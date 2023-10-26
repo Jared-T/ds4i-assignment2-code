@@ -1,0 +1,25 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "DS4I Assignment 1"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - ds4i_assignment2.qmd
+      - code_appendix.qmd
+
+format:
+  html:
+    embed-resources: true
+    theme: lux
+    css: styles.css
+    toc: true
+
+execute:
+  cache: true
+  echo: false
+
+bibliography: references.bib

@@ -1,0 +1,7 @@
+saved_files/assignment1_savedvals/*.pkl filter=lfs diff=lfs merge=lfs -text
+best_model.h5 filter=lfs diff=lfs merge=lfs -text
+saved_files/sentences_jared_BERT/variables/* filter=lfs diff=lfs merge=lfs -text
+saved_files/assignment1_savedvals/svm_bow_results.pkl filter=lfs diff=lfs merge=lfs -text
+saved_files/sentences_jared_BERT/variables/variables.data-00000-of-00001 filter=lfs diff=lfs merge=lfs -text
+saved_files/assignment1_savedvals/nn_bow_tune.pkl filter=lfs diff=lfs merge=lfs -text
+saved_files/assignment1_savedvals/nn_tf_results.pkl filter=lfs diff=lfs merge=lfs -text

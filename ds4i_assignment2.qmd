@@ -1,0 +1,10 @@
+---
+title: "Happy Legendary Title"
+format: html
+author: Jared Tavares
+---
+
+# Hello there
+
+
+This is a happy document. It has a title, and some content. It also has a list:
