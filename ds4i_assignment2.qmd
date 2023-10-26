@@ -8,3 +8,5 @@ author: Jared Tavares
 
 
 This is a happy document. It has a title, and some content. It also has a list:
+
+Cool cool cool
