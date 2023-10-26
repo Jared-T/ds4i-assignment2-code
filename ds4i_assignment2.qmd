@@ -4,9 +4,68 @@ format: html
 author: Jared Tavares
 ---
 
-# Hello there
+# Read in the daaaata
 
+```{python}
 
-This is a happy document. It has a title, and some content. It also has a list:
+# Loading in the necessary libraries
+import zipfile
+import os
+import pandas as pd
+import re
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS
+from itertools import cycle
+import seaborn as sns
+import numpy as np
+from collections import Counter
+from nltk.tokenize import word_tokenize
 
-Cool cool cool
+```
+
+```{python}
+
+# Unzip the file and get the list of filenames
+with zipfile.ZipFile("data/speeches.zip", 'r') as zip_ref:
+    zip_ref.extractall("data")
+
+filenames = os.listdir("data")
+filenames = [filename for filename in filenames if filename.endswith('.txt')]
+
+# Read the content of each speech file and extract the date from the first line
+speeches = []
+dates = []
+for filename in filenames:
+    with open(os.path.join("data", filename), 'r', encoding='utf-8') as file:
+        # Extract date from the first line
+        date = file.readline().strip()
+        dates.append(date)
+        
+        # Read the rest of the file
+        speeches.append(file.read())
+
+# Create DataFrame
+sona = pd.DataFrame({'filename': filenames, 'speech': speeches, 'date': dates})
+
+# Extract year and president for each speech
+sona['year'] = sona['filename'].str[:4]
+sona['president'] = sona['filename'].str.split('_').str[-1].str.split('.').str[0]
+
+# Clean the sona dataset by removing unnecessary text
+replace_reg = r'(http.*?(\s|.$))|(www.*?(\s|.$))|&amp;|&lt;|&gt;|\n'
+sona['speech'] = sona['speech'].str.replace(replace_reg, ' ')
+
+# Split speeches into sentences
+# sona_sentences = sona['speech'].str.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', expand=True).stack().reset_index(level=-1, drop=True)
+# sona_sentences.name = 'sentence'
+
+# # Remove newline characters from the sentences
+# sona_sentences = sona_sentences.str.replace('\n', '').str.strip()
+
+# # Merge with the president, date, and year columns to associate each sentence with the respective details
+# df_sentences = sona[['president', 'date', 'year']].join(sona_sentences)
+
+# Make a csv of the sentences
+sona.to_csv('data/sona_speeches.csv', index=False)
+
+```
