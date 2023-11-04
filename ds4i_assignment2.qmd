@@ -115,6 +115,9 @@ def clean_text(text):
 # Apply the cleaning function to the speech column
 sona_speeches_df['speech'] = sona_speeches_df['speech'].apply(clean_text)
 
+# Make a csv of the sentences
+sona_speeches_df.to_csv('data/sona_speeches_adapted.csv', index=False)
+
 ```
 
 # Exploratory Data Analysis
@@ -635,5 +638,136 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
+
+```
+
+
+# Topic modelling
+
+```{python}
+
+# Load dataset - already lemmatized and cleaned, but still has stopwords
+df = pd.read_csv('data/sona_speeches_adapted.csv')
+
+# Function to clean and remove stopwords
+def remove_stopwords(text):
+    return ' '.join([word.strip('.,!?"\'-()') for word in text.split() if word.strip('.,!?"\'-()').lower() not in ENGLISH_STOP_WORDS])
+
+# Remove numeric values from the text
+df['speech'] = df['speech'].str.replace(r'\d+', '')
+
+# Apply the function to each speech
+df['speech'] = df['speech'].apply(remove_stopwords)
+
+```
+
+## LSA
+
+```{python}
+
+import pandas as pd
+from gensim import corpora, models, matutils
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Using TF-IDF
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_matrix = tfidf_vectorizer.fit_transform(df['speech']) # Ensure 'speech_text' is the correct column name
+
+# Convert to Gensim format
+corpus = matutils.Sparse2Corpus(tfidf_matrix, documents_columns=False)
+dictionary = corpora.Dictionary.from_corpus(corpus, id2word=dict((id, word) for word, id in tfidf_vectorizer.vocabulary_.items()))
+
+# LSA model
+num_topics = 5  # or however many topics you want
+lsi_model = models.LsiModel(corpus=corpus, id2word=dictionary, num_topics=num_topics)
+
+# Now you can print topics or save the model
+lsi_topics = lsi_model.print_topics()
+for topic in lsi_topics:
+    print(topic)
+
+
+
+```
+
+
+## pLSA (Probabilistic Latent Semantic Analysis)
+
+```{python}
+
+# This is similar to LSA, but with the LdaModel instead
+lda_model = models.LdaModel(corpus=corpus, id2word=dictionary, num_topics=num_topics, gamma_threshold=1e-3)
+
+# Now you can print topics or save the model
+lda_model.print_topics()
+
+```
+
+
+## LDA (Latent Dirichlet Allocation)
+
+```{python}
+
+from gensim.utils import simple_preprocess
+
+# Tokenize the text
+tokenized_speeches = [simple_preprocess(speech) for speech in df['speech']]
+
+# Create a bag-of-words model for each speech
+bow_corpus = [dictionary.doc2bow(text) for text in tokenized_speeches]
+lda_model_bow = models.LdaModel(corpus=bow_corpus, id2word=dictionary, num_topics=num_topics)
+
+# LDA model using TF-IDF
+lda_model_tfidf = models.LdaModel(corpus=corpus, id2word=dictionary, num_topics=num_topics)
+
+# Now you can print topics or save the models
+lda_model_bow.print_topics()
+lda_model_tfidf.print_topics()
+
+```
+
+## corrLDA (Correlated Topic Model)
+
+```{python}
+
+import tomotopy as tp
+
+# Initialize CTM
+ctm = tp.CTModel(k=10)  # Replace '10' with the number of topics you want
+
+# Add documents to the model
+for text in df['speech']:
+    ctm.add_doc(text.split())  # Make sure the texts are tokenized if necessary
+
+# Train the model
+ctm.train(0)
+for i in range(100):
+    ctm.train(10)
+    print('Iteration: {}\tLog-likelihood: {}'.format(i, ctm.ll_per_word))
+
+# Get the topics
+for i in range(ctm.k):
+    print("Topic #{}:".format(i), ctm.get_topic_words(i))
+
+
+```
+
+
+## Author-Topic LDA
+
+```{python}
+
+from gensim.models import AuthorTopicModel
+
+# You need to create a mapping of authors (presidents) to documents
+author2doc = {author: [] for author in df['president'].unique()}
+for i, row in df.iterrows():
+    author2doc[row['president']].append(i)
+
+# Author-Topic LDA model
+author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=num_topics)
+
+# Now you can print topics or save the model
+author_topic_model.print_topics()
 
 ```
