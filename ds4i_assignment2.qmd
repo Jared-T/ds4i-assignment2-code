@@ -24,7 +24,7 @@ To achieve all of the above-mentioned analysis, it is first relevant to revise f
 ## Topic modelling 
 ### Latent Semantic Analysis (LSA)
 
-![](LSA.pdf){fig-alt="Schematic representation of LSA."}
+
 
 LSA [@Deerwester1990] is a non-probabilistic, non-generative model where a form of matrix factorization is utilized to uncover few latent topics, capturing meaningful relationships among documents/tokens. As depicted in Figure, in the first step, a document-term matrix DTM is generated from the raw text data by tokenizing d documents into w words (or sentences), forming the columns and rows respectively. Each row-column entry is either valued via the BoW or tf-idf approach. This DTM-matrix, which is often sparse and high-dimensional, is then decomposed via a dimensionality-reduction-technique, namely truncated Singular Value Decomposition (SVD). Consequently, in the second step the DTM-matrix becomes the product of three matrices: the topic-word matrix At* (for the tokens), the topic-prevalence matrix Bt* (for the latent semantic factors), and the transposed document-topic matrix CTt* (for the document). Here, t*, the optimal number of topics, is a hyperparameter which is refined at a value (either via the Silhouette-Coefficient or the coherence-measure approach) that retains the most significant dimensions in the transformed space. In the final step, the text data is then encoded using this top-topic number. 
 
@@ -80,6 +80,7 @@ from collections import Counter
 from nltk.tokenize import word_tokenize
 
 ```
+
 
 ```{python}
 
@@ -178,7 +179,7 @@ def get_wordnet_pos(word):
 # Clean the text, convert to lowercase, and lemmatize each word
 def clean_text(text):
     # Remove special characters: keep only letters, numbers, and basic punctuation
-    text = re.sub(r'[.]', ' ', text)  # Replaces periods with spaces
+    text = re.sub(r'[.;]', ' ', text)  # Replaces periods with spaces
     text = re.sub(r'[^a-zA-Z0-9 ]', '', text)
     text = text.lower()  # Convert to lowercase
     
@@ -743,12 +744,29 @@ plt.show()
 
 ```{python}
 
+import re
+import numpy as np
+import pandas as pd
+from scipy import linalg, spatial
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA, SparsePCA, TruncatedSVD
+from sklearn.feature_extraction.text import (CountVectorizer, TfidfTransformer, TfidfVectorizer)
+from sklearn.cluster import KMeans
+
+from sklearn.utils.extmath import randomized_svd
+
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+
 # Load dataset - already lemmatized and cleaned, but still has stopwords
 df = pd.read_csv('data/sona_speeches_adapted.csv')
 
+# Define the stop words
+stop_words = set(stopwords.words('english'))
+
 # Function to clean and remove stopwords
 def remove_stopwords(text):
-    return ' '.join([word.strip('.,!?"\'-()') for word in text.split() if word.strip('.,!?"\'-()').lower() not in ENGLISH_STOP_WORDS])
+    return ' '.join([word.strip('.,!?"\'-()') for word in text.split() if word.strip('.,!?"\'-()').lower() not in stop_words])
 
 # Remove numeric values from the text
 df['speech'] = df['speech'].str.replace(r'\d+', '')
@@ -756,37 +774,133 @@ df['speech'] = df['speech'].str.replace(r'\d+', '')
 # Apply the function to each speech
 df['speech'] = df['speech'].apply(remove_stopwords)
 
+# Save the csv of the cleaned speeches without stopwords
+df.to_csv('data/sona_speeches_no_stopwords.csv', index=False)
+
 ```
 
 ## LSA
 
 ```{python}
 
-import pandas as pd
-from gensim import corpora, models, matutils
-from sklearn.feature_extraction.text import TfidfVectorizer
+# Old code here
 
-# Using TF-IDF
-tfidf_vectorizer = TfidfVectorizer()
-tfidf_matrix = tfidf_vectorizer.fit_transform(df['speech']) # Ensure 'speech_text' is the correct column name
+# import pandas as pd
+# from gensim import corpora, models, matutils
+# from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Convert to Gensim format
-corpus = matutils.Sparse2Corpus(tfidf_matrix, documents_columns=False)
-dictionary = corpora.Dictionary.from_corpus(corpus, id2word=dict((id, word) for word, id in tfidf_vectorizer.vocabulary_.items()))
+# # Using TF-IDF
+# tfidf_vectorizer = TfidfVectorizer()
+# tfidf_matrix = tfidf_vectorizer.fit_transform(df['speech']) # Ensure 'speech_text' is the correct column name
 
-# LSA model
-num_topics = 5  # or however many topics you want
-lsi_model = models.LsiModel(corpus=corpus, id2word=dictionary, num_topics=num_topics)
+# # Convert to Gensim format
+# corpus = matutils.Sparse2Corpus(tfidf_matrix, documents_columns=False)
+# dictionary = corpora.Dictionary.from_corpus(corpus, id2word=dict((id, word) for word, id in tfidf_vectorizer.vocabulary_.items()))
 
-# Now you can print topics or save the model
-lsi_topics = lsi_model.print_topics()
-for topic in lsi_topics:
-    print(topic)
+# # LSA model
+# num_topics = 5  # or however many topics you want
+# lsi_model = models.LsiModel(corpus=corpus, id2word=dictionary, num_topics=num_topics)
+
+# # Now you can print topics or save the model
+# lsi_topics = lsi_model.print_topics()
+# for topic in lsi_topics:
+#     print(topic)
 
 
 
 ```
 
+
+```{python}
+
+# Read in the cleaned csv file for the analysis
+df = pd.read_csv('data/sona_speeches_no_stopwords.csv')
+
+filtered_document= []
+filtered_text = []
+
+# Catch any stopwords that might have been missed.
+stop_words = set(stopwords.words('english'))
+
+for document in df['speech']:
+    
+    clean_document = " ".join(re.sub(r"[^A-Za-z \—]+", " ", document).split())
+    
+    document_tokens = word_tokenize(clean_document)
+
+    for word in document_tokens:
+        if word not in stop_words:
+            filtered_document.append(word)
+
+    filtered_text.append(' '.join(filtered_document))
+
+```
+
+
+
+```{python}
+
+vectorizer = CountVectorizer()
+
+counts_matrix = vectorizer.fit_transform(filtered_text)
+
+# Get the feature names from the vectorizer
+feature_names = vectorizer.get_feature_names_out()
+
+count_matrix_df = pd.DataFrame(counts_matrix.toarray(), columns=feature_names)
+count_matrix_df.index = df['president']
+
+print("Word frequency matrix: \n", count_matrix_df)
+
+```
+
+
+```{python}
+
+# Convert the set of stop words to a list
+stop_words_list = list(stop_words)
+
+vectorizer = TfidfVectorizer(stop_words=stop_words_list, 
+max_features=10000, max_df=0.5, use_idf=True, ngram_range=(1,1))
+
+X = vectorizer.fit_transform(filtered_text)
+print(X.shape)
+
+# Retrieve feature names using the correct attribute
+feature_names = vectorizer.get_feature_names_out()
+print(feature_names)
+
+num_clusters = 4
+
+km = KMeans(n_clusters=num_clusters)
+km.fit(X)
+
+clusters = km.labels_.tolist()
+print(clusters)
+
+
+```
+
+
+```{python}
+
+U, Sigma, VT = randomized_svd(X, n_components=10, n_iter=100, random_state=122)
+
+svd_model = TruncatedSVD(n_components=2, algorithm='randomized', n_iter=100, random_state=122)
+
+svd_model.fit(X)
+    
+print(U.shape)
+
+for i, comp in enumerate(VT):
+    terms_comp = zip(feature_names, comp)
+    sorted_terms = sorted(terms_comp, key= lambda x:x[1], reverse=True)[:7]
+    print("Cluster "+str(i)+": ")
+    for t in sorted_terms:
+        print(t[0])
+    print(" ")
+
+```
 
 ## pLSA (Probabilistic Latent Semantic Analysis)
 
