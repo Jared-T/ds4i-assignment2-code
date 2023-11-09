@@ -29,10 +29,14 @@ To achieve all of the above-mentioned, it is first relevant to revise foundation
 
 <h4> Literature Review </h4>
 
-<b><u> SONA and analysis thereo </b></u>
+<b><u> SONA and analysis thereof </b></u>
 
 SONA, a pivotal event in the political programme of Parliament, serves as a presidential summary for the South African public. Specifically, the country’s current domestic affairs and international relations are reflected upon, past governmental work is perused, and future plans in terms of policies and civil projects are proposed. Through this address, accountability on the part of government is re-instilled and transparency with the public is re-affirmed on an annual basis, either once (non-election year) or twice (pre-and-post election) [@Muthambi2017].
 The text analysis of such SONA speeches, via the implementation of TM and SentA, has been previously done for Philippine presidents [@MirandaBringula2021]. Though, it is now of interest to extend such an application to another country, South Africa. 
+
+
+<b><u> Tokenization process </b></u>
+The process of tokenization entails breaking up given text into units, referred to as tokens (or terms), which are meaningful for analysis [@Zhang2018]. In this case, these tokens take on different structures, based on either a macro-context (i.e., sentences) or micro-context (i.e., words, as a unigram or bigram). At both scales, the way in which these tokens are valued will be varied. The value will either be defined by a bag-of-words (BoW) or term-frequency, inverse-document-frequency (tf-idf) approach. The former way implicates accounting for the number of occurrences of some token in some document. On the other hand, the latter way not only regards the frequency of some token, but also the significance thereof. Thus, tf-idf involves the assignment of some weight to each token in a document which in turn reflects its importance relative to the entire collection of documents (corpus). It then follows that the tf-idf value of a token t in a document *d* within a corpus *D* is calculated as the product of two constituents. The first being tf(*t*,*d*) defined as the quotient of the frequency of token *t* in document *d* and the total number of tokens in document *d*, whereas the second is idf(*t*, *D*) denoted by the quotient of the natural logarithm of the total number of documents in corpus *D* and the number of documents containing the token *t* [@SilgeRobinson2017]. 
 
 
 <h4> Methods </h4>
