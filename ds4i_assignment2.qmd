@@ -38,6 +38,16 @@ Instead of implementing truncated SVD, pLSA [@Hofmann1999] rather utilizes a gen
 
 Despite pLSA implicitly addressing LSA-related disadvantages, this method still involves two main drawbacks. There is no probability model for the document-topic probabilities P(t|d), resulting in the inability to assign topic mixtures to new, unseen documents not trained on. Model parameters also then increase linearly with the number of documents added, making this method more susceptible to overfitting. 
 
+### Latent Dirichlet Allocation 
+
+
+![](LDA.png){fig-alt="Schematic representation of LDA."}
+
+LDA is another generative, probabilistic model which can be deemed as a hierarchical Bayesian version of pLSA. Via explicitly defining a generative model for the document-topic probabilities, both the above-mentioned pitfalls of pLSA are improved upon. The number of parameters to estimate drastically decrease and the ability to apply and generalize to new, unseen documents is attainable. As presented in Figure, the initial steps first involve randomly sampling a document-topic probability distribution ($\theta$) from a Dirichlet (Dir) distribution ($\eta$), followed by randomly sampling a topic-word probability distribution ($\phi$) from another Dirichlet distribution ($\tau$). From the $\theta$ distribution, a topic t is selected by drawing from a multinomial (Mult) distribution (third step) and from the $\phi$ distribution given said topic t, a word w (or sentences) is sampled from another multinomial distribution (fourth step). The associated LDA-parameters are then estimated via a variational expectation maximization algorithm or collapsed Gibbs sampling. 
+
+
+
+
 
 # Read in the data
 
