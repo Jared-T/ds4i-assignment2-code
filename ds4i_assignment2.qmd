@@ -83,6 +83,13 @@ LDA is another generative, probabilistic model which can be deemed as a hierarch
 
 Following closely to LDA, the CTM [@LaffertyBlei2005] additionally allows for the ability to model the presence of any correlated topics.  Such topic correlations are introduced via the inclusion of the multivariate normal (MultNorm) distribution with t length-vector of means ($\mu$) and t $\times$ t covariance matrix ($\Sigma$) where the resulting values are then mapped into probabilities by passing through a logistic (log) transformation. Comparing Figure and Figure, the nuance between LDA and CTM is highlighted in light-blue, where the discrepancy in the models come about from replacing the Dirichlet distribution (which involves the implicit assumption of independence across topics) with the logit-normal distribution (which now explicitly enables for topic dependency via a covariance structure) for generating document-topic probabilities. The other generative processes previously outlined for LDA is retained and repeated for CTM. Given this additional model complexity, the more convoluted mean-field variational inference algorithm is employed for CTM-parameter estimation which necessitate many iterations for optimization purposes. CTM is consequently computationally more expensive than LDA. Though, this snag is far outweighed by the procurement of richer topics with overt relationships acknowledged between these. 
 
+
+<b><u>  Author Topic Model (ATM) </b></u>
+
+![](ATM.png){fig-alt="Schematic representation of ATM."}
+
+ATM [@RosenZvi2012] extends LDA via the inclusion of authorship information with topics. Again, inspecting Figure and Figure, the slight differences between these two models are accentuated with light-blue colour. Here, for each word w in the document d an author a is sampled uniformly (Uni) at random. Each author is associated with a distribution over topics ($\Psi$) sampled from a Dirichlet prior $\alpha$. The resultant mixture weights corresponding to the chosen author are used to select a topic t, then a word w (or sentence) is generated according to the topic-word distribution $\phi$ (drawn from another Dirichlet prior $\beta$) corresponding to that said chosen topic t. Therefore, through the estimation of the $\psi$ and $\phi$ parameters, not only is information obtained about which topics authors generally relate to, but also a representation of these document contents in terms of these topics, respectively. 
+
 # Read in the data
 
 ```{python}
