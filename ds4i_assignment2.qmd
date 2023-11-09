@@ -81,6 +81,8 @@ LDA is another generative, probabilistic model which can be deemed as a hierarch
 
 <b><u>  Correlated Topic Model (CTM) </b></u>
 
+![](CTM.png){fig-alt="Schematic representation of CTM."}
+
 Following closely to LDA, the CTM [@LaffertyBlei2005] additionally allows for the ability to model the presence of any correlated topics.  Such topic correlations are introduced via the inclusion of the multivariate normal (MultNorm) distribution with t length-vector of means ($\mu$) and t $\times$ t covariance matrix ($\Sigma$) where the resulting values are then mapped into probabilities by passing through a logistic (log) transformation. Comparing Figure and Figure, the nuance between LDA and CTM is highlighted in light-blue, where the discrepancy in the models come about from replacing the Dirichlet distribution (which involves the implicit assumption of independence across topics) with the logit-normal distribution (which now explicitly enables for topic dependency via a covariance structure) for generating document-topic probabilities. The other generative processes previously outlined for LDA is retained and repeated for CTM. Given this additional model complexity, the more convoluted mean-field variational inference algorithm is employed for CTM-parameter estimation which necessitate many iterations for optimization purposes. CTM is consequently computationally more expensive than LDA. Though, this snag is far outweighed by the procurement of richer topics with overt relationships acknowledged between these. 
 
 
