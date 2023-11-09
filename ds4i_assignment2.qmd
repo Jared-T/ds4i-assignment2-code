@@ -44,7 +44,7 @@ The process of tokenization entails breaking up given text into units, referred 
 
 <b><u> Topic modelling (TM) </b></u>
 
-TM, an unsupervised learning approach, implicates the identification of underlying abstract themes in some body of text, in the absence of pre-specified labels [@Cho2019]. In general, there are two topic-model assumptions: each document comprises of a mixture of topics and each topic consists of a collection of words [@Zhang2018]. 
+TM, an unsupervised learning approach, implicates the identification of underlying abstract themes in some body of text, in the absence of pre-specified labels [@Cho2019]. In general, there are two topic-model assumptions: each document comprises of a mixture of topics and each topic consists of a collection of words [@Zhang2018]. Different types of topic models exist, each with varying complexity in terms of the way in which topics are generated. The simplest one, Latent Semantic Analysis (LSA), has previously been implemented to discover patterns of lexical cohesion in political speech, specifically that of the former Prime Minister of the United Kingdom, Margaret Thatcher [@Klebanov2008]. Improving on LSA methodology, Probabilistic LSA (pLSA) has been implemented in healthcare [@Zhu2014] and educational [@Ming2014] contexts, albeit no application thereof in political science was found. A further sophisticated model, Latent Dirichlet Allocation (LDA), has been used to determine trending topics in  news on governmental YouTube channels [@Subhan2023]. 
 
 
 <b><u> Sentiment analysis (SentA) </b></u>
