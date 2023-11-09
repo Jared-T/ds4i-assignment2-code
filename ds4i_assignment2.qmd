@@ -8,11 +8,13 @@ author:
   - Heiletjé van Zyl (VZYHEI003)
 ---
 
-<div style="text-align: justify"> 
+<!-- <div style="text-align: justify">  -->
 
 <h4> Abstract </h4>
 ```{python}
 # TODO AT THE END!
+a = 1
+
 ```
 
 <h4> Introduction </h4>
@@ -22,7 +24,7 @@ Given such political context, it is of specific interest to analyse the  annual 
 
 ![Illustration of how the NLP techniques, sentiment analysis and topic modelling, will be implemented within a different-scales-within-different-levels framework for the presidential-SONA-speeech text analysis.](MacroMicroScheme.png){width=400 height=250 #fig-MacroMicroScheme}
 
-Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country’s serving presidents during different date periods. 
+Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country\'s serving presidents during different date periods. 
 
 To achieve all of the above-mentioned, it is first relevant to revise foundational terms and review related literature in context of politics and NLP. All pertinent pre-processing of the political text data is then considered, followed by a discussion delving into the details of each SentA and TM approach applied as part of the analysis. Specifically, three different lexicons are leveraged to describe sentiments, whilst five different topic models are tackled to uncover themes   within South-African-presidents’ SONA speeches. Ensuing the implementation of these methodologies, the results thereof are detailed in terms insights and interpretations. Thereafter, an overall evaluation of the techniques in terms of efficacy and inadequacy is overviewed. Finally, focal findings are highlighted and potential improvements as part of future research are recommended.  
 
@@ -817,6 +819,8 @@ df.to_csv('data/sona_speeches_no_stopwords.csv', index=False)
 ```
 
 
+### K-means version
+
 ```{python}
 
 # Read in the cleaned csv file for the analysis
@@ -905,6 +909,127 @@ for i, comp in enumerate(VT):
     for t in sorted_terms:
         print(t[0])
     print(" ")
+
+```
+
+### Coherence version
+
+```{python}
+
+#import modules
+import os.path
+from gensim import corpora
+from gensim.models import LsiModel
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+from gensim.models.coherencemodel import CoherenceModel
+import matplotlib.pyplot as plt
+
+
+```
+
+```{python}
+
+# Read in the cleaned csv file for the analysis
+df = pd.read_csv('data/sona_speeches_no_stopwords.csv')
+
+```
+
+```{python}
+
+def preprocess_data(doc_set):
+    """
+    Input  : docuemnt list
+    Purpose: preprocess text (tokenize, removing stopwords, and stemming)
+    Output : preprocessed text
+    """
+    # initialize regex tokenizer
+    tokenizer = RegexpTokenizer(r'\w+')
+    # create English stop words list
+    en_stop = set(stopwords.words('english'))
+    # Create p_stemmer of class PorterStemmer
+    p_stemmer = PorterStemmer()
+    # list for tokenized documents in loop
+    texts = []
+    # loop through document list
+    for i in doc_set:
+        # clean and tokenize document string
+        raw = i.lower()
+        tokens = tokenizer.tokenize(raw)
+        # remove stop words from tokens
+        stopped_tokens = [i for i in tokens if not i in en_stop]
+        # stem tokens
+        stemmed_tokens = [p_stemmer.stem(i) for i in stopped_tokens]
+        # add tokens to list
+        texts.append(stemmed_tokens)
+    return texts
+
+def prepare_corpus(doc_clean):
+    """
+    Input  : clean document
+    Purpose: create term dictionary of our courpus and Converting list of documents (corpus) into Document Term Matrix
+    Output : term dictionary and Document Term Matrix
+    """
+    # Creating the term dictionary of our courpus, where every unique term is assigned an index. dictionary = corpora.Dictionary(doc_clean)
+    dictionary = corpora.Dictionary(doc_clean)
+    # Converting list of documents (corpus) into Document Term Matrix using dictionary prepared above.
+    doc_term_matrix = [dictionary.doc2bow(doc) for doc in doc_clean]
+    # generate LDA model
+    return dictionary,doc_term_matrix
+
+def create_gensim_lsa_model(doc_clean,number_of_topics,words):
+    """
+    Input  : clean document, number of topics and number of words associated with each topic
+    Purpose: create LSA model using gensim
+    Output : return LSA model
+    """
+    dictionary,doc_term_matrix=prepare_corpus(doc_clean)
+    # generate LSA model
+    lsamodel = LsiModel(doc_term_matrix, num_topics=number_of_topics, id2word = dictionary)  # train model
+    print(lsamodel.print_topics(num_topics=number_of_topics, num_words=words))
+    return lsamodel
+
+
+def compute_coherence_values(dictionary, doc_term_matrix, doc_clean, stop, start=2, step=3):
+    """
+    Input   : dictionary : Gensim dictionary
+              corpus : Gensim corpus
+              texts : List of input texts
+              stop : Max num of topics
+    purpose : Compute c_v coherence for various number of topics
+    Output  : model_list : List of LSA topic models
+              coherence_values : Coherence values corresponding to the LDA model with respective number of topics
+    """
+    coherence_values = []
+    model_list = []
+    for num_topics in range(start, stop, step):
+        # generate LSA model
+        model = LsiModel(doc_term_matrix, num_topics=num_topics, id2word = dictionary)  # train model
+        model_list.append(model)
+        coherencemodel = CoherenceModel(model=model, texts=doc_clean, dictionary=dictionary, coherence='c_v')
+        coherence_values.append(coherencemodel.get_coherence())
+    return model_list, coherence_values
+
+```
+
+
+```{python}
+
+def plot_graph(doc_clean,start, stop, step):
+    dictionary,doc_term_matrix=prepare_corpus(doc_clean)
+    model_list, coherence_values = compute_coherence_values(dictionary, doc_term_matrix,doc_clean, stop, start, step)
+    # Show graph
+    x = range(start, stop, step)
+    plt.plot(x, coherence_values)
+    plt.xlabel("Number of Topics")
+    plt.ylabel("Coherence score")
+    plt.legend(("coherence_values"), loc='best')
+    plt.show()
+
+clean_text=preprocess_data(df['speech'].str.replace(r'[^a-zA-Z\s]', '', regex=True)) # clean data
+start,stop,step=2,3,1
+plot_graph(clean_text,start,stop,step)
 
 ```
 
