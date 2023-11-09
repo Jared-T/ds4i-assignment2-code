@@ -1,8 +1,14 @@
 ---
-title: "Assignment 2"
+title: "Sentiments and Topics in South African SONA Speeches"
+title-size: small
+subtitle: "~ STA5073Z Data Science for Industry Assignment 2"
 format: html
-author: "Jared Tavares and Heeeyletje van Zyl"
+author:   
+  - Jared Tavares (TVRJAR001)
+  - Heiletjé van Zyl (VZYHEI003)
 ---
+
+<div style="text-align: justify"> 
 
 # Abstract
 ```{python}
@@ -12,9 +18,9 @@ author: "Jared Tavares and Heeeyletje van Zyl"
 # Introduction 
 The field of Natural Language Processing (NLP) is faceted by techniques tailored for theme tracking and opinion mining which merge part of text analysis. Though, of particular prominence, is the extraction of latent thematic patterns and the establishment of the extent of emotionality expressed in political-based texts. 
 
-Given such political context, it is of specific interest to analyse the  annual State of the Nation Address (SONA) speeches delivered by six different South African presidents (F.W. de Klerk, N.R. Mandela, T.M. Mbeki, K.P. Motlanthe, J.G. Zuma, and M.C. Ramaphosa) ranging over twenty-nine years (from 1994 to 2023). This analysis, descriptive and data-driven in nature, endeavours to examine the content of the SONA speeches in terms of themes via topic modelling (TM) and emotions via sentiment analysis (SentA). In general, as illustrated in Figure, this exploration will be double-bifurcated, executing the aforementioned techniques within a macro and micro context both at the text (all-presidents versus by-president SONA speeches, respectively) and token (sentences versus words, respectively) level.  
+Given such political context, it is of specific interest to analyse the  annual State of the Nation Address (SONA) speeches delivered by six different South African presidents (F.W. de Klerk, N.R. Mandela, T.M. Mbeki, K.P. Motlanthe, J.G. Zuma, and M.C. Ramaphosa) ranging over twenty-nine years (from 1994 to 2023). This analysis, descriptive and data-driven in nature, endeavours to examine the content of the SONA speeches in terms of themes via topic modelling (TM) and emotions via sentiment analysis (SentA). In general, as illustrated in @fig-MacroMicroScheme, this exploration will be double-bifurcated, executing the aforementioned techniques within a macro and micro context both at the text (all-presidents versus by-president SONA speeches, respectively) and token (sentences versus words, respectively) level.  
 
-![](MacroMicroScheme.png){fig-alt="Schematic representation of sentiment analysis and topic modelling investigated within at different scales within differnt levels."}
+![Schematic representation of sentiment analysis and topic modelling investigated within at different scales within differnt levels.](MacroMicroScheme.png){width=500 height=500 a #fig-MacroMicroScheme}
 
 Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country’s serving presidents during different date periods. 
 
@@ -24,7 +30,7 @@ To achieve all of the above-mentioned analysis, it is first relevant to revise f
 ## Topic modelling 
 ### Latent Semantic Analysis (LSA)
 
-![](LSA.pdf){fig-alt="Schematic representation of LSA."}
+![](LSA.png){fig-alt="Schematic representation of LSA."}
 
 LSA [@Deerwester1990] is a non-probabilistic, non-generative model where a form of matrix factorization is utilized to uncover few latent topics, capturing meaningful relationships among documents/tokens. As depicted in Figure, in the first step, a document-term matrix DTM is generated from the raw text data by tokenizing d documents into w words (or sentences), forming the columns and rows respectively. Each row-column entry is either valued via the BoW or tf-idf approach. This DTM-matrix, which is often sparse and high-dimensional, is then decomposed via a dimensionality-reduction-technique, namely truncated Singular Value Decomposition (SVD). Consequently, in the second step the DTM-matrix becomes the product of three matrices: the topic-word matrix At* (for the tokens), the topic-prevalence matrix Bt* (for the latent semantic factors), and the transposed document-topic matrix CTt* (for the document). Here, t*, the optimal number of topics, is a hyperparameter which is refined at a value (either via the Silhouette-Coefficient or the coherence-measure approach) that retains the most significant dimensions in the transformed space. In the final step, the text data is then encoded using this top-topic number. 
 
@@ -32,19 +38,7 @@ Given LSA only implicates a DTM-matrix, the implementation thereof is generally 
 
 ### Probabilistic Latent Semantic Analysis (pLSA)
 
-<!-- ![](pLSA.pdf) -->
 
-
-```{=html}
-<iframe src="pLSA.pdf" width="100%" height="500px">
-</iframe>
-```
-
-
-<!-- ![Caption for your PDF figure](/Users/heiletjevanzyl/Desktop/DSFI/STA5073Z Assignment 2/ds4i-assignment2-code/pLSA.pdf)
-
-
-<embed src="pLSA.pdf" type="application/pdf"> -->
 
 Instead of implementing truncated SVD, pLSA [@Hofmann1999] rather utilizes a generative, probabilistic model. Within this framework, a document d is first selected with probability P(d). Then given this, a latent topic t is present in this selected document d and so chosen with probability of P(t|d). Finally, given this chosen topic t, a word w (or sentence) is generated from it with probability P(w|t), as shown in Figure. It is noted that the values of P(d) is determined directly from the corpus D which is defined in terms of a DTM matrix. In contrast, the probabilities P(t|d) and P(w|t) are parameters modelled as multinomial distributions and iteratively updated via the Expectation-Maximization (EM) algorithm. Direct parallelism between LSA and pLSA can be drawn via the methods’ parameterization, as conveyed via matching colours of the topic-word matrix and P(w|t), the document-topic matrix and P(d|t) as well as the topic-prevalence matrix and P(t) displayed in Figure and Figure, respectively. 
 
@@ -868,3 +862,5 @@ author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, 
 author_topic_model.print_topics()
 
 ```
+
+</div>
