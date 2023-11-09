@@ -107,6 +107,27 @@ sona.to_csv('data/sona_speeches.csv', index=False)
 
 
 ```{python}
+from matplotlib.colors import LinearSegmentedColormap
+
+cmap = plt.cm.cividis
+
+norm = plt.Normalize(0, 100)
+
+# Define a colour map based on cividis
+# Define a new colormap using a smaller slice of the cividis colormap, this time stopping well before the yellows
+cividis_modified = cmap(np.linspace(0, 0.4, cmap.N))  # Using only 40% of the colormap range
+
+# Create a new colormap from the data
+cividis_no_yellow_light = LinearSegmentedColormap.from_list('cividis_no_yellow_light', cividis_modified)
+
+# Let's pick three colors from the modified colormap
+colors = [cividis_no_yellow_light(norm(0)), 
+          cividis_no_yellow_light(norm(50)), 
+          cividis_no_yellow_light(norm(100))]
+
+```
+
+```{python}
 import nltk
 # Make sure to download the necessary NLTK corpus if you haven't already
 # nltk.download('wordnet')
@@ -180,15 +201,32 @@ word_frequencies = get_word_frequencies(sona_speeches_df['speech'], ENGLISH_STOP
 # Get the top 10 most frequent words across all speeches
 top_10_words = word_frequencies.most_common(10)
 
-# Plotting the bar graph for the top 10 most frequent words across speeches
+cividis_no_yellow_light(norm(100))
+
+# Plotting
 plt.figure(figsize=(10, 6))
-plt.bar([word for word, count in top_10_words], [count for word, count in top_10_words])
-plt.title('Top 10 Most Frequent Words Across SONA Speeches')
+plt.bar([word for word, count in top_10_words], [count for word, count in top_10_words], color=colors[0])
 plt.xlabel('Words')
 plt.ylabel('Frequency')
 plt.xticks(rotation=45)
 plt.show()
 
+# Define the directory name
+directory = "saved_plots"
+
+# Check if the directory exists
+if not os.path.exists(directory):
+    # If it does not exist, create it
+    os.makedirs(directory)
+
+# Now you can safely save your file within 'saved_plots' directory
+pdf_filename = f'{directory}/top_10_words_across_speeches_chart.pdf'
+plt.savefig(pdf_filename, format='pdf', bbox_inches='tight')
+
+# Closing the figure to prevent it from displaying again in the output
+plt.close()
+
+pdf_filename
 
 ```
 
