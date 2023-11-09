@@ -4,6 +4,23 @@ format: html
 author: "Jared Tavares and Heeeyletje van Zyl"
 ---
 
+# Abstract
+```{python}
+# TODO AT THE END!
+```
+
+# Introduction 
+The field of Natural Language Processing (NLP) is faceted by techniques tailored for theme tracking and opinion mining which merge part of text analysis. Though, of particular prominence, is the extraction of latent thematic patterns and the establishment of the extent of emotionality expressed in political-based texts. 
+
+Given such political context, it is of specific interest to analyse the  annual State of the Nation Address (SONA) speeches delivered by six different South African presidents (F.W. de Klerk, N.R. Mandela, T.M. Mbeki, K.P. Motlanthe, J.G. Zuma, and M.C. Ramaphosa) ranging over twenty-nine years (from 1994 to 2023). This analysis, descriptive and data-driven in nature, endeavours to examine the content of the SONA speeches in terms of themes via topic modelling (TM) and emotions via sentiment analysis (SentA). In general, as illustrated in Figure, this exploration will be double-bifurcated, executing the aforementioned techniques within a macro and micro context both at the text (all-presidents versus by-president SONA speeches, respectively) and token (sentences versus words, respectively) level.  
+
+![](MacroMicroScheme.png.png){fig-alt="Schematic representation of sentiment analysis and topic modelling investigated within at different scales within differnt levels."}
+
+Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country’s serving presidents during different date periods. 
+
+To achieve all of the above-mentioned analysis, it is first relevant to revise foundational terms and review related literature in context of politics and NLP. All pertinent pre-processing of the political text data is then considered, followed by a discussion delving into the details of each SentA and TM approach applied as part of the analysis. Specifically, three different lexicons are leveraged to describe sentiments, whilst five different topic models are tackled to uncover themes   within South-African-presidents’ SONA speeches. Ensuing the implementation of these methodologies, the results thereof are detailed in terms insights and interpretations. Thereafter, an overall evaluation of the techniques in terms of efficacy and inadequacy is overviewed. Finally, focal findings are highlighted and potential improvements as part of future research are recommended.  
+
+
 # Read in the data
 
 ```{python}
@@ -72,6 +89,7 @@ sona.to_csv('data/sona_speeches.csv', index=False)
 
 
 ```{python}
+import nltk
 # Make sure to download the necessary NLTK corpus if you haven't already
 # nltk.download('wordnet')
 # nltk.download('averaged_perceptron_tagger')
@@ -286,7 +304,7 @@ def get_top_negation_bigrams(speeches, n, negation_words):
     X = vectorizer.fit_transform(speeches)
     feature_names = vectorizer.get_feature_names_out()
     bigram_frequencies = zip(feature_names, X.toarray().sum(axis=0))
-
+    # TODO filter actual negation words
     # Filter bigrams to only keep those with negation words
     negation_bigrams = [(bigram, freq) for bigram, freq in bigram_frequencies if any(neg_word in bigram for neg_word in negation_words)]
     negation_bigrams = sorted(negation_bigrams, key=lambda x: x[1], reverse=True)[:n]
@@ -726,7 +744,7 @@ lda_model_tfidf.print_topics()
 
 ```
 
-## corrLDA (Correlated Topic Model)
+## CTM (Correlated Topic Model)
 
 ```{python}
 
@@ -753,7 +771,7 @@ for i in range(ctm.k):
 ```
 
 
-## Author-Topic LDA
+## ATM (Author-Topic Model)
 
 ```{python}
 
