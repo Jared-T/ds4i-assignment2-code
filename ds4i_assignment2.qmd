@@ -24,17 +24,27 @@ To achieve all of the above-mentioned analysis, it is first relevant to revise f
 ## Topic modelling 
 ### Latent Semantic Analysis (LSA)
 
-![](LSA.png){fig-alt="Schematic representation of LSA."}
+![](LSA.pdf){fig-alt="Schematic representation of LSA."}
 
-# ![](LSA.pdf){fig-alt="Schematic representation of LSA."}
-
-LSA [@Deerwaster1990] is a non-probabilistic, non-generative model where a form of matrix factorization is utilized to uncover few latent topics, capturing meaningful relationships among documents/tokens. As depicted in Figure, in the first step, a document-term matrix DTM is generated from the raw text data by tokenizing d documents into w words (or sentences), forming the columns and rows respectively. Each row-column entry is either valued via the BoW or tf-idf approach. This DTM-matrix, which is often sparse and high-dimensional, is then decomposed via a dimensionality-reduction-technique, namely truncated Singular Value Decomposition (SVD). Consequently, in the second step the DTM-matrix becomes the product of three matrices: the topic-word matrix At* (for the tokens), the topic-prevalence matrix Bt* (for the latent semantic factors), and the transposed document-topic matrix CTt* (for the document). Here, t*, the optimal number of topics, is a hyperparameter which is refined at a value (either via the Silhouette-Coefficient or the coherence-measure approach) that retains the most significant dimensions in the transformed space. In the final step, the text data is then encoded using this top-topic number. 
+LSA [@Deerwester1990] is a non-probabilistic, non-generative model where a form of matrix factorization is utilized to uncover few latent topics, capturing meaningful relationships among documents/tokens. As depicted in Figure, in the first step, a document-term matrix DTM is generated from the raw text data by tokenizing d documents into w words (or sentences), forming the columns and rows respectively. Each row-column entry is either valued via the BoW or tf-idf approach. This DTM-matrix, which is often sparse and high-dimensional, is then decomposed via a dimensionality-reduction-technique, namely truncated Singular Value Decomposition (SVD). Consequently, in the second step the DTM-matrix becomes the product of three matrices: the topic-word matrix At* (for the tokens), the topic-prevalence matrix Bt* (for the latent semantic factors), and the transposed document-topic matrix CTt* (for the document). Here, t*, the optimal number of topics, is a hyperparameter which is refined at a value (either via the Silhouette-Coefficient or the coherence-measure approach) that retains the most significant dimensions in the transformed space. In the final step, the text data is then encoded using this top-topic number. 
 
 Given LSA only implicates a DTM-matrix, the implementation thereof is generally efficient. Though, with the involvement of truncated SVD, some computational intensity and a lack of quick updates with new, incoming text-data can arise. Additional LSA drawbacks include: the lack of interpretability, the underlying linear-model framework (which results in poor performance on text-data with non-linear dependencies), and the underlying Gaussian assumption for tokens in documents (which may not be an appropriate distribution). 
 
 ### Probabilistic Latent Semantic Analysis (pLSA)
 
-![](LSA.png){fig-alt="Schematic representation of pLSA."}
+<!-- ![](pLSA.pdf) -->
+
+
+```{=html}
+<iframe src="pLSA.pdf" width="100%" height="500px">
+</iframe>
+```
+
+
+<!-- ![Caption for your PDF figure](/Users/heiletjevanzyl/Desktop/DSFI/STA5073Z Assignment 2/ds4i-assignment2-code/pLSA.pdf)
+
+
+<embed src="pLSA.pdf" type="application/pdf"> -->
 
 Instead of implementing truncated SVD, pLSA [@Hofmann1999] rather utilizes a generative, probabilistic model. Within this framework, a document d is first selected with probability P(d). Then given this, a latent topic t is present in this selected document d and so chosen with probability of P(t|d). Finally, given this chosen topic t, a word w (or sentence) is generated from it with probability P(w|t), as shown in Figure. It is noted that the values of P(d) is determined directly from the corpus D which is defined in terms of a DTM matrix. In contrast, the probabilities P(t|d) and P(w|t) are parameters modelled as multinomial distributions and iteratively updated via the Expectation-Maximization (EM) algorithm. Direct parallelism between LSA and pLSA can be drawn via the methods’ parameterization, as conveyed via matching colours of the topic-word matrix and P(w|t), the document-topic matrix and P(d|t) as well as the topic-prevalence matrix and P(t) displayed in Figure and Figure, respectively. 
 
