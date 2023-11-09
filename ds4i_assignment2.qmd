@@ -8,11 +8,13 @@ author:
   - Heiletjé van Zyl (VZYHEI003)
 ---
 
-<div style="text-align: justify"> 
+<!-- <div style="text-align: justify">  -->
 
 # Abstract
 ```{python}
 # TODO AT THE END!
+a = 1
+
 ```
 
 # Introduction 
@@ -22,7 +24,7 @@ Given such political context, it is of specific interest to analyse the  annual 
 
 ![Schematic representation of sentiment analysis and topic modelling investigated within at different scales within differnt levels.](MacroMicroScheme.png){width=500 height=500 a #fig-MacroMicroScheme}
 
-Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country’s serving presidents during different date periods. 
+Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country\'s serving presidents during different date periods. 
 
 To achieve all of the above-mentioned analysis, it is first relevant to revise foundational terms and review related literature in context of politics and NLP. All pertinent pre-processing of the political text data is then considered, followed by a discussion delving into the details of each SentA and TM approach applied as part of the analysis. Specifically, three different lexicons are leveraged to describe sentiments, whilst five different topic models are tackled to uncover themes   within South-African-presidents’ SONA speeches. Ensuing the implementation of these methodologies, the results thereof are detailed in terms insights and interpretations. Thereafter, an overall evaluation of the techniques in terms of efficacy and inadequacy is overviewed. Finally, focal findings are highlighted and potential improvements as part of future research are recommended.  
 
@@ -1004,8 +1006,7 @@ def compute_coherence_values(dictionary, doc_term_matrix, doc_clean, stop, start
 
 def plot_graph(doc_clean,start, stop, step):
     dictionary,doc_term_matrix=prepare_corpus(doc_clean)
-    model_list, coherence_values = compute_coherence_values(dictionary, doc_term_matrix,doc_clean,
-                                                            stop, start, step)
+    model_list, coherence_values = compute_coherence_values(dictionary, doc_term_matrix,doc_clean, stop, start, step)
     # Show graph
     x = range(start, stop, step)
     plt.plot(x, coherence_values)
@@ -1015,7 +1016,7 @@ def plot_graph(doc_clean,start, stop, step):
     plt.show()
 
 clean_text=preprocess_data(df['speech'].str.replace(r'[^a-zA-Z\s]', '', regex=True)) # clean data
-start,stop,step=2,12,1
+start,stop,step=2,3,1
 plot_graph(clean_text,start,stop,step)
 
 ```
