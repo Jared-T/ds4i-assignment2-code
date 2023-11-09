@@ -32,8 +32,8 @@ To achieve all of the above-mentioned, it is first relevant to revise foundation
 <b><u> SONA and analysis thereof</b></u>
 <!-- **SONA and analysis thereof**]{.underline .bold} -->
 
-SONA, a pivotal event in the political programme of Parliament, serves as a presidential summary for the South African public. Specifically, the country’s current domestic affairs and international relations are reflected upon, past governmental work is perused, and future plans in terms of policies and civil projects are proposed. Through this address, accountability on the part of government is re-instilled and transparency with the public is re-affirmed on an annual basis, either once (non-election year) or twice (pre-and-post election) @Muthambi2017.
-The text analysis of such SONA speeches, via the implementation of TM and SentA, has been previously done for Philippine presidents @MirandaBringula2021. Though, it is now of interest to extend such an application to another country, South Africa. 
+SONA, a pivotal event in the political programme of Parliament, serves as a presidential summary for the South African public. Specifically, the country’s current domestic affairs and international relations are reflected upon, past governmental work is perused, and future plans in terms of policies and civil projects are proposed. Through this address, accountability on the part of government is re-instilled and transparency with the public is re-affirmed on an annual basis, either once (non-election year) or twice (pre-and-post election) [@Muthambi2017].
+The text analysis of such SONA speeches, via the implementation of TM and SentA, has been previously done for Philippine presidents [@MirandaBringula2021]. Though, it is now of interest to extend such an application to another country, South Africa. 
 
 
 
