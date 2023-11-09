@@ -30,6 +30,13 @@ LSA [@Deerwaster1990] is a non-probabilistic, non-generative model where a form 
 
 Given LSA only implicates a DTM-matrix, the implementation thereof is generally efficient. Though, with the involvement of truncated SVD, some computational intensity and a lack of quick updates with new, incoming text-data can arise. Additional LSA drawbacks include: the lack of interpretability, the underlying linear-model framework (which results in poor performance on text-data with non-linear dependencies), and the underlying Gaussian assumption for tokens in documents (which may not be an appropriate distribution). 
 
+### Probabilistic Latent Semantic Analysis (pLSA)
+
+![](LSA.png){fig-alt="Schematic representation of pLSA."}
+
+Instead of implementing truncated SVD, pLSA [@Hofmann1999] rather utilizes a generative, probabilistic model. Within this framework, a document d is first selected with probability P(d). Then given this, a latent topic t is present in this selected document d and so chosen with probability of P(t|d). Finally, given this chosen topic t, a word w (or sentence) is generated from it with probability P(w|t), as shown in Figure. It is noted that the values of P(d) is determined directly from the corpus D which is defined in terms of a DTM matrix. In contrast, the probabilities P(t|d) and P(w|t) are parameters modelled as multinomial distributions and iteratively updated via the Expectation-Maximization (EM) algorithm. Direct parallelism between LSA and pLSA can be drawn via the methods’ parameterization, as conveyed via matching colours of the topic-word matrix and P(w|t), the document-topic matrix and P(d|t) as well as the topic-prevalence matrix and P(t) displayed in Figure and Figure, respectively. 
+
+Despite pLSA implicitly addressing LSA-related disadvantages, this method still involves two main drawbacks. There is no probability model for the document-topic probabilities P(t|d), resulting in the inability to assign topic mixtures to new, unseen documents not trained on. Model parameters also then increase linearly with the number of documents added, making this method more susceptible to overfitting. 
 
 
 # Read in the data
