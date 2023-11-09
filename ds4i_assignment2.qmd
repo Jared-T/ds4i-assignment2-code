@@ -26,6 +26,8 @@ To achieve all of the above-mentioned analysis, it is first relevant to revise f
 
 ![](LSA.png){fig-alt="Schematic representation of LSA."}
 
+# ![](LSA.pdf){fig-alt="Schematic representation of LSA."}
+
 LSA [@Deerwaster1990] is a non-probabilistic, non-generative model where a form of matrix factorization is utilized to uncover few latent topics, capturing meaningful relationships among documents/tokens. As depicted in Figure, in the first step, a document-term matrix DTM is generated from the raw text data by tokenizing d documents into w words (or sentences), forming the columns and rows respectively. Each row-column entry is either valued via the BoW or tf-idf approach. This DTM-matrix, which is often sparse and high-dimensional, is then decomposed via a dimensionality-reduction-technique, namely truncated Singular Value Decomposition (SVD). Consequently, in the second step the DTM-matrix becomes the product of three matrices: the topic-word matrix At* (for the tokens), the topic-prevalence matrix Bt* (for the latent semantic factors), and the transposed document-topic matrix CTt* (for the document). Here, t*, the optimal number of topics, is a hyperparameter which is refined at a value (either via the Silhouette-Coefficient or the coherence-measure approach) that retains the most significant dimensions in the transformed space. In the final step, the text data is then encoded using this top-topic number. 
 
 Given LSA only implicates a DTM-matrix, the implementation thereof is generally efficient. Though, with the involvement of truncated SVD, some computational intensity and a lack of quick updates with new, incoming text-data can arise. Additional LSA drawbacks include: the lack of interpretability, the underlying linear-model framework (which results in poor performance on text-data with non-linear dependencies), and the underlying Gaussian assumption for tokens in documents (which may not be an appropriate distribution). 
@@ -38,6 +40,17 @@ Instead of implementing truncated SVD, pLSA [@Hofmann1999] rather utilizes a gen
 
 Despite pLSA implicitly addressing LSA-related disadvantages, this method still involves two main drawbacks. There is no probability model for the document-topic probabilities P(t|d), resulting in the inability to assign topic mixtures to new, unseen documents not trained on. Model parameters also then increase linearly with the number of documents added, making this method more susceptible to overfitting. 
 
+### Latent Dirichlet Allocation 
+
+
+![](LDA.png){fig-alt="Schematic representation of LDA."}
+
+LDA is another generative, probabilistic model which can be deemed as a hierarchical Bayesian version of pLSA. Via explicitly defining a generative model for the document-topic probabilities, both the above-mentioned pitfalls of pLSA are improved upon. The number of parameters to estimate drastically decrease and the ability to apply and generalize to new, unseen documents is attainable. As presented in Figure, the initial steps first involve randomly sampling a document-topic probability distribution ($\theta$) from a Dirichlet (Dir) distribution ($\eta$), followed by randomly sampling a topic-word probability distribution ($\phi$) from another Dirichlet distribution ($\tau$). From the $\theta$ distribution, a topic t is selected by drawing from a multinomial (Mult) distribution (third step) and from the $\phi$ distribution given said topic t, a word w (or sentences) is sampled from another multinomial distribution (fourth step). The associated LDA-parameters are then estimated via a variational expectation maximization algorithm or collapsed Gibbs sampling. 
+
+
+### Correlated Topic Model (CTM)
+
+Following closely to LDA, the CTM [@LaffertyBlei2005] additionally allows for the ability to model the presence of any correlated topics.  Such topic correlations are introduced via the inclusion of the multivariate normal (MultNorm) distribution with t length-vector of means ($\mu$) and t $\times$ t covariance matrix ($\Sigma$) where the resulting values are then mapped into probabilities by passing through a logistic (log) transformation. Comparing Figure and Figure, the nuance between LDA and CTM is highlighted in light-blue, where the discrepancy in the models come about from replacing the Dirichlet distribution (which involves the implicit assumption of independence across topics) with the logit-normal distribution (which now explicitly enables for topic dependency via a covariance structure) for generating document-topic probabilities. The other generative processes previously outlined for LDA is retained and repeated for CTM. Given this additional model complexity, the more convoluted mean-field variational inference algorithm is employed for CTM-parameter estimation which necessitate many iterations for optimization purposes. CTM is consequently computationally more expensive than LDA. Though, this snag is far outweighed by the procurement of richer topics with overt relationships acknowledged between these. 
 
 # Read in the data
 
