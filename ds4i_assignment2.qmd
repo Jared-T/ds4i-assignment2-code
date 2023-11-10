@@ -465,14 +465,61 @@ for president in presidential_years:
 
 # Sentiment analysis
     
+
 ```{python}
+
+import pandas as pd
+import nltk
+from nltk.corpus import opinion_lexicon
+from nltk.tokenize import treebank
+from afinn import Afinn
+
+# Define a function to get Bing lexicon sentiment scores
+def get_bing_sentiment(text):
+    tokenizer = treebank.TreebankWordTokenizer()
+    tokens = tokenizer.tokenize(text.lower())
+    pos_score = sum(1 for word in tokens if word in positive_words)
+    neg_score = sum(1 for word in tokens if word in negative_words)
+    compound_score = pos_score - neg_score
+    return {'positive': pos_score, 'negative': neg_score, 'compound': compound_score}
+
+
+# Load the AFINN lexicon
+afinn = Afinn()
+
+# Define a function to get AFINN sentiment scores
+def get_afinn_sentiment(text):
+    return afinn.score(text)
+
+# Load positive and negative words
+positive_words = set(opinion_lexicon.positive())
+negative_words = set(opinion_lexicon.negative())
+
+# Apply Bing sentiment analysis
+sona_speeches_clean['bing_sentiment'] = sona_speeches_clean['speech'].apply(get_bing_sentiment)
+
+# Apply AFINN sentiment analysis
+sona_speeches_clean['afinn_sentiment'] = sona_speeches_clean['speech'].apply(lambda text: get_afinn_sentiment(text))
+
+```
+
+```{python}
+
+
+
+```
+
+
+```{python}
+
+# OLD CODE BELOW
 
 import pandas as pd
 import matplotlib.pyplot as plt
 from textblob import TextBlob
 from afinn import Afinn
 from nltk.corpus import opinion_lexicon
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize, treebank
 
 # Make sure to download the necessary NLTK corpora if you haven't already
 import nltk
@@ -556,6 +603,8 @@ plot_sentiment_words(aggregated_sentiments, 'bing')
 
 
 ```{python}
+
+# OLD CODE
 
 import pandas as pd
 import matplotlib.pyplot as plt
