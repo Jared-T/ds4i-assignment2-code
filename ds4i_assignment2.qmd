@@ -841,13 +841,18 @@ import matplotlib.pyplot as plt
 from gensim.models import LsiModel, TfidfModel
 from gensim.models.coherencemodel import CoherenceModel
 from gensim import corpora
+from gensim.utils import simple_preprocess
 
-# Assuming `texts` is a list of tokenized documents
-dictionary = corpora.Dictionary(texts)
+texts = sona_speeches_clean['speech']
+# Further process tokens using gensim's simple_preprocess
+tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc=True removes punctuations
+
+# Create a Gensim dictionary from the tokenized documents
+dictionary = corpora.Dictionary(tokenized_texts)
 dictionary.filter_extremes(no_below=2, no_above=0.75)
 
 # Create a BOW corpus
-bow_corpus = [dictionary.doc2bow(text) for text in texts]
+bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
 
 # Create a TF-IDF corpus
 tfidf = TfidfModel(bow_corpus)
@@ -860,7 +865,7 @@ def compute_coherence_values(dictionary, corpus, texts, start, limit, step, cohe
     for num_topics in range(start, limit, step):
         model = LsiModel(corpus=corpus, num_topics=num_topics, id2word=dictionary)
         model_list.append(model)
-        coherencemodel = CoherenceModel(model=model, texts=texts, dictionary=dictionary, coherence=coherence)
+        coherencemodel = CoherenceModel(model=model, texts=tokenized_texts, dictionary=dictionary, coherence=coherence)
         coherence_values.append(coherencemodel.get_coherence())
     return model_list, coherence_values
 
@@ -871,7 +876,7 @@ start, limit, step = 2, 20, 1
 bow_model_list, bow_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=bow_corpus, texts=texts, start=start, limit=limit, step=step)
 
 # Compute coherence values for TF-IDF
-tfidf_model_list, tfidf_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=tfidf_corpus, texts=texts, start=start, limit=limit, step=step)
+tfidf_model_list, tfidf_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=tfidf_corpus, texts=tokenized_texts, start=start, limit=limit, step=step)
 
 # Plotting the coherence values
 x = range(start, limit, step)
@@ -930,6 +935,14 @@ fig.tight_layout()
 fig = plt.figure(figsize=(9.4, 10))
 _ = visualize.wordclouds(fig)
 
+fig, ax = plt.subplots()
+_ = visualize.topics(ax)
+fig.tight_layout()
+
+
+# To visualize the word-topic distributions
+Visualize.words(plsa.word_topics, corpus)
+
 ```
 
 
@@ -937,21 +950,101 @@ _ = visualize.wordclouds(fig)
 
 ```{python}
 
-# from gensim.utils import simple_preprocess
+# TODO: Fix this
+# import numpy as np
+# import gensim
+# from gensim.models import LdaModel
+# from gensim.models.coherencemodel import CoherenceModel
+# from gensim import corpora
+# from gensim.models import TfidfModel
+# import matplotlib.pyplot as plt
+# import tqdm
 
-# # Tokenize the text
-# tokenized_speeches = [simple_preprocess(speech) for speech in df['speech']]
+# texts = sona_speeches_clean['speech']
+# # Further process tokens using gensim's simple_preprocess
+# tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc=True removes punctuations
 
-# # Create a bag-of-words model for each speech
-# bow_corpus = [dictionary.doc2bow(text) for text in tokenized_speeches]
-# lda_model_bow = models.LdaModel(corpus=bow_corpus, id2word=dictionary, num_topics=num_topics)
+# # Create a Gensim dictionary from the tokenized documents
+# dictionary = corpora.Dictionary(tokenized_texts)
+# dictionary.filter_extremes(no_below=2, no_above=0.75)
 
-# # LDA model using TF-IDF
-# lda_model_tfidf = models.LdaModel(corpus=corpus, id2word=dictionary, num_topics=num_topics)
+# # Create a BOW corpus
+# bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
 
-# # Now you can print topics or save the models
-# lda_model_bow.print_topics()
-# lda_model_tfidf.print_topics()
+# # Create a TF-IDF corpus
+# tfidf = TfidfModel(bow_corpus)
+# tfidf_corpus = tfidf[bow_corpus]
+
+# # Define the function to compute coherence values
+# def compute_coherence_values(corpus, dictionary, k, a, b):
+#     lda_model = LdaModel(corpus=bow_corpus,
+#                          id2word=dictionary,
+#                          num_topics=k, 
+#                          random_state=100,
+#                          alpha=a,
+#                          eta=b)
+    
+#     coherence_model_lda = CoherenceModel(model=lda_model, texts=tokenized_texts, dictionary=dictionary, coherence='c_v')
+    
+#     return coherence_model_lda.get_coherence()
+
+# # Define the parameter space for grid search
+# grid = {}
+# grid['Validation_Set'] = {}
+# # Topics range
+# min_topics = 2
+# max_topics = 6
+# step_size = 2
+# topics_range = range(min_topics, max_topics, step_size)
+# # Alpha parameter
+# alpha = list(np.arange(0.01, 1, 0.3))
+# alpha.append('symmetric')
+# alpha.append('asymmetric')
+# # Beta parameter
+# beta = list(np.arange(0.01, 1, 0.3))
+# beta.append('symmetric')
+
+# # Validation sets
+# num_of_docs = len(bow_corpus)
+# corpus_sets = [# gensim.utils.ClippedCorpus(bow_corpus, num_of_docs*0.25), 
+#                # gensim.utils.ClippedCorpus(bow_corpus, num_of_docs*0.5), 
+#                gensim.utils.ClippedCorpus(bow_corpus, int(num_of_docs*0.75)), 
+#                bow_corpus]
+# corpus_title = ['75% Corpus', '100% Corpus']
+# model_results = {'Validation_Set': [],
+#                  'Topics': [],
+#                  'Alpha': [],
+#                  'Beta': [],
+#                  'Coherence': []
+#                 }
+
+# # Can take a long time to run
+# # If you want to only test a few models, reduce the number of steps in topics_range
+# # and/or limit the number of values in alpha and beta lists.
+# if 1 == 1:
+#     pbar = tqdm.tqdm(total=540)
+    
+#     # iterate through validation corpuses
+#     for i in range(len(corpus_sets)):
+#         # iterate through number of topics
+#         for k in topics_range:
+#             # iterate through alpha values
+#             for a in alpha:
+#                 # iterare through beta values
+#                 for b in beta:
+#                     # get the coherence score for the given parameters
+#                     cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, 
+#                                                   k=k, a=a, b=b)
+#                     # Save the model results
+#                     model_results['Validation_Set'].append(corpus_title[i])
+#                     model_results['Topics'].append(k)
+#                     model_results['Alpha'].append(a)
+#                     model_results['Beta'].append(b)
+#                     model_results['Coherence'].append(cv)
+                    
+#                     pbar.update(1)
+#     pbar.close()
+
 
 ```
 
@@ -959,25 +1052,49 @@ _ = visualize.wordclouds(fig)
 
 ```{python}
 
-# import tomotopy as tp
+import tomotopy as tp
+import matplotlib.pyplot as plt
 
-# # Initialize CTM
-# ctm = tp.CTModel(k=10)  # Replace '10' with the number of topics you want
+# Function to calculate coherence scores
+def calculate_coherence(model, metric='u_mass'):
+    coherence = tp.coherence.Coherence(model, coherence=metric)
+    return coherence.get_score()
 
-# # Add documents to the model
-# for text in df['speech']:
-#     ctm.add_doc(text.split())  # Make sure the texts are tokenized if necessary
+# Prepare the data for the CTM model
+tokenized_docs = [text.split() for text in sona_speeches_clean['speech']]  # Ensure the texts are tokenized
 
-# # Train the model
-# ctm.train(0)
-# for i in range(100):
-#     ctm.train(10)
-#     print('Iteration: {}\tLog-likelihood: {}'.format(i, ctm.ll_per_word))
+# Define the range of topic numbers you want to test
+topic_numbers = range(2, 8, 2)  # for example from 2 to 20 by step of 2
 
-# # Get the topics
-# for i in range(ctm.k):
-#     print("Topic #{}:".format(i), ctm.get_topic_words(i))
+# Store coherence scores for plotting
+coherence_scores = []
 
+for k in topic_numbers:
+    # Initialize CTM with the current number of topics
+    ctm = tp.CTModel(k=k)
+
+    # Add documents to the model
+    for tokens in tokenized_docs:
+        ctm.add_doc(tokens)
+
+    # Train the model
+    ctm.train(0)
+    for _ in range(100):
+        ctm.train(10)
+
+    # Calculate and store the coherence score
+    score = calculate_coherence(ctm)
+    coherence_scores.append(score)
+    print(f"Topics: {k}, Coherence Score: {score}")
+
+# Plot the coherence scores
+plt.figure(figsize=(12, 6))
+plt.plot(topic_numbers, coherence_scores)
+plt.title('Coherence Scores by Number of Topics')
+plt.xlabel('Number of Topics')
+plt.ylabel('Coherence Score')
+plt.xticks(topic_numbers)
+plt.show()
 
 ```
 
@@ -986,18 +1103,46 @@ _ = visualize.wordclouds(fig)
 
 ```{python}
 
-# from gensim.models import AuthorTopicModel
+# Note that ATM only works for BoW. Raw word counts (BoW) is standard because these models are based on the assumption that the data is generated from a multinomial distribution, which does not hold with TF-IDF weights.
 
-# # You need to create a mapping of authors (presidents) to documents
-# author2doc = {author: [] for author in df['president'].unique()}
-# for i, row in df.iterrows():
-#     author2doc[row['president']].append(i)
+from gensim.models import AuthorTopicModel
+from gensim.models.coherencemodel import CoherenceModel
+import matplotlib.pyplot as plt
 
-# # Author-Topic LDA model
-# author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=num_topics)
+# Prepare the data for the AuthorTopicModel
+# Create a mapping of authors to documents
+author2doc = {author: [] for author in sona_speeches_clean['president'].unique()}
+for i, row in sona_speeches_clean.iterrows():
+    author2doc[row['president']].append(i)
 
-# # Now you can print topics or save the model
-# author_topic_model.print_topics()
+# Define the range of topic numbers you want to test
+topic_numbers = range(2, 8, 2)  # for example from 2 to 20 by step of 2
+
+# Store coherence scores for plotting
+coherence_scores = []
+
+for num_topics in topic_numbers:
+    # Author-Topic LDA model with the current number of topics
+    author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=num_topics)
+
+    # Train the model
+    author_topic_model.update(bow_corpus, author2doc=author2doc)
+
+    # Compute coherence score
+    cm = CoherenceModel(model=author_topic_model, texts=tokenized_docs, dictionary=dictionary, coherence='u_mass')
+    coherence = cm.get_coherence()
+    coherence_scores.append(coherence)
+    print(f"Num Topics: {num_topics}, Coherence Score: {coherence}")
+
+# Plot the coherence scores
+plt.figure(figsize=(12, 6))
+plt.plot(topic_numbers, coherence_scores)
+plt.title('Coherence Scores by Number of Topics')
+plt.xlabel('Number of Topics')
+plt.ylabel('Coherence Score')
+plt.xticks(topic_numbers)
+plt.show()
+
 
 ```
 
