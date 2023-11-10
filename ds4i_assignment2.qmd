@@ -171,9 +171,9 @@ sona.to_csv('data/sona_speeches.csv', index=False)
 
 ```{python}
 # Make sure to download the necessary NLTK corpus if you haven't already
-# nltk.download('wordnet')
-# nltk.download('averaged_perceptron_tagger')
-# nltk.download('words')
+nltk.download('wordnet')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('words')
 
 # Read in the sona speeches dataset
 sona_speeches_df = pd.read_csv('data/sona_speeches.csv')
