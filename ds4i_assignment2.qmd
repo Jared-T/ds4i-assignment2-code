@@ -3,9 +3,7 @@ title: "Sentiments and Topics in South African SONA Speeches"
 title-size: small
 subtitle: "~ STA5073Z Data Science for Industry Assignment 2"
 format: html
-author:   
-  - Jared Tavares (TVRJAR001)
-  - Heiletjé van Zyl (VZYHEI003)
+author: "Jared Tavares (TVRJAR001) and Heiletjé van Zyl (VZYHEI003)"
 ---
 
 <!-- <div style="text-align: justify">  -->
@@ -81,7 +79,10 @@ from itertools import cycle
 import seaborn as sns
 import numpy as np
 from collections import Counter
+import nltk
 from nltk.tokenize import word_tokenize
+from nltk.corpus import wordnet, stopwords, words
+from nltk.stem import WordNetLemmatizer
 
 ```
 
@@ -119,17 +120,111 @@ replace_reg = r'(http.*?(\s|.$))|(www.*?(\s|.$))|&amp;|&lt;|&gt;|\n'
 sona['speech'] = sona['speech'].str.replace(replace_reg, ' ')
 
 # Split speeches into sentences
-# sona_sentences = sona['speech'].str.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', expand=True).stack().reset_index(level=-1, drop=True)
-# sona_sentences.name = 'sentence'
+sona_sentences = sona.copy()
 
-# # Remove newline characters from the sentences
-# sona_sentences = sona_sentences.str.replace('\n', '').str.strip()
+sona_sentences['speech'] = sona_sentences['speech'].str.replace('\n', '').str.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s')
 
-# # Merge with the president, date, and year columns to associate each sentence with the respective details
-# df_sentences = sona[['president', 'date', 'year']].join(sona_sentences)
+# Make a csv of the speeches
+sona.to_csv('data/sona_speeches.csv', index=False)
+
+```
+
+
+```{python}
+# Make sure to download the necessary NLTK corpus if you haven't already
+# nltk.download('wordnet')
+# nltk.download('averaged_perceptron_tagger')
+# nltk.download('words')
+
+# Read in the sona speeches dataset
+sona_speeches_df = pd.read_csv('data/sona_speeches.csv')
+sona_sentences_clean = sona_sentences.copy()
+
+# Initialize the WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+english_words = set(words.words())
+additional_words = {
+    'honourable', 'member', 'south', 'africa', 'african', 'year'
+}
+
+# Function to convert NLTK's part-of-speech tags to WordNet's part-of-speech tags
+def get_wordnet_pos(word):
+    """Map NLTK part of speech tags to WordNet part of speech tags."""
+    tag = nltk.pos_tag([word])[0][1][0].upper()
+    tag_dict = {"J": nltk.corpus.wordnet.ADJ,
+                "N": nltk.corpus.wordnet.NOUN,
+                "V": nltk.corpus.wordnet.VERB,
+                "R": nltk.corpus.wordnet.ADV}
+
+    return tag_dict.get(tag, nltk.corpus.wordnet.NOUN)
+
+# Clean the text, convert to lowercase, and lemmatize each word
+def clean_text(text):
+    # Remove special characters: keep only letters, numbers, and basic punctuation
+    text = re.sub(r'[.;]', ' ', text)  # Replaces periods with spaces
+    text = re.sub(r'[^a-zA-Z ]', '', text)
+    text = text.lower()  # Convert to lowercase
+    
+    # Tokenize the text
+    words = word_tokenize(text)
+    
+    # Remove stop words
+    words = [word for word in words if word not in stop_words]
+    
+    # Remove additional words
+    words = [word for word in words if word not in additional_words]
+
+    # Lemmatize each word with the correct POS tag
+    lemmatized_words = []
+    for word, tag in nltk.pos_tag(words):
+        wntag = get_wordnet_pos(tag)
+        lemmatized_word = lemmatizer.lemmatize(word, wntag)
+        # Only append the lemmatized word if it is in the set of English words
+        if lemmatized_word in english_words:
+            lemmatized_words.append(lemmatized_word)
+    
+    # Join the lemmatized words back into one string
+    text = ' '.join(words)
+    return text
+
+# Apply the cleaning function to the speech column
+sona_speeches_df['speech'] = sona_speeches_df['speech'].apply(clean_text)
+
+# Apply the cleaning to the sentences too
+sona_sentences_clean['speech'] = sona_sentences_clean['speech'].apply(lambda speeches: [clean_text(sentence) for sentence in speeches])
+
+# Make a csv of the speeches
+sona_speeches_df.to_csv('data/sona_speeches_adapted.csv', index=False)
 
 # Make a csv of the sentences
-sona.to_csv('data/sona_speeches.csv', index=False)
+sona_sentences_clean.to_csv('data/sona_sentences_clean.csv', index=False)
+
+```
+
+
+```{python}
+from ast import literal_eval
+
+sona_sentences_clean = pd.read_csv('data/sona_sentences_clean.csv')
+sona_sentences_clean['speech'] = sona_sentences_clean['speech'].apply(literal_eval)
+
+sona_speeches_clean = pd.read_csv('data/sona_speeches_adapted.csv')
+
+```
+
+
+```{python}
+
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+vectorizer = CountVectorizer()
+tfidf_vectorizer = TfidfVectorizer()
+
+# Transformed on the words
+bow_matrix_words = vectorizer.fit_transform(sona_speeches_clean['speech'])
+tfidf_matrix_words = tfidf_vectorizer.fit_transform(sona_speeches_clean['speech'])
+
 
 ```
 
@@ -152,56 +247,6 @@ cividis_no_yellow_light = LinearSegmentedColormap.from_list('cividis_no_yellow_l
 colors = [cividis_no_yellow_light(norm(0)), 
           cividis_no_yellow_light(norm(50)), 
           cividis_no_yellow_light(norm(100))]
-
-```
-
-```{python}
-import nltk
-# Make sure to download the necessary NLTK corpus if you haven't already
-# nltk.download('wordnet')
-# nltk.download('averaged_perceptron_tagger')
-
-from nltk.stem import WordNetLemmatizer
-
-# Read in the sona speeches dataset
-sona_speeches_df = pd.read_csv('data/sona_speeches.csv')
-
-# Initialize the WordNetLemmatizer
-lemmatizer = WordNetLemmatizer()
-
-# Function to convert NLTK's part-of-speech tags to WordNet's part-of-speech tags
-def get_wordnet_pos(word):
-    """Map NLTK part of speech tags to WordNet part of speech tags."""
-    tag = nltk.pos_tag([word])[0][1][0].upper()
-    tag_dict = {"J": nltk.corpus.wordnet.ADJ,
-                "N": nltk.corpus.wordnet.NOUN,
-                "V": nltk.corpus.wordnet.VERB,
-                "R": nltk.corpus.wordnet.ADV}
-
-    return tag_dict.get(tag, nltk.corpus.wordnet.NOUN)
-
-# Clean the text, convert to lowercase, and lemmatize each word
-def clean_text(text):
-    # Remove special characters: keep only letters, numbers, and basic punctuation
-    text = re.sub(r'[.;]', ' ', text)  # Replaces periods with spaces
-    text = re.sub(r'[^a-zA-Z0-9 ]', '', text)
-    text = text.lower()  # Convert to lowercase
-    
-    # Tokenize the text
-    words = word_tokenize(text)
-    
-    # Lemmatize each word with its POS tag
-    lemmatized_words = [lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in words]
-    
-    # Join the lemmatized words back into one string
-    text = ' '.join(lemmatized_words)
-    return text
-
-# Apply the cleaning function to the speech column
-sona_speeches_df['speech'] = sona_speeches_df['speech'].apply(clean_text)
-
-# Make a csv of the sentences
-sona_speeches_df.to_csv('data/sona_speeches_adapted.csv', index=False)
 
 ```
 
@@ -748,44 +793,156 @@ plt.show()
 
 ```{python}
 
-import re
-import numpy as np
-import pandas as pd
-from scipy import linalg, spatial
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA, SparsePCA, TruncatedSVD
-from sklearn.feature_extraction.text import (CountVectorizer, TfidfTransformer, TfidfVectorizer)
-from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-from sklearn.utils.extmath import randomized_svd
+bow_vectorizer = CountVectorizer()
+tfidf_vectorizer = TfidfVectorizer()
 
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
+# Transformed on the words
+bow_matrix_words = bow_vectorizer.fit_transform(sona_speeches_clean['speech'])
+tfidf_matrix_words = tfidf_vectorizer.fit_transform(sona_speeches_clean['speech'])
 
-# Load dataset - already lemmatized and cleaned, but still has stopwords
-df = pd.read_csv('data/sona_speeches_adapted.csv')
-
-# Define the stop words
-stop_words = set(stopwords.words('english'))
-
-# Function to clean and remove stopwords
-def remove_stopwords(text):
-    return ' '.join([word.strip('.,!?"\'-()') for word in text.split() if word.strip('.,!?"\'-()').lower() not in stop_words])
-
-# Remove numeric values from the text
-df['speech'] = df['speech'].str.replace(r'\d+', '')
-
-# Apply the function to each speech
-df['speech'] = df['speech'].apply(remove_stopwords)
-
-# Save the csv of the cleaned speeches without stopwords
-df.to_csv('data/sona_speeches_no_stopwords.csv', index=False)
 
 ```
 
 ## LSA
 
 ```{python}
+
+#import modules
+from gensim import corpora
+from gensim.models import LsiModel
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+from gensim.models.coherencemodel import CoherenceModel
+import matplotlib.pyplot as plt
+
+
+```
+
+```{python}
+
+def preprocess_data(doc_set):
+    """
+    Input  : docuemnt list
+    Purpose: preprocess text
+    Output : preprocessed text
+    """
+    # initialize regex tokenizer
+    tokenizer = RegexpTokenizer(r'\w+')
+    
+    # Create p_stemmer of class PorterStemmer
+    p_stemmer = PorterStemmer()
+    # list for tokenized documents in loop
+
+    texts = []
+    # loop through document list
+    for i in doc_set:
+        # clean and tokenize document string
+        raw = i.lower()
+        tokens = tokenizer.tokenize(raw)
+        # add tokens to list
+        texts.append(tokens)
+    return texts
+
+
+def prepare_corpus(doc_clean):
+    """
+    Input  : clean document
+    Purpose: create term dictionary of our corpus and Converting list of documents (corpus) into Document Term Matrix
+    Output : term dictionary and Document Term Matrix
+    """
+    # Creating the term dictionary of our corpus, where every unique term is assigned an index.
+    dictionary = corpora.Dictionary(doc_clean)
+    # Converting list of documents (corpus) into Document Term Matrix using the dictionary prepared above.
+    doc_term_matrix = [dictionary.doc2bow(doc) for doc in doc_clean]
+    return dictionary, doc_term_matrix
+
+def create_gensim_lsa_model(doc_clean, number_of_topics, words):
+    """
+    Input  : clean document, number of topics and number of words associated with each topic
+    Purpose: create LSA model using gensim
+    Output : return LSA model
+    """
+    dictionary, doc_term_matrix = prepare_corpus(doc_clean)
+    # Generate LSA model
+    lsamodel = LsiModel(doc_term_matrix, num_topics=number_of_topics, id2word=dictionary)  # train model
+    print(lsamodel.print_topics(num_topics=number_of_topics, num_words=words))
+    return lsamodel
+
+def compute_coherence_values(dictionary, doc_term_matrix, doc_clean, stop, start=2, step=3):
+    """
+    Input   : dictionary : Gensim dictionary
+              doc_term_matrix : Gensim corpus
+              doc_clean : List of input texts
+              stop : Max num of topics
+    Purpose : Compute c_v coherence for various number of topics
+    Output  : model_list : List of LSA topic models
+              coherence_values : Coherence values corresponding to the LSA model with respective number of topics
+    """
+    coherence_values = []
+    model_list = []
+    for num_topics in range(start, stop, step):
+        # Generate LSA model
+        model = LsiModel(tfidf_matrix_words, num_topics=num_topics, id2word=dictionary)  # train model
+        model_list.append(model)
+        coherencemodel = CoherenceModel(model=model, texts=doc_clean, dictionary=dictionary, coherence='c_v')
+        coherence_values.append(coherencemodel.get_coherence())
+    return model_list, coherence_values
+
+def plot_graph(doc_clean, start, stop, step):
+    dictionary, doc_term_matrix = prepare_corpus(doc_clean)
+    model_list, coherence_values = compute_coherence_values(dictionary, doc_term_matrix, doc_clean, stop, start, step)
+    # Show graph
+    x = list(range(start, stop, step))
+    plt.plot(x, coherence_values)
+    plt.xlabel("Number of Topics")
+    plt.ylabel("Coherence score")
+    plt.legend(("coherence_values"), loc='best')
+    plt.show()
+
+
+
+```
+
+```{python}
+
+# # LSA Model
+# document_list = sona_speeches_clean['speech'].values
+# titles = sona_speeches_clean['president'].values
+# start,stop,step=2,3,1
+
+# # Convert to Gensim format
+# corpus = matutils.Sparse2Corpus(tfidf_matrix_words, documents_columns=False)
+# dictionary = corpora.Dictionary.from_corpus(corpus, id2word=dict((id, word) for word, id in tfidf_vectorizer.vocabulary_.items()))
+
+# coherence_values = []
+# model_list = []
+# for num_topics in range(start, stop, step):
+#     # Generate LSA model
+#     model = LsiModel(corpus=corpus, num_topics=num_topics, id2word=dictionary)  # train model
+#     model_list.append(model)
+#     coherencemodel = CoherenceModel(model=model, texts=doc_clean, dictionary=dictionary, coherence='c_v')
+#     coherence_values.append(coherencemodel.get_coherence())
+
+# # Show graph
+# x = list(range(start, stop, step))
+# plt.plot(x, coherence_values)
+# plt.xlabel("Number of Topics")
+# plt.ylabel("Coherence score")
+# plt.legend(("coherence_values"), loc='best')
+# plt.show()
+
+```
+
+
+```{python}
+
+number_of_topics=7
+words=10
+clean_text=preprocess_data(document_list)
+model=create_gensim_lsa_model(clean_text,number_of_topics,words)
 
 # Old code here
 
@@ -814,220 +971,6 @@ df.to_csv('data/sona_speeches_no_stopwords.csv', index=False)
 
 ```
 
-
-### K-means version
-
-```{python}
-
-# Read in the cleaned csv file for the analysis
-df = pd.read_csv('data/sona_speeches_no_stopwords.csv')
-
-filtered_document= []
-filtered_text = []
-
-# Catch any stopwords that might have been missed.
-stop_words = set(stopwords.words('english'))
-
-for document in df['speech']:
-    
-    clean_document = " ".join(re.sub(r"[^A-Za-z \—]+", " ", document).split())
-    
-    document_tokens = word_tokenize(clean_document)
-
-    for word in document_tokens:
-        if word not in stop_words:
-            filtered_document.append(word)
-
-    filtered_text.append(' '.join(filtered_document))
-
-```
-
-
-
-```{python}
-
-vectorizer = CountVectorizer()
-
-counts_matrix = vectorizer.fit_transform(filtered_text)
-
-# Get the feature names from the vectorizer
-feature_names = vectorizer.get_feature_names_out()
-
-count_matrix_df = pd.DataFrame(counts_matrix.toarray(), columns=feature_names)
-count_matrix_df.index = df['president']
-
-print("Word frequency matrix: \n", count_matrix_df)
-
-```
-
-
-```{python}
-
-# Convert the set of stop words to a list
-stop_words_list = list(stop_words)
-
-vectorizer = TfidfVectorizer(stop_words=stop_words_list, 
-max_features=10000, max_df=0.5, use_idf=True, ngram_range=(1,1))
-
-X = vectorizer.fit_transform(filtered_text)
-print(X.shape)
-
-# Retrieve feature names using the correct attribute
-feature_names = vectorizer.get_feature_names_out()
-print(feature_names)
-
-num_clusters = 4
-
-km = KMeans(n_clusters=num_clusters)
-km.fit(X)
-
-clusters = km.labels_.tolist()
-print(clusters)
-
-
-```
-
-
-```{python}
-
-U, Sigma, VT = randomized_svd(X, n_components=10, n_iter=100, random_state=122)
-
-svd_model = TruncatedSVD(n_components=2, algorithm='randomized', n_iter=100, random_state=122)
-
-svd_model.fit(X)
-    
-print(U.shape)
-
-for i, comp in enumerate(VT):
-    terms_comp = zip(feature_names, comp)
-    sorted_terms = sorted(terms_comp, key= lambda x:x[1], reverse=True)[:7]
-    print("Cluster "+str(i)+": ")
-    for t in sorted_terms:
-        print(t[0])
-    print(" ")
-
-```
-
-### Coherence version
-
-```{python}
-
-#import modules
-import os.path
-from gensim import corpora
-from gensim.models import LsiModel
-from nltk.tokenize import RegexpTokenizer
-from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
-from gensim.models.coherencemodel import CoherenceModel
-import matplotlib.pyplot as plt
-
-
-```
-
-```{python}
-
-# Read in the cleaned csv file for the analysis
-df = pd.read_csv('data/sona_speeches_no_stopwords.csv')
-
-```
-
-```{python}
-
-def preprocess_data(doc_set):
-    """
-    Input  : docuemnt list
-    Purpose: preprocess text (tokenize, removing stopwords, and stemming)
-    Output : preprocessed text
-    """
-    # initialize regex tokenizer
-    tokenizer = RegexpTokenizer(r'\w+')
-    # create English stop words list
-    en_stop = set(stopwords.words('english'))
-    # Create p_stemmer of class PorterStemmer
-    p_stemmer = PorterStemmer()
-    # list for tokenized documents in loop
-    texts = []
-    # loop through document list
-    for i in doc_set:
-        # clean and tokenize document string
-        raw = i.lower()
-        tokens = tokenizer.tokenize(raw)
-        # remove stop words from tokens
-        stopped_tokens = [i for i in tokens if not i in en_stop]
-        # stem tokens
-        stemmed_tokens = [p_stemmer.stem(i) for i in stopped_tokens]
-        # add tokens to list
-        texts.append(stemmed_tokens)
-    return texts
-
-def prepare_corpus(doc_clean):
-    """
-    Input  : clean document
-    Purpose: create term dictionary of our courpus and Converting list of documents (corpus) into Document Term Matrix
-    Output : term dictionary and Document Term Matrix
-    """
-    # Creating the term dictionary of our courpus, where every unique term is assigned an index. dictionary = corpora.Dictionary(doc_clean)
-    dictionary = corpora.Dictionary(doc_clean)
-    # Converting list of documents (corpus) into Document Term Matrix using dictionary prepared above.
-    doc_term_matrix = [dictionary.doc2bow(doc) for doc in doc_clean]
-    # generate LDA model
-    return dictionary,doc_term_matrix
-
-def create_gensim_lsa_model(doc_clean,number_of_topics,words):
-    """
-    Input  : clean document, number of topics and number of words associated with each topic
-    Purpose: create LSA model using gensim
-    Output : return LSA model
-    """
-    dictionary,doc_term_matrix=prepare_corpus(doc_clean)
-    # generate LSA model
-    lsamodel = LsiModel(doc_term_matrix, num_topics=number_of_topics, id2word = dictionary)  # train model
-    print(lsamodel.print_topics(num_topics=number_of_topics, num_words=words))
-    return lsamodel
-
-
-def compute_coherence_values(dictionary, doc_term_matrix, doc_clean, stop, start=2, step=3):
-    """
-    Input   : dictionary : Gensim dictionary
-              corpus : Gensim corpus
-              texts : List of input texts
-              stop : Max num of topics
-    purpose : Compute c_v coherence for various number of topics
-    Output  : model_list : List of LSA topic models
-              coherence_values : Coherence values corresponding to the LDA model with respective number of topics
-    """
-    coherence_values = []
-    model_list = []
-    for num_topics in range(start, stop, step):
-        # generate LSA model
-        model = LsiModel(doc_term_matrix, num_topics=num_topics, id2word = dictionary)  # train model
-        model_list.append(model)
-        coherencemodel = CoherenceModel(model=model, texts=doc_clean, dictionary=dictionary, coherence='c_v')
-        coherence_values.append(coherencemodel.get_coherence())
-    return model_list, coherence_values
-
-```
-
-
-```{python}
-
-def plot_graph(doc_clean,start, stop, step):
-    dictionary,doc_term_matrix=prepare_corpus(doc_clean)
-    model_list, coherence_values = compute_coherence_values(dictionary, doc_term_matrix,doc_clean, stop, start, step)
-    # Show graph
-    x = range(start, stop, step)
-    plt.plot(x, coherence_values)
-    plt.xlabel("Number of Topics")
-    plt.ylabel("Coherence score")
-    plt.legend(("coherence_values"), loc='best')
-    plt.show()
-
-clean_text=preprocess_data(df['speech'].str.replace(r'[^a-zA-Z\s]', '', regex=True)) # clean data
-start,stop,step=2,3,1
-plot_graph(clean_text,start,stop,step)
-
-```
 
 ## pLSA (Probabilistic Latent Semantic Analysis)
 
