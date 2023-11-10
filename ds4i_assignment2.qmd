@@ -8,7 +8,7 @@ author:
     - Heiletjé van Zyl (VZYHEI003)
 ---
 
-<!-- <div style="text-align: justify">  -->
+<div style="text-align: justify"> 
 
 <h4> Abstract </h4>
 ```{python}
@@ -105,8 +105,6 @@ The Python-based TextBlob lexicon processes textual data in the form of a tuple 
 <b><u>  Bing </b></u>
 Unlike AFINN and TextBlob, the R-based bing lexicon does not provide sentiments via some scoring system. Rather, it simply assigns a binary label of a word being interpreted as either positive or negative [@SilgeRobinson2017].  
 
-# Read in the data
-
 ```{python}
 
 # Loading in the necessary libraries
@@ -124,6 +122,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import wordnet, stopwords, words
 from nltk.stem import WordNetLemmatizer
+
 
 ```
 
@@ -259,11 +258,13 @@ sona_speeches_clean = pd.read_csv('data/sona_speeches_adapted.csv')
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-vectorizer = CountVectorizer()
-tfidf_vectorizer = TfidfVectorizer()
+max_features = 2000
+
+bow_vectorizer = CountVectorizer(max_features=max_features)
+tfidf_vectorizer = TfidfVectorizer(max_features=max_features)
 
 # Transformed on the words
-bow_matrix_words = vectorizer.fit_transform(sona_speeches_clean['speech'])
+bow_matrix_words = bow_vectorizer.fit_transform(sona_speeches_clean['speech'])
 tfidf_matrix_words = tfidf_vectorizer.fit_transform(sona_speeches_clean['speech'])
 
 
@@ -832,38 +833,102 @@ plt.show()
 
 # Topic modelling
 
-```{python}
-
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-
-bow_vectorizer = CountVectorizer()
-tfidf_vectorizer = TfidfVectorizer()
-
-# Transformed on the words
-bow_matrix_words = bow_vectorizer.fit_transform(sona_speeches_clean['speech'])
-tfidf_matrix_words = tfidf_vectorizer.fit_transform(sona_speeches_clean['speech'])
-
-
-```
-
 ## LSA
 
-
 ```{python}
 
-b = 1
+import matplotlib.pyplot as plt
+from gensim.models import LsiModel, TfidfModel
+from gensim.models.coherencemodel import CoherenceModel
+from gensim import corpora
+
+# Assuming `texts` is a list of tokenized documents
+dictionary = corpora.Dictionary(texts)
+dictionary.filter_extremes(no_below=2, no_above=0.75)
+
+# Create a BOW corpus
+bow_corpus = [dictionary.doc2bow(text) for text in texts]
+
+# Create a TF-IDF corpus
+tfidf = TfidfModel(bow_corpus)
+tfidf_corpus = tfidf[bow_corpus]
+
+# Define the function to compute coherence values
+def compute_coherence_values(dictionary, corpus, texts, start, limit, step, coherence='u_mass'):
+    coherence_values = []
+    model_list = []
+    for num_topics in range(start, limit, step):
+        model = LsiModel(corpus=corpus, num_topics=num_topics, id2word=dictionary)
+        model_list.append(model)
+        coherencemodel = CoherenceModel(model=model, texts=texts, dictionary=dictionary, coherence=coherence)
+        coherence_values.append(coherencemodel.get_coherence())
+    return model_list, coherence_values
+
+# Set parameters
+start, limit, step = 2, 20, 1
+
+# Compute coherence values for BOW
+bow_model_list, bow_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=bow_corpus, texts=texts, start=start, limit=limit, step=step)
+
+# Compute coherence values for TF-IDF
+tfidf_model_list, tfidf_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=tfidf_corpus, texts=texts, start=start, limit=limit, step=step)
+
+# Plotting the coherence values
+x = range(start, limit, step)
+plt.figure(figsize=(10, 5))
+plt.plot(x, bow_coherence_values, label='BOW Coherence')
+plt.plot(x, tfidf_coherence_values, label='TF-IDF Coherence')
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
+plt.title("Coherence Scores by Number of Topics")
+plt.legend()
+plt.show()
+
 
 ```
+
 
 ## pLSA (Probabilistic Latent Semantic Analysis)
 
+
 ```{python}
 
-# This is similar to LSA, but with the LdaModel instead
-# lda_model = models.LdaModel(corpus=corpus, id2word=dictionary, num_topics=num_topics, gamma_threshold=1e-3)
+sona_speeches_clean['speech'].to_csv('data/sona_sentences_only.csv', index=False)
 
-# # Now you can print topics or save the model
-# lda_model.print_topics()
+```
+
+```{python}
+
+from plsa import Corpus, Pipeline, Visualize
+from plsa.pipeline import DEFAULT_PIPELINE
+from plsa.algorithms import PLSA
+
+pipeline = Pipeline(*DEFAULT_PIPELINE)
+pipeline
+
+corpus = Corpus.from_csv("data/sona_sentences_only.csv", pipeline)
+corpus
+
+n_topics = 5
+
+plsa = PLSA(corpus, n_topics, True)
+print(plsa)
+
+result = plsa.fit()
+print(plsa)
+
+print(result.topic)
+
+visualize = Visualize(result)
+visualize
+
+fig, ax = plt.subplots()
+_ = visualize.topics_in_doc(0, ax)
+fig.tight_layout()
+
+
+fig = plt.figure(figsize=(9.4, 10))
+_ = visualize.wordclouds(fig)
 
 ```
 
@@ -936,3 +1001,4 @@ b = 1
 
 ```
 
+</div> 
