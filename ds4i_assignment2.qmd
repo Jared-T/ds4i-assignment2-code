@@ -353,6 +353,7 @@ top_10_words_by_president = get_top_words_by_president(sona_speeches_clean, 10, 
 
 ```{python}
 
+# Plot the word frequenceis for each president
 for president, top_words in top_10_words_by_president.items():
     
     # Individual plot for each president
