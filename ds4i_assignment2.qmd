@@ -312,12 +312,14 @@ def get_word_frequencies(speeches, stopwords):
     return word_counts
 
 # Get the word frequencies excluding stopwords
-word_frequencies = get_word_frequencies(sona_speeches_df['speech'], ENGLISH_STOP_WORDS)
+word_frequencies = get_word_frequencies(sona_speeches_clean['speech'], ENGLISH_STOP_WORDS)
 
 # Get the top 10 most frequent words across all speeches
 top_10_words = word_frequencies.most_common(10)
 
-cividis_no_yellow_light(norm(100))
+```
+
+```{python}
 
 # Plotting
 plt.figure(figsize=(10, 6))
@@ -325,28 +327,12 @@ plt.bar([word for word, count in top_10_words], [count for word, count in top_10
 plt.xlabel('Words')
 plt.ylabel('Frequency')
 plt.xticks(rotation=45)
-plt.show()
 
-# Define the directory name
-directory = "saved_plots"
-
-# Check if the directory exists
-if not os.path.exists(directory):
-    # If it does not exist, create it
-    os.makedirs(directory)
-
-# Now you can safely save your file within 'saved_plots' directory
-pdf_filename = f'{directory}/top_10_words_across_speeches_chart.pdf'
-plt.savefig(pdf_filename, format='pdf', bbox_inches='tight')
-
-# Closing the figure to prevent it from displaying again in the output
-plt.close()
-
-pdf_filename
+# Save the plot as a PNG file
+plt.savefig(f'saved_plots/overall_top_words.png', bbox_inches='tight')
+plt.close()  # Close the figure to avoid displaying it in the notebook
 
 ```
-
-
 
 ```{python}
 
@@ -361,26 +347,9 @@ def get_top_words_by_president(speeches_df, n, stopwords):
     return top_words_by_president
 
 # Get the top 10 most frequent words for each president
-top_10_words_by_president = get_top_words_by_president(sona_speeches_df, 10, ENGLISH_STOP_WORDS)
-
-# Plotting the bar graph for the top 10 most frequent words faceted by president
-fig, axes = plt.subplots(nrows=len(top_10_words_by_president), ncols=1, figsize=(10, 6 * len(top_10_words_by_president)))
-fig.suptitle('Top 10 Most Frequent Words by President (Excluding Stopwords)', y=1.02)
-
-for i, (president, top_words) in enumerate(top_10_words_by_president.items()):
-    axes[i].bar([word for word, count in top_words], [count for word, count in top_words])
-    axes[i].set_title(president)
-    axes[i].set_xlabel('Words')
-    axes[i].set_ylabel('Frequency')
-    axes[i].tick_params(axis='x', rotation=45)
-
-plt.tight_layout()
-plt.show()
-
+top_10_words_by_president = get_top_words_by_president(sona_speeches_clean, 10, ENGLISH_STOP_WORDS)
 
 ```
-
-
 
 ```{python}
 
@@ -457,7 +426,7 @@ for president in presidential_years:
     plt.xticks(presidential_years[president], rotation=45)
     plt.tight_layout()
     plt.show()
-# still need to save as .png
+
 
 ```
 
