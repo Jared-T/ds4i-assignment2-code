@@ -359,11 +359,10 @@ for president, top_words in top_10_words_by_president.items():
     # Individual plot for each president
     plt.figure(figsize=(10, 6))
     plt.bar([word for word, count in top_words], [count for word, count in top_words], color=colors[0])
-    plt.title(f'{president}')
     plt.xlabel('Words')
     plt.ylabel('Frequency')
     plt.xticks(rotation=45)
-    
+
     # Save the plot as a PNG file
     plt.savefig(f'saved_plots/{president}_top_words.png', bbox_inches='tight')
     plt.close()  # Close the figure to avoid displaying it in the notebook
