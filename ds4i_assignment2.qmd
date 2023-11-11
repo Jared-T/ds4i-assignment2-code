@@ -312,12 +312,14 @@ def get_word_frequencies(speeches, stopwords):
     return word_counts
 
 # Get the word frequencies excluding stopwords
-word_frequencies = get_word_frequencies(sona_speeches_df['speech'], ENGLISH_STOP_WORDS)
+word_frequencies = get_word_frequencies(sona_speeches_clean['speech'], ENGLISH_STOP_WORDS)
 
 # Get the top 10 most frequent words across all speeches
 top_10_words = word_frequencies.most_common(10)
 
-cividis_no_yellow_light(norm(100))
+```
+
+```{python}
 
 # Plotting
 plt.figure(figsize=(10, 6))
@@ -325,28 +327,12 @@ plt.bar([word for word, count in top_10_words], [count for word, count in top_10
 plt.xlabel('Words')
 plt.ylabel('Frequency')
 plt.xticks(rotation=45)
-plt.show()
 
-# Define the directory name
-directory = "saved_plots"
-
-# Check if the directory exists
-if not os.path.exists(directory):
-    # If it does not exist, create it
-    os.makedirs(directory)
-
-# Now you can safely save your file within 'saved_plots' directory
-pdf_filename = f'{directory}/top_10_words_across_speeches_chart.pdf'
-plt.savefig(pdf_filename, format='pdf', bbox_inches='tight')
-
-# Closing the figure to prevent it from displaying again in the output
-plt.close()
-
-pdf_filename
+# Save the plot as a PNG file
+plt.savefig(f'saved_plots/overall_top_words.png', bbox_inches='tight')
+plt.close()  # Close the figure to avoid displaying it in the notebook
 
 ```
-
-
 
 ```{python}
 
@@ -361,106 +347,27 @@ def get_top_words_by_president(speeches_df, n, stopwords):
     return top_words_by_president
 
 # Get the top 10 most frequent words for each president
-top_10_words_by_president = get_top_words_by_president(sona_speeches_df, 10, ENGLISH_STOP_WORDS)
-
-# Plotting the bar graph for the top 10 most frequent words faceted by president
-fig, axes = plt.subplots(nrows=len(top_10_words_by_president), ncols=1, figsize=(10, 6 * len(top_10_words_by_president)))
-fig.suptitle('Top 10 Most Frequent Words by President (Excluding Stopwords)', y=1.02)
-
-for i, (president, top_words) in enumerate(top_10_words_by_president.items()):
-    axes[i].bar([word for word, count in top_words], [count for word, count in top_words])
-    axes[i].set_title(president)
-    axes[i].set_xlabel('Words')
-    axes[i].set_ylabel('Frequency')
-    axes[i].tick_params(axis='x', rotation=45)
-
-plt.tight_layout()
-plt.show()
-
+top_10_words_by_president = get_top_words_by_president(sona_speeches_clean, 10, ENGLISH_STOP_WORDS)
 
 ```
 
-
-
 ```{python}
 
-# We will first identify the overall top words to track over time.
-overall_top_words = [word for word, count in top_10_words]
-
-# Function to get yearly frequency of specific words
-def get_yearly_word_trends(speeches_df, words):
-    yearly_word_trends = {word: [] for word in words}
-    years = sorted(speeches_df['year'].unique())
+for president, top_words in top_10_words_by_president.items():
     
-    for year in years:
-        year_speeches = speeches_df[speeches_df['year'] == year]['speech']
-        word_counts = get_word_frequencies(year_speeches, ENGLISH_STOP_WORDS)
-        for word in words:
-            yearly_word_trends[word].append(word_counts[word])
-    
-    return years, yearly_word_trends
-
-# Get the yearly trends for the overall top words
-years, yearly_word_trends = get_yearly_word_trends(sona_speeches_df, overall_top_words)
-
-# Plotting the line graph for how the most frequent words trend over time across speeches
-plt.figure(figsize=(14, 7))
-
-for word in overall_top_words:
-    plt.plot(years, yearly_word_trends[word], label=word, marker='o')
-
-plt.title('Trends of Most Frequent Words Over Time in SONA Speeches (Excluding Stopwords)')
-plt.xlabel('Year')
-plt.ylabel('Frequency')
-plt.legend()
-plt.grid(True)
-plt.xticks(years, rotation=45)
-plt.tight_layout()
-plt.show()
-
-
-```
-
-
-```{python}
-
-# Function to get yearly frequency of specific words for each president
-def get_presidential_yearly_word_trends(speeches_df, words):
-    presidents = speeches_df['president'].unique()
-    presidential_word_trends = {president: {word: [] for word in words} for president in presidents}
-    presidential_years = {president: sorted(speeches_df[speeches_df['president'] == president]['year'].unique()) for president in presidents}
-    
-    for president in presidents:
-        for year in presidential_years[president]:
-            year_speeches = speeches_df[(speeches_df['year'] == year) & (speeches_df['president'] == president)]['speech']
-            word_counts = get_word_frequencies(year_speeches, ENGLISH_STOP_WORDS)
-            for word in words:
-                presidential_word_trends[president][word].append(word_counts[word])
-    
-    return presidential_years, presidential_word_trends
-
-# Get the presidential yearly trends for the overall top words
-presidential_years, presidential_word_trends = get_presidential_yearly_word_trends(sona_speeches_df, overall_top_words)
-
-# Plotting the line graphs for the most frequent words for each president over time
-for president in presidential_years:
-    plt.figure(figsize=(14, 7))
-
-    for word in overall_top_words:
-        plt.plot(presidential_years[president], presidential_word_trends[president][word], label=word, marker='o')
-
-    plt.title(f'Trends of Most Frequent Words Over Time for President {president} (Excluding Stopwords)')
-    plt.xlabel('Year')
+    # Individual plot for each president
+    plt.figure(figsize=(10, 6))
+    plt.bar([word for word, count in top_words], [count for word, count in top_words], color=colors[0])
+    plt.title(f'{president}')
+    plt.xlabel('Words')
     plt.ylabel('Frequency')
-    plt.legend()
-    plt.grid(True)
-    plt.xticks(presidential_years[president], rotation=45)
-    plt.tight_layout()
-    plt.show()
-
+    plt.xticks(rotation=45)
+    
+    # Save the plot as a PNG file
+    plt.savefig(f'saved_plots/{president}_top_words.png', bbox_inches='tight')
+    plt.close()  # Close the figure to avoid displaying it in the notebook
 
 ```
-
 
 
 
