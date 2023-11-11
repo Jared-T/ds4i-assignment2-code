@@ -108,7 +108,8 @@ Unlike AFINN and TextBlob, the R-based bing lexicon does not provide sentiments 
 
 
 
-<b><u>  Exploratory Data Analysis </b></u>
+
+<h4> Exploratory Data Analysis</h4>
 
 ![](saved_plots/overall_top_words.png){fig-alt="Most frequent words across all speeches"}
 
