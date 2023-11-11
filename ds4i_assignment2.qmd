@@ -349,7 +349,7 @@ top_10_words = word_frequencies.most_common(10)
 
 # Plotting
 plt.figure(figsize=(10, 6))
-plt.bar([word for word, count in top_10_words], [count for word, count in top_10_words], color=colors[0])
+plt.bar([word for word, count in top_10_words], [count for word, count in top_10_words], color=colors[2])
 plt.xlabel('Words')
 plt.ylabel('Frequency')
 plt.xticks(rotation=45)
