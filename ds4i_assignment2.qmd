@@ -188,10 +188,22 @@ sona['speech'] = sona['speech'].str.replace(replace_reg, ' ')
 # Split speeches into sentences
 sona_sentences = sona.copy()
 
-sona_sentences['speech'] = sona_sentences['speech'].str.replace('\n', '').str.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s')
+import itertools
+
+# Replace new lines with space and split into sentences based on regular expression
+sona_sentences['speech'] = sona_sentences['speech'].str.replace('\n', ' ').str.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s')
+
+# Flatten the list of sentence fragments to avoid nested lists
+sona_sentences['speech'] = sona_sentences['speech'].apply(lambda sentences: list(itertools.chain.from_iterable(sentence.split('.') for sentence in sentences)))
+
+# Remove empty strings from the list of sentences
+sona_sentences['speech'] = sona_sentences['speech'].apply(lambda sentences: [sentence.strip() for sentence in sentences if sentence.strip()])
 
 # Make a csv of the speeches
 sona.to_csv('data/sona_speeches.csv', index=False)
+
+# Make a csv of the sentences
+sona_sentences.to_csv('data/sona_sentences_untransformed.csv', index=False)
 
 ```
 
@@ -204,7 +216,8 @@ sona.to_csv('data/sona_speeches.csv', index=False)
 
 # Read in the sona speeches dataset
 sona_speeches_df = pd.read_csv('data/sona_speeches.csv')
-sona_sentences_clean = sona_sentences.copy()
+sona_sentences_clean = pd.read_csv('data/sona_sentences_untransformed.csv')
+sona_sentences_clean['speech'] = sona_sentences_clean['speech'].apply(literal_eval)
 
 # Initialize the WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
@@ -255,14 +268,33 @@ def clean_text(text):
     text = ' '.join(words)
     return text
 
+def clean_text_no_word_removals(text):
+    # Remove special characters: keep only letters, numbers, and basic punctuation
+    text = re.sub(r'[.;]', ' ', text)  # Replaces periods with spaces
+    text = re.sub(r'[^a-zA-Z ]', '', text)
+    text = text.lower()  # Convert to lowercase
+    return text
+
 # Apply the cleaning function to the speech column
-sona_speeches_df['speech'] = sona_speeches_df['speech'].apply(clean_text)
+tempdf = sona_speeches_df.copy()
+sona_speeches_df['speech'] = tempdf['speech'].apply(clean_text)
+sona_speeches_df['speech_untrans'] = tempdf['speech'].apply(clean_text_no_word_removals)
+
+def clean_speeches(speeches):
+    # The input is expected to be a list of strings
+    return [clean_text(sentence) for sentence in speeches]
 
 # Apply the cleaning to the sentences too
-sona_sentences_clean['speech'] = sona_sentences_clean['speech'].apply(lambda speeches: [clean_text(sentence) for sentence in speeches])
+sona_sentences_clean['sentence'] = sona_sentences_clean['speech'].apply(lambda speeches: [clean_text(sentence) for sentence in speeches])
+
+# Apply the cleaning to sentences that need to keep their words
+sona_sentences_clean['sent_untrans'] = sona_sentences_clean['speech'].apply(lambda speeches: [clean_text_no_word_removals(sentence) for sentence in speeches])
 
 # Make a csv of the speeches
 sona_speeches_df.to_csv('data/sona_speeches_adapted.csv', index=False)
+
+# Remove the speech column from the sentences DataFrame
+sona_sentences_clean.drop(columns=['speech'], inplace=True)
 
 # Make a csv of the sentences
 sona_sentences_clean.to_csv('data/sona_sentences_clean.csv', index=False)
@@ -274,8 +306,18 @@ sona_sentences_clean.to_csv('data/sona_sentences_clean.csv', index=False)
 from ast import literal_eval
 
 sona_sentences_clean = pd.read_csv('data/sona_sentences_clean.csv')
-sona_sentences_clean['speech'] = sona_sentences_clean['speech'].apply(literal_eval)
+sona_sentences_clean['sentence'] = sona_sentences_clean['sentence'].apply(literal_eval)
+sona_sentences_clean['sent_untrans'] = sona_sentences_clean['sent_untrans'].apply(literal_eval)
 
+# Make the sentences into a single column
+sona_sentences_alltogether = sona_sentences_clean.explode('sentence')
+sona_sentences_all_untrans = sona_sentences_clean.explode('sent_untrans')
+
+
+# Make a csv of the sentences
+sona_sentences_all_untrans.to_csv('data/sona_sentiment_sentences.csv', index=False)
+
+# Speeches
 sona_speeches_clean = pd.read_csv('data/sona_speeches_adapted.csv')
 
 ```
@@ -313,7 +355,7 @@ cividis_modified = cmap(np.linspace(0, 0.4, cmap.N))  # Using only 40% of the co
 cividis_no_yellow_light = LinearSegmentedColormap.from_list('cividis_no_yellow_light', cividis_modified)
 
 # Let's pick three colors from the modified colormap
-colors = [cividis_no_yellow_light(norm(0)), 
+colormap = [cividis_no_yellow_light(norm(0)), 
           cividis_no_yellow_light(norm(50)), 
           cividis_no_yellow_light(norm(100))]
 
@@ -408,6 +450,15 @@ from nltk.corpus import opinion_lexicon
 from nltk.tokenize import treebank
 from afinn import Afinn
 
+from dateutil import parser
+
+# Function to parse date strings based on the described rule
+def parse_date(date_str):
+    # Split the string by comma and take the last part
+    date_part = date_str.split(',')[-1].strip()
+    # Parse the date part into a datetime object
+    return parser.parse(date_part)
+
 # Define a function to get Bing lexicon sentiment scores
 def get_bing_sentiment(text):
     tokenizer = treebank.TreebankWordTokenizer()
@@ -415,7 +466,7 @@ def get_bing_sentiment(text):
     pos_score = sum(1 for word in tokens if word in positive_words)
     neg_score = sum(1 for word in tokens if word in negative_words)
     compound_score = pos_score - neg_score
-    return {'positive': pos_score, 'negative': neg_score, 'compound': compound_score}
+    return compound_score
 
 
 # Load the AFINN lexicon
@@ -430,10 +481,152 @@ positive_words = set(opinion_lexicon.positive())
 negative_words = set(opinion_lexicon.negative())
 
 # Apply Bing sentiment analysis
-sona_speeches_clean['bing_sentiment'] = sona_speeches_clean['speech'].apply(get_bing_sentiment)
+sona_speeches_clean['bing_sentiment'] = sona_speeches_clean['speech_untrans'].apply(get_bing_sentiment)
+sona_sentences_all_untrans['bing_sentiment'] = sona_sentences_all_untrans['sent_untrans'].apply(get_bing_sentiment)
 
 # Apply AFINN sentiment analysis
-sona_speeches_clean['afinn_sentiment'] = sona_speeches_clean['speech'].apply(lambda text: get_afinn_sentiment(text))
+sona_speeches_clean['afinn_sentiment'] = sona_speeches_clean['speech_untrans'].apply(lambda text: get_afinn_sentiment(text))
+sona_sentences_all_untrans['afinn_sentiment'] = sona_sentences_all_untrans['sent_untrans'].apply(lambda text: get_afinn_sentiment(text))
+
+# Convert the date strings to datetime objects
+sona_speeches_clean['date'] = sona_speeches_clean['date'].apply(parse_date)
+sona_sentences_all_untrans['date'] = sona_sentences_all_untrans['date'].apply(parse_date)
+
+# Sort the DataFrames by date in ascending order
+sona_speeches_clean.sort_values('date', ascending=True, inplace=True)
+#sona_sentences_all_untrans.sort_values('date', ascending=True, inplace=True)
+
+# Create a new variable which is the date as a string
+sona_speeches_clean['date_str'] = sona_speeches_clean['date'].dt.strftime('%Y-%m-%d')
+sona_sentences_all_untrans['date_str'] = sona_sentences_all_untrans['date'].dt.strftime('%Y-%m-%d')
+
+```
+
+
+
+```{python}
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# For plotting sentiment scores of speeches by each president
+def plot_speeches_by_president(df, lexicon):
+    plt.figure(figsize=(10, 6))
+    
+    presidents = df['president'].unique()
+
+    colors = ['lightsteelblue', colormap[1], 'midnightblue', 'lightgray', 'darkgray',  'dimgray']
+
+    for idx, president in enumerate(presidents):
+        president_df = df[df['president'] == president]
+        plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
+    plt.xlabel('Date')
+    plt.ylabel(f'{lexicon} Sentiment Score')
+    plt.title(f'Average {lexicon} Sentiment Score of Speeches by {president}')
+    plt.xticks(rotation=65)
+    plt.legend()
+    plt.show()
+
+
+# For plotting sentiment scores of sentences by each president
+def plot_sentences_by_president(df, lexicon):
+    plt.figure(figsize=(10, 6))
+    
+    presidents = df['president'].unique()
+
+    colors = ['lightsteelblue', colormap[1], 'midnightblue', 'lightgray', 'darkgray',  'dimgray']
+    
+    # Create a copy of the DataFrame
+    df = df.copy()
+
+    # Add a column for the sentence number
+    df['sentence_num'] = df.groupby('date_str').cumcount() + 1
+
+    for idx, president in enumerate(presidents):
+        president_df = df[df['president'] == president]
+        plt.bar(president_df['sentence_num'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
+        plt.xlabel('Sentence')
+        plt.ylabel(f'{lexicon} Sentiment Score')
+        plt.title(f'{lexicon} Sentiment Score of Sentences by {president}')
+        plt.xticks(rotation=65)
+        plt.show()
+
+    
+
+# Assuming 'date' is a column in datetime format and 'president' is the name of each president
+plot_speeches_by_president(sona_speeches_clean, 'bing')
+plot_speeches_by_president(sona_speeches_clean, 'afinn')
+
+plot_sentences_by_president(sona_sentences_all_untrans, 'bing')
+plot_sentences_by_president(sona_sentences_all_untrans, 'afinn')
+
+
+```
+
+```{python}
+from collections import defaultdict
+
+# Function to calculate word sentiments across all speeches of a president
+def calculate_word_sentiments(president_speeches, lexicon):
+    # Combine all speeches into one large text
+    all_speeches = ' '.join(president_speeches)
+    # Tokenize the text into words and filter out stopwords and non-alphabetic tokens
+    words = [word for word in word_tokenize(all_speeches.lower()) if word.isalpha() and word not in stopwords.words('english')]
+    # Get sentiment score for each word
+    word_sentiments = defaultdict(int)
+    for word in words:
+        # Get the sentiment score for the word
+        if lexicon == 'bing':
+            sentiment = get_bing_sentiment(word)
+        elif lexicon == 'afinn':
+            sentiment = get_afinn_sentiment(word)
+
+        word_sentiments[word] += sentiment
+    return word_sentiments
+
+# Function to plot the top positive and negative words
+def plot_top_words(word_sentiments, president, lexicon):
+    # Sort words by sentiment score
+    sorted_words = sorted(word_sentiments.items(), key=lambda kv: kv[1])
+    # Select the top 10 positive and negative words
+    top_positive_words = sorted_words[-10:]
+    top_negative_words = sorted_words[:10]
+
+    # Words and their sentiment scores for plotting
+    words_positive, scores_positive = zip(*top_positive_words)
+    words_negative, scores_negative = zip(*top_negative_words)
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # Plot the top negative words
+    ax.barh(range(10), scores_negative, color=colormap[2], label='Negative')
+    # Plot the top positive words
+    ax.barh(range(10, 20), scores_positive, color=colormap[0], label='Positive')
+
+    # Add the word labels
+    ax.set_yticks(range(20))
+    ax.set_yticklabels(words_negative + words_positive)
+    
+    # Set the labels and title
+    ax.set_xlabel(f'Contribution to Sentiment Score: {lexicon}')
+    ax.set_title(f'Top 10 Positive and Negative Words by {president}')
+    ax.legend()
+
+    # Adjust the view so negative words are at the bottom and positive at the top
+    ax.set_ylim(-1, 20)
+    
+    plt.tight_layout()
+    # Save the plot as a PNG file
+    plt.savefig(f'sentiment_plots/word_contr_{lexicon}_{president}.png', bbox_inches='tight')
+    plt.close()  # Close the figure to avoid displaying it in the notebook
+
+# Aggregate the speeches by president and calculate the top words
+presidents_speeches = sona_speeches_clean.groupby('president')['speech_untrans'].apply(list)
+for president, speeches in presidents_speeches.items():
+    word_sentiments_bing = calculate_word_sentiments(speeches, 'bing')
+    word_sentiments_afinn = calculate_word_sentiments(speeches, 'afinn')
+    plot_top_words(word_sentiments_bing, president, 'bing')
+    plot_top_words(word_sentiments_bing, president, 'AFINN')
 
 ```
 
