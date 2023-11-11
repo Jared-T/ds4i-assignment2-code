@@ -48,7 +48,7 @@ The process of tokenization entails breaking up given text into units, referred 
 TM, an unsupervised learning approach, implicates the identification of underlying abstract themes in some body of text, in the absence of pre-specified labels [@Cho2019]. In general, there are two topic-model assumptions: each document comprises of a mixture of topics and each topic consists of a collection of words [@Zhang2018]. Different types of topic models exist, each with varying complexity in terms of the way in which topics are generated. The simplest one, Latent Semantic Analysis (LSA), has previously been implemented to discover patterns of lexical cohesion in political speech, specifically that of the former Prime Minister of the United Kingdom, Margaret Thatcher [@Klebanov2008]. Improving on LSA methodology, Probabilistic LSA (pLSA) has been implemented in healthcare [@Zhu2014] and educational [@Ming2014] contexts, albeit no application thereof in political science was found. A further sophisticated model, Latent Dirichlet Allocation (LDA), has been used to determine trending topics in  news on governmental YouTube channels [@Subhan2023]. 
 
 <b><u> Sentiment analysis (SentA) </b></u>
-SentA involves deciphering the intent of words to infer certain emotional dimensions labelled either in polarized (negative/positive) or higher-dimensional terms (niche feelings like joy/sadness). Various unigram lexicons have been derived to such extents. For example, the R-based nrc lexicon dichotomously classifies words with yes/no labels in categories such as positive, negative, anticipation, anger, and so forth. Using such pre-defined lexicons has been previously utilized to analyze political communication, specifically in terms of campaign polarization, via SentA [@Haselmayer]. 
+SentA involves deciphering the intent of words to infer certain emotional dimensions labelled either in polarized (negative/positive) or higher-dimensional terms (niche feelings like joy/sadness). Various unigram lexicons have been derived to such extents. For example, the R-based nrc lexicon dichotomously classifies words with yes/no labels in categories such as positive, negative, anticipation, anger, and so forth. Using such pre-defined lexicons has been previously utilized to analyze political communication, specifically in terms of campaign polarization, via SentA [@Haselmayer2017]. 
 
 <b><u> Optimal number of topics </b></u>
 Two approaches can be applied to determine the optimum topic number. Within the first approach, each topic can be viewed as a cluster and a metric showing how similar each word is to its own topic (cohesion) compared to other topics (separation) can be computed. The Silhouette Coefficient is such a measure ranging from a value of negative one to positive one. Here, higher positive values are indicative of words being well-compacted within the topic to which it belongs. The second approach involves the calculation of a coherence score. This measures the ability of the topic model to distinguish well between topics that are semantically interpretable by humans and are not simply statistical-inference artifacts. Hence, the number of topics as well as any other topic-model hyperparameters are tuned to values that yield the maximum coherence score, allowing for the most understandable themes. This latter approach will largely be applied in this SONA-speech analysis. 
@@ -104,6 +104,16 @@ The Python-based TextBlob lexicon processes textual data in the form of a tuple 
 
 <b><u>  Bing </b></u>
 Unlike AFINN and TextBlob, the R-based bing lexicon does not provide sentiments via some scoring system. Rather, it simply assigns a binary label of a word being interpreted as either positive or negative [@SilgeRobinson2017].  
+
+
+::: {#fig-EDA-presidents layout-ncol=2}
+
+![de Klerk](saved_plots/deKlerk_top_words.png){#fig-deKlerk}
+
+![Mandela](saved_plots/Mandela_top_words.png){#fig-Mandela}
+
+Presidents
+:::
 
 ```{python}
 
@@ -873,28 +883,28 @@ model_results = {'Validation_Set': [],
 # Can take a long time to run
 # If you want to only test a few models, reduce the number of steps in topics_range
 # and/or limit the number of values in alpha and beta lists.
-if 1 == 1:
-    pbar = tqdm.tqdm(total=(max_topics-min_topics)*len(alpha)*len(beta)*len(corpus_sets))
+# if 1 == 1:
+#     pbar = tqdm.tqdm(total=(max_topics-min_topics)*len(alpha)*len(beta)*len(corpus_sets))
     
-    # iterate through validation corpuses
-    for i in range(len(corpus_sets)):
-        # iterate through number of topics
-        for k in topics_range:
-            # iterate through alpha values
-            for a in alpha:
-                # iterare through beta values
-                for b in beta:
-                    # get the coherence score for the given parameters
-                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, k=k, a=a, b=b)
-                    # Save the model results
-                    model_results['Validation_Set'].append(corpus_title[i])
-                    model_results['Topics'].append(k)
-                    model_results['Alpha'].append(a)
-                    model_results['Beta'].append(b)
-                    model_results['Coherence'].append(cv)
+#     # iterate through validation corpuses
+#     for i in range(len(corpus_sets)):
+#         # iterate through number of topics
+#         for k in topics_range:
+#             # iterate through alpha values
+#             for a in alpha:
+#                 # iterare through beta values
+#                 for b in beta:
+#                     # get the coherence score for the given parameters
+#                     cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, k=k, a=a, b=b)
+#                     # Save the model results
+#                     model_results['Validation_Set'].append(corpus_title[i])
+#                     model_results['Topics'].append(k)
+#                     model_results['Alpha'].append(a)
+#                     model_results['Beta'].append(b)
+#                     model_results['Coherence'].append(cv)
                     
-                    pbar.update(1)
-    pbar.close()
+#                     pbar.update(1)
+#     pbar.close()
 
 
 ```
@@ -903,8 +913,8 @@ if 1 == 1:
 ```{python}
 
 # Save the results to a csv
-model_results_df = pd.DataFrame(model_results)
-model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
+#model_results_df = pd.DataFrame(model_results)
+#model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
 
 ```
 
