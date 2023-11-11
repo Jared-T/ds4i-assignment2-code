@@ -995,7 +995,6 @@ model_results_df.sort_values(by='Coherence', ascending=False).head(10)
 
 ```
 
-```
 
 ## CTM (Correlated Topic Model)
 
