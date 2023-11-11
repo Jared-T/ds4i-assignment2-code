@@ -314,6 +314,9 @@ sona_sentences_clean['sent_untrans'] = sona_sentences_clean['sent_untrans'].appl
 sona_sentences_alltogether = sona_sentences_clean.explode('sentence')
 sona_sentences_all_untrans = sona_sentences_clean.explode('sent_untrans')
 
+# Drop the other columns
+sona_sentences_alltogether.drop(columns=['sent_untrans'], inplace=True)
+sona_sentences_all_untrans.drop(columns=['sentence'], inplace=True)
 
 # Make a csv of the sentences
 sona_sentences_all_untrans.to_csv('data/sona_sentiment_sentences.csv', index=False)
@@ -516,17 +519,22 @@ def plot_speeches_by_president(df, lexicon):
     
     presidents = df['president'].unique()
 
+    lexicon_lab = lexicon
+
+    if lexicon == 'afinn':
+        lexicon_lab = 'AFINN'
+
     colors = ['lightsteelblue', colormap[1], 'midnightblue', 'lightgray', 'darkgray',  'dimgray']
 
     for idx, president in enumerate(presidents):
         president_df = df[df['president'] == president]
         plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
     plt.xlabel('Date')
-    plt.ylabel(f'{lexicon} Sentiment Score')
-    plt.title(f'Average {lexicon} Sentiment Score of Speeches by {president}')
+    plt.ylabel(f'{lexicon_lab} Sentiment Score')
     plt.xticks(rotation=65)
     plt.legend()
-    plt.show()
+    plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
+    plt.close()  # Close the figure to avoid displaying it in the notebook
 
 
 # For plotting sentiment scores of sentences by each president
@@ -548,9 +556,9 @@ def plot_sentences_by_president(df, lexicon):
         plt.bar(president_df['sentence_num'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
         plt.xlabel('Sentence')
         plt.ylabel(f'{lexicon} Sentiment Score')
-        plt.title(f'{lexicon} Sentiment Score of Sentences by {president}')
         plt.xticks(rotation=65)
-        plt.show()
+        plt.savefig(f'sentiment_plots/sent_{lexicon}_{president}.png', bbox_inches='tight')
+        plt.close()  # Close the figure to avoid displaying it in the notebook
 
     
 
@@ -610,7 +618,6 @@ def plot_top_words(word_sentiments, president, lexicon):
     
     # Set the labels and title
     ax.set_xlabel(f'Contribution to Sentiment Score: {lexicon}')
-    ax.set_title(f'Top 10 Positive and Negative Words by {president}')
     ax.legend()
 
     # Adjust the view so negative words are at the bottom and positive at the top
