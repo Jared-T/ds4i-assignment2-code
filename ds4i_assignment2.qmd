@@ -502,12 +502,6 @@ sona_speeches_clean['afinn_sentiment'] = sona_speeches_clean['speech'].apply(lam
 
 ```
 
-```{python}
-
-
-
-```
-
 
 ```{python}
 
