@@ -880,7 +880,7 @@ fig.tight_layout()
 
 
 # To visualize the word-topic distributions
-Visualize.words(plsa.word_topics, corpus)
+# Visualize.words(plsa.word_topics, corpus)
 
 ```
 
