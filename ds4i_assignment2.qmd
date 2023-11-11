@@ -172,9 +172,9 @@ sona.to_csv('data/sona_speeches.csv', index=False)
 
 ```{python}
 # Make sure to download the necessary NLTK corpus if you haven't already
-nltk.download('wordnet')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('words')
+#nltk.download('wordnet')
+#nltk.download('averaged_perceptron_tagger')
+#nltk.download('words')
 
 # Read in the sona speeches dataset
 sona_speeches_df = pd.read_csv('data/sona_speeches.csv')
@@ -185,7 +185,8 @@ lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 english_words = set(words.words())
 additional_words = {
-    'honourable', 'member', 'south', 'africa', 'african', 'year'
+    'honourable', 'member', 'south', 'africa', 'african', 'year',
+    'madame', 'madam', 'soes', 'ms', 'madams', 'madames'
 }
 
 # Function to convert NLTK's part-of-speech tags to WordNet's part-of-speech tags
@@ -508,89 +509,89 @@ sona_speeches_clean['afinn_sentiment'] = sona_speeches_clean['speech'].apply(lam
 
 # OLD CODE BELOW
 
-import pandas as pd
-import matplotlib.pyplot as plt
-from textblob import TextBlob
-from afinn import Afinn
-from nltk.corpus import opinion_lexicon
-from nltk.tokenize import word_tokenize, treebank
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# from textblob import TextBlob
+# from afinn import Afinn
+# from nltk.corpus import opinion_lexicon
+# from nltk.tokenize import word_tokenize, treebank
 
-# Make sure to download the necessary NLTK corpora if you haven't already
-import nltk
-# nltk.download('opinion_lexicon')
-# nltk.download('punkt')
+# # Make sure to download the necessary NLTK corpora if you haven't already
+# import nltk
+# # nltk.download('opinion_lexicon')
+# # nltk.download('punkt')
 
-# Initialize Afinn and prepare Bing lexicon
-afinn = Afinn()
-positive_words = set(opinion_lexicon.positive())
-negative_words = set(opinion_lexicon.negative())
+# # Initialize Afinn and prepare Bing lexicon
+# afinn = Afinn()
+# positive_words = set(opinion_lexicon.positive())
+# negative_words = set(opinion_lexicon.negative())
 
-# Function to calculate sentiment scores using Afinn
-def afinn_sentiment(text):
-    return afinn.score(text)
+# # Function to calculate sentiment scores using Afinn
+# def afinn_sentiment(text):
+#     return afinn.score(text)
 
-# Function to calculate sentiment scores using Bing lexicon
-def bing_sentiment(word):
-    if word in positive_words:
-        return 1  # Positive sentiment
-    elif word in negative_words:
-        return -1  # Negative sentiment
-    else:
-        return 0  # Neutral sentiment
+# # Function to calculate sentiment scores using Bing lexicon
+# def bing_sentiment(word):
+#     if word in positive_words:
+#         return 1  # Positive sentiment
+#     elif word in negative_words:
+#         return -1  # Negative sentiment
+#     else:
+#         return 0  # Neutral sentiment
 
-# Function to analyze the sentiment of each word in the speech
-def analyze_sentiment(speech):
-    # Tokenize words
-    words = word_tokenize(speech)
+# # Function to analyze the sentiment of each word in the speech
+# def analyze_sentiment(speech):
+#     # Tokenize words
+#     words = word_tokenize(speech)
     
-    # TextBlob
-    tb_sentiments = [TextBlob(word).sentiment.polarity for word in words]
+#     # TextBlob
+#     tb_sentiments = [TextBlob(word).sentiment.polarity for word in words]
     
-    # Afinn
-    afinn_sentiments = [afinn_sentiment(word) for word in words]
+#     # Afinn
+#     afinn_sentiments = [afinn_sentiment(word) for word in words]
     
-    # Bing
-    bing_sentiments = [bing_sentiment(word) for word in words]
+#     # Bing
+#     bing_sentiments = [bing_sentiment(word) for word in words]
     
-    # Aggregate results
-    sentiment_data = pd.DataFrame({
-        'word': words,
-        'textblob': tb_sentiments,
-        'afinn': afinn_sentiments,
-        'bing': bing_sentiments
-    })
+#     # Aggregate results
+#     sentiment_data = pd.DataFrame({
+#         'word': words,
+#         'textblob': tb_sentiments,
+#         'afinn': afinn_sentiments,
+#         'bing': bing_sentiments
+#     })
     
-    return sentiment_data
+#     return sentiment_data
 
-# Apply the sentiment analysis
-all_sentiments = pd.concat([analyze_sentiment(speech) for speech in sona_speeches_df['speech']])
+# # Apply the sentiment analysis
+# all_sentiments = pd.concat([analyze_sentiment(speech) for speech in sona_speeches_df['speech']])
 
-# Group by word and calculate mean sentiment
-aggregated_sentiments = all_sentiments.groupby('word').agg('mean').reset_index()
+# # Group by word and calculate mean sentiment
+# aggregated_sentiments = all_sentiments.groupby('word').agg('mean').reset_index()
 
-# Function to plot bar graphs for the words that contribute most to sentiment
-def plot_sentiment_words(sentiment_df, lexicon_name):
-    top_positive = sentiment_df[sentiment_df[lexicon_name] > 0].sort_values(by=lexicon_name, ascending=False).head(10)
-    top_negative = sentiment_df[sentiment_df[lexicon_name] < 0].sort_values(by=lexicon_name).head(10)
+# # Function to plot bar graphs for the words that contribute most to sentiment
+# def plot_sentiment_words(sentiment_df, lexicon_name):
+#     top_positive = sentiment_df[sentiment_df[lexicon_name] > 0].sort_values(by=lexicon_name, ascending=False).head(10)
+#     top_negative = sentiment_df[sentiment_df[lexicon_name] < 0].sort_values(by=lexicon_name).head(10)
     
-    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
-    axes[0].barh(top_positive['word'], top_positive[lexicon_name])
-    axes[0].set_title('Top Positive Words - ' + lexicon_name)
-    axes[0].invert_yaxis()  # labels read top-to-bottom
-    axes[0].set_xlabel('Sentiment Score')
+#     fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+#     axes[0].barh(top_positive['word'], top_positive[lexicon_name])
+#     axes[0].set_title('Top Positive Words - ' + lexicon_name)
+#     axes[0].invert_yaxis()  # labels read top-to-bottom
+#     axes[0].set_xlabel('Sentiment Score')
 
-    axes[1].barh(top_negative['word'], top_negative[lexicon_name])
-    axes[1].set_title('Top Negative Words - ' + lexicon_name)
-    axes[1].invert_yaxis()  # labels read top-to-bottom
-    axes[1].set_xlabel('Sentiment Score')
+#     axes[1].barh(top_negative['word'], top_negative[lexicon_name])
+#     axes[1].set_title('Top Negative Words - ' + lexicon_name)
+#     axes[1].invert_yaxis()  # labels read top-to-bottom
+#     axes[1].set_xlabel('Sentiment Score')
 
-    plt.tight_layout()
-    plt.show()
+#     plt.tight_layout()
+#     plt.show()
 
-# Plot for each lexicon
-plot_sentiment_words(aggregated_sentiments, 'textblob')
-plot_sentiment_words(aggregated_sentiments, 'afinn')
-plot_sentiment_words(aggregated_sentiments, 'bing')
+# # Plot for each lexicon
+# plot_sentiment_words(aggregated_sentiments, 'textblob')
+# plot_sentiment_words(aggregated_sentiments, 'afinn')
+# plot_sentiment_words(aggregated_sentiments, 'bing')
 
 
 ```
@@ -812,6 +813,12 @@ bow_model_list, bow_coherence_values = compute_coherence_values(dictionary=dicti
 # Compute coherence values for TF-IDF
 tfidf_model_list, tfidf_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=tfidf_corpus, texts=tokenized_texts, start=start, limit=limit, step=step)
 
+
+```
+
+
+```{python}
+
 # Plotting the coherence values
 x = range(start, limit, step)
 plt.figure(figsize=(10, 5))
@@ -825,6 +832,14 @@ plt.show()
 
 ```
 
+
+```{python}
+
+# Word frequency plots for the top 10 words for each topic
+from collections import Counter
+
+
+```
 
 ## pLSA (Probabilistic Latent Semantic Analysis)
 
@@ -882,7 +897,6 @@ fig.tight_layout()
 
 ```{python}
 
-# TODO: Fix this
 import numpy as np
 import gensim
 from gensim.models import LdaModel
@@ -898,7 +912,7 @@ tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc
 
 # Create a Gensim dictionary from the tokenized documents
 dictionary = corpora.Dictionary(tokenized_texts)
-#dictionary.filter_extremes(no_below=2, no_above=0.8)
+dictionary.filter_extremes(no_below=3, no_above=0.7)
 
 # Create a BOW corpus
 bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
@@ -909,10 +923,14 @@ tfidf_corpus = tfidf[bow_corpus]
 
 # Define the function to compute coherence values
 def compute_coherence_values(corpus, dictionary, k, a, b):
-    lda_model = LdaModel(corpus=bow_corpus,
+    lda_model = LdaModel(corpus=corpus,
                          id2word=dictionary,
                          num_topics=k, 
                          random_state=100,
+                         chunksize=2000,
+                         iterations=400,
+                         passes=20,
+                         eval_every=None,
                          alpha=a,
                          eta=b)
     
@@ -929,9 +947,9 @@ max_topics = 10
 step_size = 1
 topics_range = range(min_topics, max_topics, step_size)
 # Alpha parameter
-alpha = list(np.arange(0.01, 1, 0.2))
+alpha = list(np.arange(0.1, 1, 0.1))
 # Beta parameter
-beta = list(np.arange(0.01, 1, 0.2))
+beta = list(np.arange(0.1, 1, 0.2))
 
 # Validation sets
 num_of_docs = len(bow_corpus)
@@ -960,8 +978,7 @@ if 1 == 1:
                 # iterare through beta values
                 for b in beta:
                     # get the coherence score for the given parameters
-                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, 
-                                                  k=k, a=a, b=b)
+                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, k=k, a=a, b=b)
                     # Save the model results
                     model_results['Validation_Set'].append(corpus_title[i])
                     model_results['Topics'].append(k)
@@ -980,7 +997,7 @@ if 1 == 1:
 
 # Save the results to a csv
 model_results_df = pd.DataFrame(model_results)
-# model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
+model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
 
 ```
 
@@ -993,6 +1010,41 @@ model_results_df.sort_values(by='Coherence', ascending=False).head(10)
 
 ```
 
+
+```{python}
+
+import pyLDAvis.gensim_models
+import gensim
+
+# Train the best models for each corpus
+lda_model_bow = LdaModel(corpus=bow_corpus,
+                         id2word=dictionary,
+                         num_topics=2, 
+                         random_state=100,
+                         chunksize=2000,
+                         iterations=400,
+                         passes=20,
+                         eval_every=None,
+                         alpha=0.1,
+                         eta=0.9)
+
+# Prepare the visualization data
+vis_data = pyLDAvis.gensim_models.prepare(lda_model_bow, bow_corpus, dictionary)
+
+
+```
+
+
+```{python}
+
+# Enable the automatic display of visualizations in the Jupyter notebook
+pyLDAvis.enable_notebook()
+
+# Display the visualization
+pyLDAvis.display(vis_data)
+
+
+```
 
 ## CTM (Correlated Topic Model)
 
