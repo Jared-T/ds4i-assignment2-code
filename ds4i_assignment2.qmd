@@ -845,7 +845,7 @@ from plsa.algorithms import PLSA
 pipeline = Pipeline(*DEFAULT_PIPELINE)
 pipeline
 
-corpus = Corpus.from_csv("data/sona_sentences_only.csv", pipeline)
+corpus = Corpus.from_csv("data/sona_speeches_only.csv", pipeline)
 corpus
 
 n_topics = 5
