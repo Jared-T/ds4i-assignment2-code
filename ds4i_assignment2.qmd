@@ -149,6 +149,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import wordnet, stopwords, words
 from nltk.stem import WordNetLemmatizer
+from ast import literal_eval
 
 
 ```
@@ -304,7 +305,6 @@ sona_sentences_clean.to_csv('data/sona_sentences_clean.csv', index=False)
 
 
 ```{python}
-from ast import literal_eval
 
 sona_sentences_clean = pd.read_csv('data/sona_sentences_clean.csv')
 sona_sentences_clean['sentence'] = sona_sentences_clean['sentence'].apply(literal_eval)
