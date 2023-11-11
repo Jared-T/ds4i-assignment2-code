@@ -106,14 +106,30 @@ The Python-based TextBlob lexicon processes textual data in the form of a tuple 
 Unlike AFINN and TextBlob, the R-based bing lexicon does not provide sentiments via some scoring system. Rather, it simply assigns a binary label of a word being interpreted as either positive or negative [@SilgeRobinson2017].  
 
 
+
+
+<b><u>  Exploratory Data Analysis </b></u>
+
+![](saved_plots/overall_top_words.png){fig-alt="Most frequent words across all speeches"}
+
 ::: {#fig-EDA-presidents layout-ncol=2}
 
 ![de Klerk](saved_plots/deKlerk_top_words.png){#fig-deKlerk}
 
 ![Mandela](saved_plots/Mandela_top_words.png){#fig-Mandela}
 
+![Mbeki](saved_plots/Mbeki_top_words.png){#fig-Mbeki}
+
+![Motlanthe](saved_plots/ Motlanthe_top_words.png){#fig-Motlanthe}
+
+![Zuma](saved_plots/Zuma_top_words.png){#fig-Zuma}
+
+![Ramaphosa](saved_plots/Ramaphosa_top_words.png){#fig-Ramaphosa}
+
 Presidents
 :::
+
+
 
 ```{python}
 
