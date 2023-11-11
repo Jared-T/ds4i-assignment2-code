@@ -867,7 +867,7 @@ visualize = Visualize(result)
 visualize
 
 fig, ax = plt.subplots()
-_ = visualize.topics_in_doc(0, ax)
+_ = visualize.topics_in_doc(35, ax)
 fig.tight_layout()
 
 
