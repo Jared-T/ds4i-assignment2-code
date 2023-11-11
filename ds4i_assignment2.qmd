@@ -823,12 +823,10 @@ plt.title("Coherence Scores by Number of Topics")
 plt.legend()
 plt.show()
 
-
 ```
 
 
 ## pLSA (Probabilistic Latent Semantic Analysis)
-
 
 ```{python}
 
