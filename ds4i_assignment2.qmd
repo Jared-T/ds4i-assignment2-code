@@ -161,6 +161,9 @@ from nltk.stem import WordNetLemmatizer
 from ast import literal_eval
 from collections import defaultdict
 
+# Global params
+plt.rcParams['xtick.labelsize'] = 14
+plt.rcParams['ytick.labelsize'] = 14
 
 ```
 
@@ -1049,6 +1052,51 @@ sona_sentences_alltogether['sentence'].to_csv('data/sona_sentences_only.csv', in
 
 ```{python}
 
+import math
+
+def calculate_umass_coherence(plsa_result, corpus, top_n=10, tf_idf=False):
+    # Extract the top N words for each topic
+    top_words_by_topic = [
+        [word for word, _ in plsa_result.word_given_topic[i][:top_n]]
+        for i in range(plsa_result.n_topics)
+    ]
+    
+    # Get document-word matrix (document frequency matrix)
+    doc_word_matrix = corpus.get_doc_word(tf_idf=tf_idf)
+    
+    # Calculate document frequencies for single words
+    word_doc_freq = np.sum(doc_word_matrix > 0, axis=0)
+    
+    # Calculate coherence for each topic
+    topic_coherences = []
+    for top_words in top_words_by_topic:
+        pair_scores = []
+        for i, word in enumerate(top_words):
+            for j in range(i + 1, len(top_words)):
+                # Get indices in the vocabulary
+                word_i_index = corpus.index[word]
+                word_j_index = corpus.index[top_words[j]]
+                
+                # Count the documents where both words appear
+                both_docs = np.sum((doc_word_matrix[:, word_i_index] > 0) & (doc_word_matrix[:, word_j_index] > 0))
+                
+                # Calculate score for this word pair
+                score = math.log((both_docs + 1.0) / word_doc_freq[word_i_index])  # Add 1 to avoid log(0)
+                pair_scores.append(score)
+                
+        # Average over all pairs to get the topic coherence
+        topic_coherence = sum(pair_scores) / len(pair_scores)
+        topic_coherences.append(topic_coherence)
+        
+    # Average over all topics to get the overall coherence
+    overall_coherence = sum(topic_coherences) / len(topic_coherences)
+    return overall_coherence
+
+
+```
+
+```{python}
+
 import matplotlib.pyplot as plt
 from plsa import Corpus, Pipeline, Visualize
 from plsa.pipeline import DEFAULT_PIPELINE
@@ -1061,96 +1109,67 @@ corpus_sent = Corpus.from_csv("data/sona_sentences_only.csv", pipeline)
 
 topic_numbers = range(2, 12, 1)
 
-n_topics = 2
+# Loop over the topic number and calculate the coherence values
+bow_coherence_values = []
+bow_coherence_values_sent = []
+tfidf_coherence_values = []
+tfidf_coherence_values_sent = []
 
-# Initialize the models
-tfidf_plsa = PLSA(corpus, n_topics, tf_idf=True)
-bow_plsa = PLSA(corpus, n_topics, tf_idf=False)
+for n_topics in topic_numbers:
+    # Initialize the models
+    tfidf_plsa = PLSA(corpus, n_topics, tf_idf=True)
+    bow_plsa = PLSA(corpus, n_topics, tf_idf=False)
 
-tfidf_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=True)
-bow_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=False)
+    tfidf_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=True)
+    bow_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=False)
+    
+    # Fit the models
+    tfidf_result = tfidf_plsa.fit()
+    bow_result = bow_plsa.fit()
+    tfidf_result_sent = tfidf_plsa_sent.fit()
+    bow_result_sent = bow_plsa_sent.fit()
+    
+    # Calculate the coherence value
+    tfidf_coherence = calculate_umass_coherence(tfidf_result, corpus, tf_idf=True)
+    tfidf_coherence_sent = calculate_umass_coherence(tfidf_result_sent, corpus_sent, tf_idf=True)
 
-# Fit the models
-tfidf_result = tfidf_plsa.fit()
-bow_result = bow_plsa.fit()
-tfidf_result_sent = tfidf_plsa_sent.fit()
-bow_result_sent = bow_plsa_sent.fit()
-
-# Relative importance of latent topics
-print(tfidf_result.topic)
-
-# Word given topic
-print(tfidf_result.word_given_topic)
-
-# Topic given document - Dimensions are number of docs x number of topics
-print(tfidf_result.topic_given_doc)
-
-
-# visualize = Visualize(result)
-
-# fig, ax = plt.subplots()
-# _ = visualize.topics_in_doc(35, ax)
-# fig.tight_layout()
-
-# fig, ax = plt.subplots()
-# _ = visualize.topics(ax)
-# fig.tight_layout()
+    bow_coherence = calculate_umass_coherence(bow_result, corpus)
+    bow_coherence_sent = calculate_umass_coherence(bow_result_sent, corpus_sent)
+    
+    # Add the coherence value to the list
+    tfidf_coherence_values.append(tfidf_coherence)
+    tfidf_coherence_values_sent.append(tfidf_coherence_sent)
+    bow_coherence_values.append(bow_coherence)
+    bow_coherence_values_sent.append(bow_coherence_sent)
 
 
-# To visualize the word-topic distributions
-# Visualize.words(plsa.word_topics, corpus)
 
 ```
 
-```{python}
 
-# Relative importance of latent topics
-print(tfidf_result.topic)
-
-# Word given topic
-print(tfidf_result.word_given_topic)
-
-# Topic given document
-print(tfidf_result.topic_given_doc)
-
-def calculate_umass_coherence(topic_word_distribution, doc_topic_distribution, total_docs):
-    """
-    Calculate UMass coherence for each topic.
-    """
-    coherence_scores = []
-    for t in range(len(topic_word_distribution)):
-        topic_coherence = 0.0
-        for m, word_prob1 in enumerate(topic_word_distribution[t][:-1]):
-            word_id1 = word_prob1[0]
-            for word_prob2 in topic_word_distribution[t][m + 1:]:
-                word_id2 = word_prob2[0]
-                # Get the number of documents that include word_id1
-                doc_count_word1 = np.sum(doc_topic_distribution[:, t] * (word_id1 in doc for doc in corpus))
-                # Get the number of documents that include both word_id1 and word_id2
-                doc_count_both = np.sum(doc_topic_distribution[:, t] * (word_id1 in doc and word_id2 in doc for doc in corpus))
-                # Calculate score for this word pair and add to topic coherence
-                if doc_count_word1 > 0 and doc_count_both > 0:
-                    topic_coherence += np.log((doc_count_both + 1.0) / doc_count_word1)
-        coherence_scores.append(topic_coherence)
-    return coherence_scores
-
-```
 
 ```{python}
 
-print(corpus)
+# Plot the speech coherence values
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, bow_coherence_values, label='BoW Coherence', color='midnightblue')
+plt.plot(topic_numbers, tfidf_coherence_values, label='TF-IDF Coherence', color='darkgray')
+plt.xlabel("Number of Topics", fontsize=16)
+plt.ylabel("Coherence score",  fontsize=16)
+plt.legend(loc='lower left')
+plt.savefig(f'plsa_plots/speeches_coherence.png', bbox_inches='tight')
+plt.close()
 
-```
 
-```{python}
-
-# Assuming you have access to the necessary distributions
-topic_word_distribution = tfidf_result.word_given_topic # You need the word-topic distribution for each topic
-doc_topic_distribution = tfidf_result.topic_given_doc # You need the document-topic distribution for the corpus
-total_docs = len(corpus) # Total number of documents in the corpus
-
-umass_coherence_scores = calculate_umass_coherence(topic_word_distribution, doc_topic_distribution, total_docs)
-print(umass_coherence_scores)
+# Plot the sentence coherence values
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, bow_coherence_values_sent, label='BoW Coherence', color='midnightblue')
+plt.plot(topic_numbers, tfidf_coherence_values_sent, label='TF-IDF Coherence', color='darkgray')
+plt.xlabel("Number of Topics", fontsize=16)
+plt.ylabel("Coherence score",  fontsize=16)
+plt.legend(loc='lower left')
+plt.savefig(f'plsa_plots/sentences_coherence.png', bbox_inches='tight')
+plt.close()
 
 ```
 
@@ -1164,11 +1183,12 @@ def plot_top_words_for_topic(word_given_topic, topic_num, top_n=10):
 
     # Create a bar plot
     plt.figure(figsize=(10, 6))
-    plt.barh(words, probabilities, color='skyblue')
+    plt.barh(words, probabilities, color='midnightblue')
     plt.xlabel('Probability')
-    plt.title(f'Top {top_n} Words for Topic #{topic_num + 1}')
     plt.gca().invert_yaxis()  # To have the highest probabilities on top
-    plt.show()
+    plt.savefig(f'plsa_plots/Top {top_n} Words for Topic {topic_num + 1}.png', bbox_inches='tight')
+    plt.close()
+
 
 # Number of topics in your model
 n_topics = len(tfidf_result.word_given_topic)
@@ -1220,7 +1240,7 @@ tfidf_sentences = TfidfModel(bow_corpus_sentences)
 tfidf_corpus_sentences = tfidf_sentences[bow_corpus_sentences]
 
 # Define the function to compute coherence values
-def compute_coherence_values(corpus, dictionary, k, a, b):
+def compute_coherence_values(corpus, dictionary, k, a, b, texts):
     lda_model = LdaModel(corpus=corpus,
                          id2word=dictionary,
                          num_topics=k, 
@@ -1229,7 +1249,7 @@ def compute_coherence_values(corpus, dictionary, k, a, b):
                          alpha=a,
                          eta=b)
     
-    coherence_model_lda = CoherenceModel(model=lda_model, texts=tokenized_texts, dictionary=dictionary, coherence='u_mass')
+    coherence_model_lda = CoherenceModel(model=lda_model, texts=texts, dictionary=dictionary, coherence='u_mass')
     
     return coherence_model_lda.get_coherence()
 
@@ -1279,7 +1299,7 @@ if 1 == 1:
                 # iterare through beta values
                 for b in beta:
                     # get the coherence score for the given parameters
-                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, k=k, a=a, b=b)
+                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, k=k, a=a, b=b, texts=tokenized_texts)
                     # Save the model results
                     model_results['Validation_Set'].append(corpus_title[i])
                     model_results['Topics'].append(k)
@@ -1304,7 +1324,7 @@ if 1 == 1:
                 # iterare through beta values
                 for b in beta:
                     # get the coherence score for the given parameters
-                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dict_sentences, k=k, a=a, b=b)
+                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dict_sentences, k=k, a=a, b=b, texts=tokenized_sentences)
                     # Save the model results
                     model_results_sentences['Validation_Set'].append(corpus_title[i])
                     model_results_sentences['Topics'].append(k)
@@ -1320,7 +1340,7 @@ if 1 == 1:
 
 ```{python}
 
-# Save the results to a csv
+# # Save the results to a csv
 # model_results_df = pd.DataFrame(model_results)
 # model_results_sentences_df = pd.DataFrame(model_results_sentences)
 
@@ -1367,6 +1387,42 @@ num_cols = num_cols[1:]
 
 ```
 
+
+```{python}
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# Use pivot_table to handle duplicate (Alpha, Beta) pairs by averaging their coherence values
+pivot_table = model_results_df.pivot_table(index='Alpha', columns='Beta', values='Coherence', aggfunc=np.mean)
+pivot_table_sentences = model_results_sentences_df.pivot_table(index='Alpha', columns='Beta', values='Coherence', aggfunc=np.mean)
+
+# Create the meshgrid for Alpha and Beta values
+Alpha, Beta = np.meshgrid(pivot_table.columns, pivot_table.index)
+Alpha_sentences, Beta_sentences = np.meshgrid(pivot_table_sentences.columns, pivot_table_sentences.index)
+
+# Create the contour plot using the values of the pivot_table
+# We need to use the values attribute to get the coherence scores as a 2D array
+plt.figure(figsize=(8, 6))
+cp = plt.contourf(Alpha, Beta, pivot_table.values, cmap='viridis', levels=100)
+plt.colorbar(cp)
+plt.xlabel('Beta')
+plt.ylabel('Alpha')
+plt.savefig(f'lda_plots/speeches_contour_plot.png', bbox_inches='tight')
+plt.close()
+
+plt.figure(figsize=(8, 6))
+cp = plt.contourf(Alpha_sentences, Beta_sentences, pivot_table_sentences.values, cmap='viridis', levels=100)
+plt.colorbar(cp)
+plt.xlabel('Beta')
+plt.ylabel('Alpha')
+plt.savefig(f'lda_plots/sentences_contour_plot.png', bbox_inches='tight')
+plt.close()
+
+```
+
 ```{python}
 
 def style_df(df):
@@ -1407,11 +1463,11 @@ lda_model_speeches = LdaModel(corpus=bow_corpus,
 
 lda_model_sentences = LdaModel(corpus=bow_corpus,
                          id2word=dict_sentences,
-                         num_topics=4, 
+                         num_topics=2, 
                          random_state=100,
                          eval_every=None,
-                         alpha=0.1,
-                         eta=0.5)
+                         alpha=0.9,
+                         eta=0.9)
 
 # Prepare the visualization data
 vis_data_speeches = pyLDAvis.gensim_models.prepare(lda_model_speeches, bow_corpus, dictionary)
