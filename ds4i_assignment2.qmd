@@ -359,8 +359,7 @@ colormap = [cividis_no_yellow_light(norm(0)),
 
 ![Most frequent words used across all SONA speeches, irrespective of president.](saved_plots/overall_top_words.png){#fig-EDA-speeches}
 
-
-From @fig-EDA-speeches, it is evident that the word "government" is mainly referenced to across all SONA speeches. This word dominance draws upon the importance of this authority body that is integral to the governance of South Africa. The frequent usage of the words "people" and "public" suggests a sense of inclusivity, where the idea of togetherness is implicitly emphasized. Other words, such as "development" and "new", are indicative of ideas of growth and renewal. Lastly, a sense of security and safety is provided with the recurring use of the word "ensure".
+From @fig-EDA-speeches, it is evident that the word "government" is mainly referenced to across all SONA speeches. This word dominance draws upon how the importance of this authority body, which is integral to the governance of South Africa, is emphasized. The frequent usage of the words "people" and "public" indicates a sense of inclusivity where the idea of togetherness is implicitly suggested. Other words, such as "development" and "new", are indicative of ideas of growth and renewal. Lastly, a sense of security and safety is provided with the recurring use of the word "ensure".
 
 ::: {#fig-EDA-presidents layout-ncol=2}
 
@@ -379,7 +378,10 @@ From @fig-EDA-speeches, it is evident that the word "government" is mainly refer
 Most frequent words used in SONA speeches, faceted by president.
 :::
 
-The two words, "government" and "people", 
+After faceting the most frequent words by president, as displayed in @fig-EDA-presidents, there are some slight nuances noted. For instance, former president de Klerk used words which were emblematic of the political paradigm shift that occurred during the time of his term. Words such as “transitional”, “constitutional”, and “constitution” reflects the country’s progression from an exclusive, segregated to a more inclusive, democratic state. This political and legal reform directed towards achieving societal equality is further underscored by the words, “parties”, “party”, and “election”. The pivotal role of proper partnerships being formed, which would have further aided in maintaining this change, is foregrounded with the word “alliance”.  
+
+Similarly, this idea of unity has also been foregrounded in the other five presidents’ speeches with the commonly shared word “people”. Though, unlike de Klerk, the other former presidents (Mandela, Mbeki, Motlanthe, Zuma) and current president (Ramaphosa), seem to similarly place more focus on the explicit communication of policies and vision (“development” and “work”) and the establishment of a sense of responsibility and accountability on their part as president (“government” and “ensure”). Some minor distinctions between these aforementioned presidents can be made. Mandela, Mbeki, and Motlanthe, for example, seemed to draw more attention to “society” or “social” progress, whilst Zuma and Ramaphosa appeared to place more prominence on “economic” progress.
+
 
 
 ```{python}
@@ -1559,8 +1561,6 @@ Coherence plots
 
 Coherence plots 
 :::
-
-
 
 
 ```{python}
