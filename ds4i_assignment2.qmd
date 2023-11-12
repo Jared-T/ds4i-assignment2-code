@@ -1059,7 +1059,7 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 ![Words](plsa_plots/words_coherence.png){#fig-pLSA-words-coherence}
 
 
-::: {#fig-pLSA-words-BoW-topics layout-ncol=2}
+<!-- ::: {#fig-pLSA-words-BoW-topics layout-ncol=2}
 
 ![BoW: Topic 1](plsa_plots/words-BoW_topic_1.png){#fig-pLSA-words-bow-topic1}
 
@@ -1106,12 +1106,12 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 ![tf-idf: Topic 11](plsa_plots/words-tf-idf_topic_11.png){#fig-pLSA-words-tfidf-topic11}
 
 Topic plots for pLSA using words as tokens either applied within BoW or tf-idf approach. 
-:::
+::: -->
 
 ![Sentences](plsa_plots/sentences_coherence.png){#fig-pLSA-sentences-coherence}
 
 
-::: {#fig-pLSA-words-BoW-topics layout-ncol=2}
+<!-- ::: {#fig-pLSA-words-BoW-topics layout-ncol=2}
 
 ![BoW: Topic 1](plsa_plots/sentences-BoW_topic_1.png){#fig-pLSA-sentences-bow-topic1}
 
@@ -1158,7 +1158,7 @@ Topic plots for pLSA using words as tokens either applied within BoW or tf-idf a
 ![tf-idf: Topic 11](plsa_plots/sentences-tf-idf_topic_11.png){#fig-pLSA-sentences-tfidf-topic11}
 
 Topic plots for pLSA using sentences as tokens either applied within BoW or tf-idf approach. 
-:::
+::: -->
 
 
 
