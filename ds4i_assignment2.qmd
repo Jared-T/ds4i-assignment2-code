@@ -405,8 +405,8 @@ top_10_words = word_frequencies.most_common(10)
 # Plotting
 plt.figure(figsize=(10, 6))
 plt.bar([word for word, count in top_10_words], [count for word, count in top_10_words], color=colormap[2])
-plt.xlabel('Words')
-plt.ylabel('Frequency')
+plt.xlabel('Words', fontsize=12)
+plt.ylabel('Frequency', fontsize=12)
 plt.xticks(rotation=45)
 
 # Save the plot as a PNG file
@@ -440,8 +440,8 @@ for president, top_words in top_10_words_by_president.items():
     # Individual plot for each president
     plt.figure(figsize=(10, 6))
     plt.bar([word for word, count in top_words], [count for word, count in top_words], color=colormap[0])
-    plt.xlabel('Words')
-    plt.ylabel('Frequency')
+    plt.xlabel('Words', fontsize=20)
+    plt.ylabel('Frequency', fontsize=20)
     plt.xticks(rotation=45)
 
     # Save the plot as a PNG file
@@ -486,6 +486,36 @@ for president, top_words in top_10_words_by_president.items():
 ![$\texttt{bing}$: Ramaphosa](sentiment_plots/sent_bing_Ramaphosa.png){#fig-sentA-Ramaphosa-bing}
 
 Most frequent words used in SONA speeches, faceted by president.
+:::
+
+
+::: {#fig-SentA-Contr layout-ncol=2}
+
+![$\texttt{AFINN}$: de Klerk](sentiment_plots/word_contr_AFINN_deKlerk.png){#fig-sentA-deKlerk-afinn}
+
+![$\texttt{bing}$: de Klerk](sentiment_plots/word_contr_bing_deKlerk.png){#fig-sentA-deKlerk-bing}
+
+![$\texttt{AFINN}$: Mandela](sentiment_plots/word_contr_AFINN_Mandela.png){#fig-sentA-Mandela-afinn}
+
+![$\texttt{bing}$: Mandela](sentiment_plots/word_contr_bing_Mandela.png){#fig-sentA-Mandela-bing}
+
+![$\texttt{AFINN}$: Mbeki](sentiment_plots/word_contr_AFINN_Mbeki.png){#fig-sentA-Mbeki-afinn}
+
+![$\texttt{bing}$: Mbeki](sentiment_plots/word_contr_bing_Mbeki.png){#fig-sentA-Mbeki-bing}
+
+![$\texttt{AFINN}$: Motlanthe](sentiment_plots/word_contr_AFINN_ Motlanthe.png){#fig-sentA-Motlanthe-afinn}
+
+![$\texttt{bing}$: Motlanthe](sentiment_plots/word_contr_bing_ Motlanthe.png){#fig-sentA-Motlanthe-bing}
+
+![$\texttt{AFINN}$: Zuma](sentiment_plots/word_contr_AFINN_Zuma.png){#fig-sentA-Zuma-afinn}
+
+![$\texttt{bing}$: Zuma](sentiment_plots/word_contr_bing_Zuma.png){#fig-sentA-Zuma-bing}
+
+![$\texttt{AFINN}$: Ramaphosa](sentiment_plots/word_contr_AFINN_Ramaphosa.png){#fig-sentA-Ramaphosa-afinn}
+
+![$\texttt{bing}$: Ramaphosa](sentiment_plots/word_contr_bing_Ramaphosa.png){#fig-sentA-Ramaphosa-bing}
+
+Contribution to sentiment score, faceted by president.
 :::
 
 ```{python}
@@ -571,8 +601,8 @@ def plot_speeches_by_president(df, lexicon):
     for idx, president in enumerate(presidents):
         president_df = df[df['president'] == president]
         plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
-    plt.xlabel('Date')
-    plt.ylabel(f'Sentiment Score: {lexicon_lab}')
+    plt.xlabel('Date', fontsize=12)
+    plt.ylabel(f'Sentiment Score', fontsize=12)
     plt.xticks(rotation=65)
     plt.legend(loc ="upper left")
     plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
@@ -585,9 +615,7 @@ def plot_sentences_by_president(df, lexicon):
 
     presidents = df['president'].unique()
 
-    # colors = ['lightsteelblue', colormap[1], 'midnightblue',  'lightgray', 'darkgray', 'dimgray']
-
-    colors = ['dimgray', 'midnightblue', 'lightsteelblue',  'darkgray', 'lightgray', colormap[1]]
+    colors = [colormap[1],  'dimgray', 'midnightblue', 'darkgray', 'lightsteelblue', 'lightgray']
 
     lexicon_lab = lexicon
 
@@ -606,8 +634,8 @@ def plot_sentences_by_president(df, lexicon):
         plt.figure(figsize=(10, 6))
         president_df = df[df['president'] == president]
         plt.bar(president_df['sentence_num'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[i])
-        plt.xlabel('Sentence')
-        plt.ylabel(f'Sentiment Score: {lexicon_lab}')
+        plt.xlabel('Sentence', fontsize=20)
+        plt.ylabel(f'Sentiment Score', fontsize=20)
         plt.xticks(rotation=65)
         plt.savefig(f'sentiment_plots/sent_{lexicon}_{president}.png', bbox_inches='tight')
         plt.close()  # Close the figure to avoid displaying it in the notebook
@@ -615,7 +643,6 @@ def plot_sentences_by_president(df, lexicon):
         i += 1
 
     
-
 # Assuming 'date' is a column in datetime format and 'president' is the name of each president
 plot_speeches_by_president(sona_speeches_clean, 'bing')
 plot_speeches_by_president(sona_speeches_clean, 'afinn')
@@ -659,7 +686,7 @@ def plot_top_words(word_sentiments, president, lexicon):
     words_positive, scores_positive = zip(*top_positive_words)
     words_negative, scores_negative = zip(*top_negative_words)
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(10, 6))
 
     # Plot the top negative words
     ax.barh(range(10), scores_negative, color=colormap[2], label='Negative')
@@ -668,11 +695,11 @@ def plot_top_words(word_sentiments, president, lexicon):
 
     # Add the word labels
     ax.set_yticks(range(20))
-    ax.set_yticklabels(words_negative + words_positive)
+    ax.set_yticklabels(words_negative + words_positive, fontsize=20)
     
     # Set the labels and title
-    ax.set_xlabel(f'Contribution to Sentiment Score: {lexicon}')
-    ax.legend()
+    ax.set_xlabel(f'Contribution to Sentiment Score', fontsize=20)
+    ax.legend(prop = { "size": 16 }, loc = "lower right")
 
     # Adjust the view so negative words are at the bottom and positive at the top
     ax.set_ylim(-1, 20)
