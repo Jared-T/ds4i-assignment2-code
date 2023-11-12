@@ -1476,6 +1476,26 @@ for k in range(ctms.k):
 from gensim.models import AuthorTopicModel
 from gensim.models.coherencemodel import CoherenceModel
 import matplotlib.pyplot as plt
+from gensim.utils import simple_preprocess
+from gensim import corpora
+
+texts = sona_speeches_clean['speech']
+sentences = sona_sentences_alltogether['sentence']
+
+# Further process tokens using gensim's simple_preprocess
+tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc=True removes punctuations
+tokenized_sentences = [simple_preprocess(doc, deacc=True) for doc in sentences]  # deacc=True removes punctuations
+
+# Create a Gensim dictionary from the tokenized documents
+dictionary = corpora.Dictionary(tokenized_texts)
+dictionary.filter_extremes(no_below=3, no_above=0.7)
+
+dict_sentences = corpora.Dictionary(tokenized_sentences)
+dict_sentences.filter_extremes(no_below=3, no_above=0.7)
+
+# Create a BOW corpus
+bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
+bow_corpus_sentences = [dict_sentences.doc2bow(text) for text in tokenized_sentences]
 
 # Prepare the data for the AuthorTopicModel
 # Create a mapping of authors to documents
@@ -1483,34 +1503,98 @@ author2doc = {author: [] for author in sona_speeches_clean['president'].unique()
 for i, row in sona_speeches_clean.iterrows():
     author2doc[row['president']].append(i)
 
+# Create a mapping of authors to sentences
+author2sent = {author: [] for author in sona_sentences_alltogether['president'].unique()}
+for i, row in sona_sentences_alltogether.iterrows():
+    author2sent[row['president']].append(i)
+
 # Define the range of topic numbers you want to test
-topic_numbers = range(2, 8, 2)  # for example from 2 to 20 by step of 2
+topic_numbers = range(2, 12, 1)  # for example from 2 to 20 by step of 2
 
 # Store coherence scores for plotting
 coherence_scores = []
+coherence_scores_sentences = []
 
 for num_topics in topic_numbers:
     # Author-Topic LDA model with the current number of topics
     author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=num_topics)
+    author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, author2doc=author2sent, id2word=dict_sentences, num_topics=num_topics)
 
     # Train the model
     author_topic_model.update(bow_corpus, author2doc=author2doc)
+    author_topic_model_sentences.update(bow_corpus_sentences, author2doc=author2sent)
 
     # Compute coherence score
     cm = CoherenceModel(model=author_topic_model, texts=tokenized_docs, dictionary=dictionary, coherence='u_mass')
+    cm_sentences = CoherenceModel(model=author_topic_model_sentences, texts=tokenized_sentences, dictionary=dict_sentences, coherence='u_mass')
+
     coherence = cm.get_coherence()
+    coherence_sentences = cm_sentences.get_coherence()
+
     coherence_scores.append(coherence)
+    coherence_scores_sentences.append(coherence_sentences)
+
     print(f"Num Topics: {num_topics}, Coherence Score: {coherence}")
 
-# Plot the coherence scores
-plt.figure(figsize=(12, 6))
-plt.plot(topic_numbers, coherence_scores)
+```
+
+
+```{python}
+
+# Plot the speech coherence scores
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, coherence_scores,  color='midnightblue')
 plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
 plt.xticks(topic_numbers)
-plt.show()
+plt.savefig(f'atm_plots/words_coherence_plots.png', bbox_inches='tight')
+plt.close()
 
+# Plot the sentence coherence scores
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, coherence_scores_sentences, color='midnightblue')
+plt.title('Coherence Scores by Number of Topics')
+plt.xlabel('Number of Topics')
+plt.ylabel('Coherence Score')
+plt.xticks(topic_numbers)
+plt.savefig(f'atm_plots/sentences_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
+```
+
+
+```{python}
+
+# Author-Topic LDA model with the current number of topics
+author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=2)
+author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, author2doc=author2sent, id2word=dict_sentences, num_topics=2)
+
+# Train the model
+author_topic_model.update(bow_corpus, author2doc=author2doc)
+author_topic_model_sentences.update(bow_corpus_sentences, author2doc=author2sent)
+
+# Function to plot the top words for one topic in an AuthorTopicModel
+def plot_top_words_for_author_topic_model(model, modtype, topic_num, top_n=10):
+    # Extract the top words for this topic
+    top_words = model.get_topic_terms(topic_num, topn=top_n)
+    words, weights = zip(*[(model.id2word[word_id], weight) for word_id, weight in top_words])
+
+    # Create a bar chart for the top words in this topic
+    plt.figure(figsize=(10, 6))
+    plt.barh(words, weights, color='midnightblue')
+    plt.xlabel('Weight')
+    plt.gca().invert_yaxis()  # Highest weights on top
+    plt.savefig(f'atm_plots/{modtype}_{topic_num+1}.png', bbox_inches='tight')
+    plt.close()
+
+# Plot the top words for each topic for the AuthorTopicModel of documents
+for k in range(author_topic_model.num_topics):
+    plot_top_words_for_author_topic_model(author_topic_model, "speeches",k)
+
+# Plot the top words for each topic for the AuthorTopicModel of sentences
+for k in range(author_topic_model_sentences.num_topics):
+    plot_top_words_for_author_topic_model(author_topic_model_sentences, "sentences", k)
 
 ```
 
