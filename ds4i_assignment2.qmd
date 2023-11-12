@@ -589,7 +589,7 @@ def plot_sentences_by_president(df, lexicon):
 
     colors = ['dimgray', 'midnightblue', 'lightsteelblue',  'darkgray', 'lightgray', colormap[1]]
 
-   lexicon_lab = lexicon
+    lexicon_lab = lexicon
 
     if lexicon == 'afinn':
         lexicon_lab = 'AFINN'
