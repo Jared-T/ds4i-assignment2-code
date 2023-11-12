@@ -1207,10 +1207,28 @@ def calculate_umass_coherence(topic_word_distribution, doc_topic_distribution, t
 
 ```{python}
 
-print(corpus)
+# Plot the speech coherence values - updated
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, bow_coherence_values, label='BoW Coherence', color='midnightblue')
+plt.plot(topic_numbers, tfidf_coherence_values, label='TF-IDF Coherence', color='darkgray')
+plt.xlabel("Number of Topics", fontsize=16)
+plt.ylabel("Coherence score",  fontsize=16)
+plt.legend(loc='lower left')
+plt.savefig(f'plsa_plots/speeches_coherence.png', bbox_inches='tight')
+plt.close()
+
+
+# Plot the sentence coherence values - updated
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, bow_coherence_values_sent, label='BoW Coherence', color='midnightblue')
+plt.plot(topic_numbers, tfidf_coherence_values_sent, label='TF-IDF Coherence', color='darkgray')
+plt.xlabel("Number of Topics", fontsize=16)
+plt.ylabel("Coherence score",  fontsize=16)
+plt.legend(loc='lower left')
+plt.savefig(f'plsa_plots/sentences_coherence.png', bbox_inches='tight')
+plt.close()
 
 ```
-
 
 ```{python}
 
