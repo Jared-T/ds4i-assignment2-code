@@ -1230,11 +1230,11 @@ if 1 == 1:
 ```{python}
 
 # Save the results to a csv
-model_results_df = pd.DataFrame(model_results)
-model_results_sentences_df = pd.DataFrame(model_results_sentences)
+# model_results_df = pd.DataFrame(model_results)
+# model_results_sentences_df = pd.DataFrame(model_results_sentences)
 
-model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
-model_results_sentences_df.to_csv('data/sona_sentences_lda.csv', index=False)
+# model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
+# model_results_sentences_df.to_csv('data/sona_sentences_lda.csv', index=False)
 
 ```
 
@@ -1243,7 +1243,10 @@ model_results_sentences_df.to_csv('data/sona_sentences_lda.csv', index=False)
 
 # Save the results to a csv
 model_results_df = pd.read_csv('data/sona_speeches_lda.csv')
-model_results_df.sort_values(by='Coherence', ascending=False).head(10)
+sorted_speeches_df = model_results_df.sort_values(by='Coherence', ascending=False)
+
+# Concatenate the head and tail of the DataFrame
+combined_speeches_df = pd.concat([sorted_speeches_df.head(10), sorted_speeches_df.tail(10)])
 
 ```
 
@@ -1252,14 +1255,25 @@ model_results_df.sort_values(by='Coherence', ascending=False).head(10)
 
 # Save the results to a csv
 model_results_sentences_df = pd.read_csv('data/sona_sentences_lda.csv')
-model_results_sentences_df.sort_values(by='Coherence', ascending=False).head(10)
+sorted_sentences_df = model_results_sentences_df.sort_values(by='Coherence', ascending=False)
+
+# Concatenate the head and tail of the DataFrame
+combined_sentences_df = pd.concat([sorted_sentences_df.head(10), sorted_sentences_df.tail(10)])
 
 ```
 
 ```{python}
 
+def style_df(df):
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    format_dict = {col: "{:.3f}" for col in numeric_cols}
+    return df.style.set_table_styles({
+        '': [{'selector': '',
+              'props': [('border', '1px solid black')]}]
+    }).format(format_dict).hide()
+
 # Save the results to a csv
-model_results_df.sort_values(by='Coherence', ascending=False).tail(10)
+style_df(combined_speeches_df)
 
 ```
 
@@ -1267,7 +1281,7 @@ model_results_df.sort_values(by='Coherence', ascending=False).tail(10)
 ```{python}
 
 # Save the results to a csv
-model_results_sentences_df.sort_values(by='Coherence', ascending=False).tail(10)
+style_df(combined_sentences_df)
 
 ```
 
