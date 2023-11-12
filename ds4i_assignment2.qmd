@@ -455,77 +455,78 @@ for president, top_words in top_10_words_by_president.items():
 ```
 
 
-
 # Sentiment analysis
 
-![$\texttt{AFINN}$: All speeches](sentiment_plots/speech_afinn_all.png){#fig-sentA-speeches-afinn}
+![$\texttt{AFINN}$: All speeches](sentiment_plots/speech_afinn_all.png){#fig-sent-speeches-afinn}
 
-![$\texttt{bing}$: All speeches](sentiment_plots/speech_bing_all.png){#fig-sentA-speeches-bing}
+![$\texttt{bing}$: All speeches](sentiment_plots/speech_bing_all.png){#fig-sent-speeches-bing}
 
     
-::: {#fig-SentA layout-ncol=2}
+::: {#fig-sentlayout-ncol=2}
 
-![$\texttt{AFINN}$: de Klerk](sentiment_plots/sent_afinn_deKlerk.png){#fig-sentA-deKlerk-afinn}
+![$\texttt{AFINN}$: de Klerk](sentiment_plots/sent_afinn_deKlerk.png){#fig-sent-deKlerk-afinn}
 
-![$\texttt{bing}$: de Klerk](sentiment_plots/sent_bing_deKlerk.png){#fig-sentA-deKlerk-bing}
+![$\texttt{bing}$: de Klerk](sentiment_plots/sent_bing_deKlerk.png){#fig-sent-deKlerk-bing}
 
-![$\texttt{AFINN}$: Mandela](sentiment_plots/sent_afinn_Mandela.png){#fig-sentA-Mandela-afinn}
+![$\texttt{AFINN}$: Mandela](sentiment_plots/sent_afinn_Mandela.png){#fig-sent-Mandela-afinn}
 
-![$\texttt{bing}$: Mandela](sentiment_plots/sent_bing_Mandela.png){#fig-sentA-Mandela-bing}
+![$\texttt{bing}$: Mandela](sentiment_plots/sent_bing_Mandela.png){#fig-sent-Mandela-bing}
 
-![$\texttt{AFINN}$: Mbeki](sentiment_plots/sent_afinn_Mbeki.png){#fig-sentA-Mbeki-afinn}
+![$\texttt{AFINN}$: Mbeki](sentiment_plots/sent_afinn_Mbeki.png){#fig-sent-Mbeki-afinn}
 
-![$\texttt{bing}$: Mbeki](sentiment_plots/sent_bing_Mbeki.png){#fig-sentA-Mbeki-bing}
+![$\texttt{bing}$: Mbeki](sentiment_plots/sent_bing_Mbeki.png){#fig-sent-Mbeki-bing}
 
-![$\texttt{AFINN}$: Motlanthe](sentiment_plots/sent_afinn_ Motlanthe.png){#fig-sentA-Motlanthe-afinn}
+![$\texttt{AFINN}$: Motlanthe](sentiment_plots/sent_afinn_ Motlanthe.png){#fig-sent-Motlanthe-afinn}
 
-![$\texttt{bing}$: Motlanthe](sentiment_plots/sent_bing_ Motlanthe.png){#fig-sentA-Motlanthe-bing}
+![$\texttt{bing}$: Motlanthe](sentiment_plots/sent_bing_ Motlanthe.png){#fig-sent-Motlanthe-bing}
 
-![$\texttt{AFINN}$: Zuma](sentiment_plots/sent_afinn_Zuma.png){#fig-sentA-Zuma-afinn}
+![$\texttt{AFINN}$: Zuma](sentiment_plots/sent_afinn_Zuma.png){#fig-sent-Zuma-afinn}
 
-![$\texttt{bing}$: Zuma](sentiment_plots/sent_bing_Zuma.png){#fig-sentA-Zuma-bing}
+![$\texttt{bing}$: Zuma](sentiment_plots/sent_bing_Zuma.png){#fig-sent-Zuma-bing}
 
-![$\texttt{AFINN}$: Ramaphosa](sentiment_plots/sent_afinn_Ramaphosa.png){#fig-sentA-Ramaphosa-afinn}
+![$\texttt{AFINN}$: Ramaphosa](sentiment_plots/sent_afinn_Ramaphosa.png){#fig-sent-Ramaphosa-afinn}
 
-![$\texttt{bing}$: Ramaphosa](sentiment_plots/sent_bing_Ramaphosa.png){#fig-sentA-Ramaphosa-bing}
+![$\texttt{bing}$: Ramaphosa](sentiment_plots/sent_bing_Ramaphosa.png){#fig-sent-Ramaphosa-bing}
 
 Most frequent words used in SONA speeches, faceted by president.
 :::
 
 
-::: {#fig-SentA-Contr layout-ncol=2}
+::: {#fig-wordcontr layout-ncol=2}
 
-![$\texttt{AFINN}$: All speeches](sentiment_plots/word_contr_AFINN_all.png){#fig-sentA-speeches-afinn}
+![$\texttt{AFINN}$: All speeches](sentiment_plots/word_contr_AFINN_all.png){#fig-wordcontr-speeches-afinn}
 
-![$\texttt{bing}$: All speeches](sentiment_plots/word_contr_bing_all.png){#fig-sentA-speeches-bing}
+![$\texttt{bing}$: All speeches](sentiment_plots/word_contr_bing_all.png){#fig-wordcontr-speeches-bing}
 
 
-![$\texttt{AFINN}$: de Klerk](sentiment_plots/word_contr_AFINN_deKlerk.png){#fig-sentA-deKlerk-afinn}
+![$\texttt{AFINN}$: de Klerk](sentiment_plots/word_contr_AFINN_deKlerk.png){#fig-wordcontr-deKlerk-afinn}
 
-![$\texttt{bing}$: de Klerk](sentiment_plots/word_contr_bing_deKlerk.png){#fig-sentA-deKlerk-bing}
+![$\texttt{bing}$: de Klerk](sentiment_plots/word_contr_bing_deKlerk.png){#fig-wordcontr-deKlerk-bing}
 
-![$\texttt{AFINN}$: Mandela](sentiment_plots/word_contr_AFINN_Mandela.png){#fig-sentA-Mandela-afinn}
+![$\texttt{AFINN}$: Mandela](sentiment_plots/word_contr_AFINN_Mandela.png){#fig-wordcontr-Mandela-afinn}
 
-![$\texttt{bing}$: Mandela](sentiment_plots/word_contr_bing_Mandela.png){#fig-sentA-Mandela-bing}
+![$\texttt{bing}$: Mandela](sentiment_plots/word_contr_bing_Mandela.png){#fig-wordcontr-Mandela-bing}
 
-![$\texttt{AFINN}$: Mbeki](sentiment_plots/word_contr_AFINN_Mbeki.png){#fig-sentA-Mbeki-afinn}
+![$\texttt{AFINN}$: Mbeki](sentiment_plots/word_contr_AFINN_Mbeki.png){#fig-wordcontr-Mbeki-afinn}
 
-![$\texttt{bing}$: Mbeki](sentiment_plots/word_contr_bing_Mbeki.png){#fig-sentA-Mbeki-bing}
+![$\texttt{bing}$: Mbeki](sentiment_plots/word_contr_bing_Mbeki.png){#fig-wordcontr-Mbeki-bing}
 
-![$\texttt{AFINN}$: Motlanthe](sentiment_plots/word_contr_AFINN_ Motlanthe.png){#fig-sentA-Motlanthe-afinn}
+![$\texttt{AFINN}$: Motlanthe](sentiment_plots/word_contr_AFINN_ Motlanthe.png){#fig-wordcontr-Motlanthe-afinn}
 
-![$\texttt{bing}$: Motlanthe](sentiment_plots/word_contr_bing_ Motlanthe.png){#fig-sentA-Motlanthe-bing}
+![$\texttt{bing}$: Motlanthe](sentiment_plots/word_contr_bing_ Motlanthe.png){#fig-wordcontr-Motlanthe-bing}
 
-![$\texttt{AFINN}$: Zuma](sentiment_plots/word_contr_AFINN_Zuma.png){#fig-sentA-Zuma-afinn}
+![$\texttt{AFINN}$: Zuma](sentiment_plots/word_contr_AFINN_Zuma.png){#fig-wordcontr-Zuma-afinn}
 
-![$\texttt{bing}$: Zuma](sentiment_plots/word_contr_bing_Zuma.png){#fig-sentA-Zuma-bing}
+![$\texttt{bing}$: Zuma](sentiment_plots/word_contr_bing_Zuma.png){#fig-wordcontr-Zuma-bing}
 
-![$\texttt{AFINN}$: Ramaphosa](sentiment_plots/word_contr_AFINN_Ramaphosa.png){#fig-sentA-Ramaphosa-afinn}
+![$\texttt{AFINN}$: Ramaphosa](sentiment_plots/word_contr_AFINN_Ramaphosa.png){#fig-wordcontr-Ramaphosa-afinn}
 
-![$\texttt{bing}$: Ramaphosa](sentiment_plots/word_contr_bing_Ramaphosa.png){#fig-sentA-Ramaphosa-bing}
+![$\texttt{bing}$: Ramaphosa](sentiment_plots/word_contr_bing_Ramaphosa.png){#fig-wordcontr-Ramaphosa-bing}
 
 Contribution to sentiment score, faceted by president.
 :::
+
+
 
 ```{python}
 
@@ -761,7 +762,7 @@ def plot_top_words(word_sentiments, lexicon):
     words_positive, scores_positive = zip(*top_positive_words)
     words_negative, scores_negative = zip(*top_negative_words)
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(10, 6))
 
     # Plot the top negative words
     ax.barh(range(10), scores_negative, color=colormap[2], label='Negative')
@@ -797,6 +798,61 @@ plot_top_words(word_sentiments_afinn, 'AFINN')
 # Topic modelling
 
 ## LSA
+
+::: {#fig-LSA-coherence layout-ncol=2}
+
+![Words](lsa_plots/words_coherence_plots){#fig-words-coherence}
+
+![Sentences](lsa_plots/sentences_coherence_plots.png){#fig-sentences-coherence}
+
+Coherence plots for LSA 
+:::
+
+
+::: {#fig-LSA-words-BoW-topics layout-ncol=2}
+
+![Topic 1](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
+
+![Topic 2](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
+
+![Topic 3](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
+
+![Topic 4](lsa_plots/words_bow_topic_4.png){#fig-words-bow-topic4}
+
+Topic plots for LSA - BoW
+:::
+
+
+::: {#fig-LSA-sentences-BoW-topics layout-ncol=2}
+
+![Topic 1](lsa_plots/sentences_bow_topic_1.png){#fig-words-bow-topic1}
+
+![Topic 2](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
+
+![Topic 3](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
+
+![Topic 4](lsa_plots/words_bow_topic_4.png){#fig-words-bow-topic4}
+
+Topic plots for LSA - BoW
+:::
+
+
+::: {#fig-LSA-tfidf-topics layout-ncol=2}
+
+![Topic 1](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
+
+![Topic 2](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
+
+![Topic 3](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
+
+![Topic 4](lsa_plots/words_bow_topic_4.png){#fig-words-bow-topic4}
+
+Topic plots for LSA - BoW
+:::
+
+
+
+
 
 ```{python}
 
@@ -891,13 +947,14 @@ plt.close()
 
 ```{python}
 
-lsa_bow_words = LsiModel(corpus=bow_corpus, num_topics=4, id2word=dictionary)
+lsa_bow_words = LsiModel(corpus=bow_corpus, num_topics=3, id2word=dictionary)
 lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=4, id2word=dict_sentences)
 
 lsa_tfidf_words = LsiModel(corpus=tfidf_corpus, num_topics=3, id2word=dictionary)
 lsa_tfidf_sentences = LsiModel(corpus=tfidf_corpus_sentences, num_topics=4, id2word=dict_sentences)
 
 ```
+
 
 ```{python}
 
