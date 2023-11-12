@@ -1161,7 +1161,7 @@ for n_topics in topic_numbers:
 
 ```{python}
 
-# Plot the speech coherence values
+# Plot the speech coherence values - updated
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, bow_coherence_values, label='BoW Coherence', color='midnightblue')
 plt.plot(topic_numbers, tfidf_coherence_values, label='TF-IDF Coherence', color='darkgray')
@@ -1172,7 +1172,7 @@ plt.savefig(f'plsa_plots/speeches_coherence.png', bbox_inches='tight')
 plt.close()
 
 
-# Plot the sentence coherence values
+# Plot the sentence coherence values - updated
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, bow_coherence_values_sent, label='BoW Coherence', color='midnightblue')
 plt.plot(topic_numbers, tfidf_coherence_values_sent, label='TF-IDF Coherence', color='darkgray')
