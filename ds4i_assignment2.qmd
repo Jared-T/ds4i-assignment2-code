@@ -581,7 +581,7 @@ def plot_speeches_by_president(df, lexicon):
 
 # For plotting sentiment scores of sentences by each president
 def plot_sentences_by_president(df, lexicon):
-    plt.figure(figsize=(10, 6))
+    #plt.figure(figsize=(10, 6))
 
     presidents = df['president'].unique()
 
