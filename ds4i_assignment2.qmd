@@ -1047,19 +1047,29 @@ import matplotlib.pyplot as plt
 import tqdm
 
 texts = sona_speeches_clean['speech']
+sentences = sona_sentences_alltogether['sentence']
+
 # Further process tokens using gensim's simple_preprocess
 tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc=True removes punctuations
+tokenized_sentences = [simple_preprocess(doc, deacc=True) for doc in sentences]  # deacc=True removes punctuations
 
 # Create a Gensim dictionary from the tokenized documents
 dictionary = corpora.Dictionary(tokenized_texts)
 dictionary.filter_extremes(no_below=3, no_above=0.7)
 
+dict_sentences = corpora.Dictionary(tokenized_sentences)
+dict_sentences.filter_extremes(no_below=3, no_above=0.7)
+
 # Create a BOW corpus
 bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
+bow_corpus_sentences = [dict_sentences.doc2bow(text) for text in tokenized_sentences]
 
 # Create a TF-IDF corpus
 tfidf = TfidfModel(bow_corpus)
 tfidf_corpus = tfidf[bow_corpus]
+
+tfidf_sentences = TfidfModel(bow_corpus_sentences)
+tfidf_corpus_sentences = tfidf_sentences[bow_corpus_sentences]
 
 # Define the function to compute coherence values
 def compute_coherence_values(corpus, dictionary, k, a, b):
@@ -1067,9 +1077,6 @@ def compute_coherence_values(corpus, dictionary, k, a, b):
                          id2word=dictionary,
                          num_topics=k, 
                          random_state=100,
-                         chunksize=2000,
-                         iterations=400,
-                         passes=20,
                          eval_every=None,
                          alpha=a,
                          eta=b)
@@ -1102,33 +1109,63 @@ model_results = {'Validation_Set': [],
                  'Beta': [],
                  'Coherence': []
                 }
+model_results_sentences = {'Validation_Set': [],
+                 'Topics': [],
+                 'Alpha': [],
+                 'Beta': [],
+                 'Coherence': []
+                }
 
 # Can take a long time to run
 # If you want to only test a few models, reduce the number of steps in topics_range
 # and/or limit the number of values in alpha and beta lists.
-# if 1 == 1:
-#     pbar = tqdm.tqdm(total=(max_topics-min_topics)*len(alpha)*len(beta)*len(corpus_sets))
+if 1 == 1:
+    pbar = tqdm.tqdm(total=(max_topics-min_topics)*len(alpha)*len(beta)*len(corpus_sets))
     
-#     # iterate through validation corpuses
-#     for i in range(len(corpus_sets)):
-#         # iterate through number of topics
-#         for k in topics_range:
-#             # iterate through alpha values
-#             for a in alpha:
-#                 # iterare through beta values
-#                 for b in beta:
-#                     # get the coherence score for the given parameters
-#                     cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, k=k, a=a, b=b)
-#                     # Save the model results
-#                     model_results['Validation_Set'].append(corpus_title[i])
-#                     model_results['Topics'].append(k)
-#                     model_results['Alpha'].append(a)
-#                     model_results['Beta'].append(b)
-#                     model_results['Coherence'].append(cv)
+    # iterate through validation corpuses
+    for i in range(len(corpus_sets)):
+        # iterate through number of topics
+        for k in topics_range:
+            # iterate through alpha values
+            for a in alpha:
+                # iterare through beta values
+                for b in beta:
+                    # get the coherence score for the given parameters
+                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, k=k, a=a, b=b)
+                    # Save the model results
+                    model_results['Validation_Set'].append(corpus_title[i])
+                    model_results['Topics'].append(k)
+                    model_results['Alpha'].append(a)
+                    model_results['Beta'].append(b)
+                    model_results['Coherence'].append(cv)
                     
-#                     pbar.update(1)
-#     pbar.close()
+                    pbar.update(1)
+    pbar.close()
 
+
+# Get the results for the sentences
+if 1 == 1:
+    pbar = tqdm.tqdm(total=(max_topics-min_topics)*len(alpha)*len(beta)*len(corpus_sets))
+    
+    # iterate through validation corpuses
+    for i in range(len(corpus_sets)):
+        # iterate through number of topics
+        for k in topics_range:
+            # iterate through alpha values
+            for a in alpha:
+                # iterare through beta values
+                for b in beta:
+                    # get the coherence score for the given parameters
+                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dict_sentences, k=k, a=a, b=b)
+                    # Save the model results
+                    model_results_sentences['Validation_Set'].append(corpus_title[i])
+                    model_results_sentences['Topics'].append(k)
+                    model_results_sentences['Alpha'].append(a)
+                    model_results_sentences['Beta'].append(b)
+                    model_results_sentences['Coherence'].append(cv)
+                    
+                    pbar.update(1)
+    pbar.close()
 
 ```
 
@@ -1136,8 +1173,11 @@ model_results = {'Validation_Set': [],
 ```{python}
 
 # Save the results to a csv
-#model_results_df = pd.DataFrame(model_results)
-#model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
+model_results_df = pd.DataFrame(model_results)
+model_results_sentences_df = pd.DataFrame(model_results_sentences)
+
+model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
+model_results_sentences_df.to_csv('data/sona_sentences_lda.csv', index=False)
 
 ```
 
@@ -1153,24 +1193,52 @@ model_results_df.sort_values(by='Coherence', ascending=False).head(10)
 
 ```{python}
 
+# Save the results to a csv
+model_results_sentences_df = pd.read_csv('data/sona_sentences_lda.csv')
+model_results_sentences_df.sort_values(by='Coherence', ascending=False).head(10)
+
+```
+
+```{python}
+
+# Save the results to a csv
+model_results_df.sort_values(by='Coherence', ascending=False).tail(10)
+
+```
+
+
+```{python}
+
+# Save the results to a csv
+model_results_sentences_df.sort_values(by='Coherence', ascending=False).tail(10)
+
+```
+
+```{python}
+
 import pyLDAvis.gensim_models
 import gensim
 
 # Train the best models for each corpus
-lda_model_bow = LdaModel(corpus=bow_corpus,
+lda_model_speeches = LdaModel(corpus=bow_corpus,
                          id2word=dictionary,
-                         num_topics=2, 
+                         num_topics=9, 
                          random_state=100,
-                         chunksize=2000,
-                         iterations=400,
-                         passes=20,
+                         eval_every=None,
+                         alpha=0.6,
+                         eta=0.5)
+
+lda_model_sentences = LdaModel(corpus=bow_corpus,
+                         id2word=dict_sentences,
+                         num_topics=4, 
+                         random_state=100,
                          eval_every=None,
                          alpha=0.1,
-                         eta=0.9)
+                         eta=0.5)
 
 # Prepare the visualization data
-vis_data = pyLDAvis.gensim_models.prepare(lda_model_bow, bow_corpus, dictionary)
-
+vis_data_speeches = pyLDAvis.gensim_models.prepare(lda_model_speeches, bow_corpus, dictionary)
+vis_data_sentences = pyLDAvis.gensim_models.prepare(lda_model_sentences, bow_corpus_sentences, dict_sentences)
 
 ```
 
@@ -1181,7 +1249,16 @@ vis_data = pyLDAvis.gensim_models.prepare(lda_model_bow, bow_corpus, dictionary)
 pyLDAvis.enable_notebook()
 
 # Display the visualization
-pyLDAvis.display(vis_data)
+pyLDAvis.display(vis_data_speeches)
+
+
+```
+
+
+```{python}
+
+# Display the visualization
+pyLDAvis.display(vis_data_sentences)
 
 
 ```
