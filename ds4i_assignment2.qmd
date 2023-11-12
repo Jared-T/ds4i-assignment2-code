@@ -3,6 +3,10 @@ title: "Sentiments and Topics in South African SONA Speeches"
 title-size: small
 subtitle: "STA5073Z Data Science for Industry Assignment 2"
 format: html
+execute: 
+  echo: false
+  cache: true
+  freeze: auto
 author: 
     - "Jared Tavares (TVRJAR001)"
     - "Heiletjé van Zyl (VZYHEI003)"
