@@ -466,6 +466,7 @@ for president, top_words in top_10_words_by_president.items():
 
 <h5> Sentiment Analysis </h5>
 
+
 ::: {#fig-sent-speeches layout-ncol=2}
 
 ![$\texttt{AFINN}$: All speeches](sentiment_plots/speech_afinn_all.png){#fig-sent-speeches-afinn}
@@ -482,29 +483,29 @@ Across both lexicons, from de Klerk to Mbeki’s presidential terms, positive se
 
 ::: {#fig-sent-presidents layout-ncol=2}
 
-![$\texttt{AFINN}$: de Klerk](sentiment_plots/sent_afinn_deKlerk.png){#fig-sent-deKlerk-afinn}
+![$\texttt{AFINN}$: de Klerk speeches](sentiment_plots/sent_afinn_deKlerk.png){#fig-sent-deKlerk-afinn}
 
-![$\texttt{bing}$: de Klerk](sentiment_plots/sent_bing_deKlerk.png){#fig-sent-deKlerk-bing}
+![$\texttt{bing}$: de Klerk speeches](sentiment_plots/sent_bing_deKlerk.png){#fig-sent-deKlerk-bing}
 
-![$\texttt{AFINN}$: Mandela](sentiment_plots/sent_afinn_Mandela.png){#fig-sent-Mandela-afinn}
+![$\texttt{AFINN}$: Mandela speeches](sentiment_plots/sent_afinn_Mandela.png){#fig-sent-Mandela-afinn}
 
-![$\texttt{bing}$: Mandela](sentiment_plots/sent_bing_Mandela.png){#fig-sent-Mandela-bing}
+![$\texttt{bing}$: Mandela speeches](sentiment_plots/sent_bing_Mandela.png){#fig-sent-Mandela-bing}
 
-![$\texttt{AFINN}$: Mbeki](sentiment_plots/sent_afinn_Mbeki.png){#fig-sent-Mbeki-afinn}
+![$\texttt{AFINN}$: Mbeki speeches](sentiment_plots/sent_afinn_Mbeki.png){#fig-sent-Mbeki-afinn}
 
-![$\texttt{bing}$: Mbeki](sentiment_plots/sent_bing_Mbeki.png){#fig-sent-Mbeki-bing}
+![$\texttt{bing}$: Mbeki speeches](sentiment_plots/sent_bing_Mbeki.png){#fig-sent-Mbeki-bing}
 
-![$\texttt{AFINN}$: Motlanthe](sentiment_plots/sent_afinn_ Motlanthe.png){#fig-sent-Motlanthe-afinn}
+![$\texttt{AFINN}$: Motlanthe speeches](sentiment_plots/sent_afinn_ Motlanthe.png){#fig-sent-Motlanthe-afinn}
 
-![$\texttt{bing}$: Motlanthe](sentiment_plots/sent_bing_ Motlanthe.png){#fig-sent-Motlanthe-bing}
+![$\texttt{bing}$: Motlanthe speeches](sentiment_plots/sent_bing_ Motlanthe.png){#fig-sent-Motlanthe-bing}
 
-![$\texttt{AFINN}$: Zuma](sentiment_plots/sent_afinn_Zuma.png){#fig-sent-Zuma-afinn}
+![$\texttt{AFINN}$: Zuma speeches](sentiment_plots/sent_afinn_Zuma.png){#fig-sent-Zuma-afinn}
 
-![$\texttt{bing}$: Zuma](sentiment_plots/sent_bing_Zuma.png){#fig-sent-Zuma-bing}
+![$\texttt{bing}$: Zuma speeches](sentiment_plots/sent_bing_Zuma.png){#fig-sent-Zuma-bing}
 
-![$\texttt{AFINN}$: Ramaphosa](sentiment_plots/sent_afinn_Ramaphosa.png){#fig-sent-Ramaphosa-afinn}
+![$\texttt{AFINN}$: Ramaphosa speeches](sentiment_plots/sent_afinn_Ramaphosa.png){#fig-sent-Ramaphosa-afinn}
 
-![$\texttt{bing}$: Ramaphosa](sentiment_plots/sent_bing_Ramaphosa.png){#fig-sent-Ramaphosa-bing}
+![$\texttt{bing}$: Ramaphosa speeches](sentiment_plots/sent_bing_Ramaphosa.png){#fig-sent-Ramaphosa-bing}
 
 Trajectory of sentiment score through SONA speech sentences stratified by president, comparing across two different lexicons. 
 :::
@@ -523,29 +524,29 @@ Words which contribute to the positive and negative sentiment across all SONA sp
 
 ::: {#fig-wordcontr-presidents layout-ncol=2}
 
-![$\texttt{AFINN}$: de Klerk](sentiment_plots/word_contr_AFINN_deKlerk.png){#fig-wordcontr-deKlerk-afinn}
+![$\texttt{AFINN}$: de Klerk speeches](sentiment_plots/word_contr_AFINN_deKlerk.png){#fig-wordcontr-deKlerk-afinn}
 
-![$\texttt{bing}$: de Klerk](sentiment_plots/word_contr_bing_deKlerk.png){#fig-wordcontr-deKlerk-bing}
+![$\texttt{bing}$: de Klerk speeches](sentiment_plots/word_contr_bing_deKlerk.png){#fig-wordcontr-deKlerk-bing}
 
-![$\texttt{AFINN}$: Mandela](sentiment_plots/word_contr_AFINN_Mandela.png){#fig-wordcontr-Mandela-afinn}
+![$\texttt{AFINN}$: Mandela speeches](sentiment_plots/word_contr_AFINN_Mandela.png){#fig-wordcontr-Mandela-afinn}
 
-![$\texttt{bing}$: Mandela](sentiment_plots/word_contr_bing_Mandela.png){#fig-wordcontr-Mandela-bing}
+![$\texttt{bing}$: Mandela speeches](sentiment_plots/word_contr_bing_Mandela.png){#fig-wordcontr-Mandela-bing}
 
-![$\texttt{AFINN}$: Mbeki](sentiment_plots/word_contr_AFINN_Mbeki.png){#fig-wordcontr-Mbeki-afinn}
+![$\texttt{AFINN}$: Mbeki speeches](sentiment_plots/word_contr_AFINN_Mbeki.png){#fig-wordcontr-Mbeki-afinn}
 
-![$\texttt{bing}$: Mbeki](sentiment_plots/word_contr_bing_Mbeki.png){#fig-wordcontr-Mbeki-bing}
+![$\texttt{bing}$: Mbeki speeches](sentiment_plots/word_contr_bing_Mbeki.png){#fig-wordcontr-Mbeki-bing}
 
-![$\texttt{AFINN}$: Motlanthe](sentiment_plots/word_contr_AFINN_ Motlanthe.png){#fig-wordcontr-Motlanthe-afinn}
+![$\texttt{AFINN}$: Motlanthe speeches](sentiment_plots/word_contr_AFINN_ Motlanthe.png){#fig-wordcontr-Motlanthe-afinn}
 
-![$\texttt{bing}$: Motlanthe](sentiment_plots/word_contr_bing_ Motlanthe.png){#fig-wordcontr-Motlanthe-bing}
+![$\texttt{bing}$: Motlanthe speeches](sentiment_plots/word_contr_bing_ Motlanthe.png){#fig-wordcontr-Motlanthe-bing}
 
-![$\texttt{AFINN}$: Zuma](sentiment_plots/word_contr_AFINN_Zuma.png){#fig-wordcontr-Zuma-afinn}
+![$\texttt{AFINN}$: Zuma speeches](sentiment_plots/word_contr_AFINN_Zuma.png){#fig-wordcontr-Zuma-afinn}
 
-![$\texttt{bing}$: Zuma](sentiment_plots/word_contr_bing_Zuma.png){#fig-wordcontr-Zuma-bing}
+![$\texttt{bing}$: Zuma speeches](sentiment_plots/word_contr_bing_Zuma.png){#fig-wordcontr-Zuma-bing}
 
-![$\texttt{AFINN}$: Ramaphosa](sentiment_plots/word_contr_AFINN_Ramaphosa.png){#fig-wordcontr-Ramaphosa-afinn}
+![$\texttt{AFINN}$: Ramaphosa speeches](sentiment_plots/word_contr_AFINN_Ramaphosa.png){#fig-wordcontr-Ramaphosa-afinn}
 
-![$\texttt{bing}$: Ramaphosa](sentiment_plots/word_contr_bing_Ramaphosa.png){#fig-wordcontr-Ramaphosa-bing}
+![$\texttt{bing}$: Ramaphosa speeches](sentiment_plots/word_contr_bing_Ramaphosa.png){#fig-wordcontr-Ramaphosa-bing}
 
 Words which contribute to the positive and negative sentiment for each specific presidents' SONA speech/speeches. 
 :::
@@ -612,7 +613,6 @@ sona_sentences_all_untrans['date_str'] = sona_sentences_all_untrans['date'].dt.s
 ```
 
 
-
 ```{python}
 
 import matplotlib.pyplot as plt
@@ -634,9 +634,9 @@ def plot_speeches_by_president(df, lexicon):
     for idx, president in enumerate(presidents):
         president_df = df[df['president'] == president]
         plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
-    plt.xlabel('Date', fontsize=12)
-    plt.ylabel(f'Sentiment Score', fontsize=12)
-    plt.xticks(fontsize=16)
+    plt.xlabel('Date', fontsize=20)
+    plt.ylabel(f'Sentiment Score', fontsize=20)
+    plt.xticks(fontsize=16, rotation=45)
     plt.yticks(fontsize=16)
     plt.legend(loc ="upper left")
     plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
