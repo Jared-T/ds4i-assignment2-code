@@ -236,8 +236,11 @@ lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words('english'))
 english_words = set(words.words())
 additional_words = {
-    'honourable', 'member', 'south', 'africa', 'african', 'year',
-    'madame', 'madam', 'soes', 'ms', 'madams', 'madames'
+    'honourable', 'member', 'chairperson',
+    'south', 'africa', 'african', 'africans', 'year',
+    'madame', 'madam', 'soes', 'ms', 'madams', 'madames', 'mw',
+    'compatriotsthe',
+    'also'
 }
 
 # Function to convert NLTK's part-of-speech tags to WordNet's part-of-speech tags
@@ -491,6 +494,11 @@ Most frequent words used in SONA speeches, faceted by president.
 
 
 ::: {#fig-SentA-Contr layout-ncol=2}
+
+![$\texttt{AFINN}$: All speeches](sentiment_plots/word_contr_AFINN_all.png){#fig-sentA-speeches-afinn}
+
+![$\texttt{bing}$: All speeches](sentiment_plots/word_contr_bing_all.png){#fig-sentA-speeches-bing}
+
 
 ![$\texttt{AFINN}$: de Klerk](sentiment_plots/word_contr_AFINN_deKlerk.png){#fig-sentA-deKlerk-afinn}
 
@@ -762,7 +770,7 @@ def plot_top_words(word_sentiments, lexicon):
 
     # Add the word labels
     ax.set_yticks(range(20))
-    ax.set_yticklabels(words_negative + words_positive)
+    ax.set_yticklabels(words_negative + words_positive, fontsize=20)
     
     # Set the labels and title
     ax.set_xlabel(f'Contribution to Sentiment Score: {lexicon}')
@@ -855,11 +863,11 @@ from matplotlib.ticker import MaxNLocator
 
 # Plotting the coherence values
 x = range(start, limit, step)
-plt.figure(figsize=(10, 5))
+plt.figure(figsize=(10, 6))
 plt.plot(x, bow_coherence_values, label='BOW Coherence', color='midnightblue')
 plt.plot(x, tfidf_coherence_values, label='TF-IDF Coherence', color='darkgray')
-plt.xlabel("Number of Topics")
-plt.ylabel("Coherence score")
+plt.xlabel("Number of Topics", fontsize=20)
+plt.ylabel("Coherence score",  fontsize=20)
 plt.legend(loc='lower left')
 plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.savefig(f'lsa_plots/words_coherence_plots.png', bbox_inches='tight')
@@ -868,12 +876,12 @@ plt.close()
 
 # Plotting the coherence values
 x = range(start, limit, step)
-plt.figure(figsize=(10, 5))
+plt.figure(figsize=(10, 6))
 plt.plot(x, bow_coherence_values_sentences, label='BOW Coherence', color='midnightblue')
 plt.plot(x, tfidf_coherence_values_sentences, label='TF-IDF Coherence', color='darkgray')
-plt.xlabel("Number of Topics")
-plt.ylabel("Coherence score")
-plt.legend(loc='lower left')
+plt.xlabel("Number of Topics", fontsize=20)
+plt.ylabel("Coherence score",  fontsize=20)
+plt.legend(loc='lower right')
 plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.savefig(f'lsa_plots/sentence_coherence_plots.png', bbox_inches='tight')
 plt.close()
@@ -901,27 +909,34 @@ def plot_top_words_lsa(model, num_words=10):
     fig, axes = plt.subplots(1, len(topics), figsize=(5 * len(topics), 10), sharey=True)
     axes = axes.flatten()
     
+    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'dimgray']
+    
+    i = 0
+    
     for topic_id, topic in topics:
         top_words = [word for word, _ in topic]
         weights = [abs(weight) for _, weight in topic]  # Use absolute values to show contribution
         
         ax = axes[topic_id]
-        ax.barh(top_words, weights)
+        ax.barh(top_words, weights, color=colors[i])
         ax.set_title(f'Topic {topic_id + 1}')
         ax.invert_yaxis()
         
-        ax.set_xlabel('Word Importance')
-        ax.set_ylabel('Words')
+        ax.set_xlabel('Word Importance', fontsize=20)
+        ax.set_ylabel('Words', fontsize=20)
+
+        i += 1
 
     plt.tight_layout()
+    plt.figure(figsize=(10, 6))
     plt.show()
 
 # Plot the top words for each topic for the LSA models
-plot_top_words_lsa(lsa_bow_words)
-plot_top_words_lsa(lsa_bow_sentences)
+#plot_top_words_lsa(lsa_bow_words)
+#plot_top_words_lsa(lsa_bow_sentences)
 
-plot_top_words_lsa(lsa_tfidf_words)
-plot_top_words_lsa(lsa_tfidf_sentences)
+#plot_top_words_lsa(lsa_tfidf_words)
+#plot_top_words_lsa(lsa_tfidf_sentences)
 
 ```
 
@@ -930,8 +945,15 @@ plot_top_words_lsa(lsa_tfidf_sentences)
 
 import matplotlib.pyplot as plt
 
+
+
 # Function to plot the top words for each topic in a single LSA model
 def plot_top_words_for_each_topic(model, fiton, lexicon, num_words=10):
+
+    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'dimgray']
+    
+    j = 0
+
     for i in range(model.num_topics):
         # Extract the top words for this topic
         top_words = model.show_topic(i, num_words)
@@ -941,11 +963,14 @@ def plot_top_words_for_each_topic(model, fiton, lexicon, num_words=10):
 
         # Create a bar chart for the top words in this topic
         plt.figure(figsize=(10, 6))
-        plt.barh(words, weights, color = colormap[0])
+        plt.barh(words, weights, color = colors[j])
+        # ax.set_yticklabels(words, fontsize=20)
+        j += 1
         plt.xlabel('Weight')
         plt.gca().invert_yaxis()  # Highest weights on top
         plt.savefig(f'lsa_plots/{fiton}_{lexicon}_topic_{i + 1}.png', bbox_inches='tight')
         plt.close()
+
 
 # Apply the plotting function to each of your LSA models
 plot_top_words_for_each_topic(lsa_bow_words, 'words', 'bow')
