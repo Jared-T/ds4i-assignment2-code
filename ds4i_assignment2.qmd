@@ -1055,6 +1055,7 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 <h4> pLSA </h4> 
 
 
+
 ```{python}
 
 sona_speeches_clean['speech'].to_csv('data/sona_speeches_only.csv', index=False)
@@ -1106,6 +1107,7 @@ def calculate_umass_coherence(plsa_result, corpus, top_n=10, tf_idf=False):
 
 
 ```
+
 
 ```{python}
 
@@ -1247,6 +1249,15 @@ print(umass_coherence_scores)
 
 
 <h4> LDA </h4> 
+
+::: {#fig-LDA-contours layout-ncol=2}
+
+![Words](lda_plots/words_contour_plot.png.png){#fig-LDA-contour-words}
+
+![Sentences](lda_plots/sentences_contour_plot.png){#fig-LDA-contour-sentences}
+
+Contour plots for words and sentences. 
+:::
 
 ```{python}
 
