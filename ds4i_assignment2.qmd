@@ -1348,42 +1348,124 @@ def calculate_coherence(model, metric='u_mass'):
 
 # Prepare the data for the CTM model
 tokenized_docs = [text.split() for text in sona_speeches_clean['speech']]  # Ensure the texts are tokenized
+tokenized_sentences = [text.split() for text in sona_sentences_alltogether['sentence']]  # Ensure the texts are tokenized
 
 # Define the range of topic numbers you want to test
-topic_numbers = range(2, 8, 2)  # for example from 2 to 20 by step of 2
+topic_numbers = range(2, 12, 1)  # for example from 2 to 20 by step of 2
 
 # Store coherence scores for plotting
 coherence_scores = []
+coherence_scores_sentences = []
 
 for k in topic_numbers:
     # Initialize CTM with the current number of topics
     ctm = tp.CTModel(k=k)
+    ctms = tp.CTModel(k=k)
 
     # Add documents to the model
     for tokens in tokenized_docs:
         ctm.add_doc(tokens)
 
+    # Add sentences to the model
+    for tokens in tokenized_sentences:
+        ctms.add_doc(tokens)    
+
     # Train the model
     ctm.train(0)
+    ctms.train(0)
+
     for _ in range(100):
         ctm.train(10)
+        ctms.train(10)
 
     # Calculate and store the coherence score
     score = calculate_coherence(ctm)
+    score_sentences = calculate_coherence(ctms)
+
     coherence_scores.append(score)
+    coherence_scores_sentences.append(score_sentences)
+
     print(f"Topics: {k}, Coherence Score: {score}")
 
-# Plot the coherence scores
-plt.figure(figsize=(12, 6))
-plt.plot(topic_numbers, coherence_scores)
+
+
+```
+
+
+```{python}
+
+# Plot the speech coherence scores
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, coherence_scores,  color='midnightblue')
 plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
 plt.xticks(topic_numbers)
-plt.show()
+plt.savefig(f'ctm_plots/words_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
+# Plot the sentence coherence scores
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, coherence_scores_sentences, color='midnightblue')
+plt.title('Coherence Scores by Number of Topics')
+plt.xlabel('Number of Topics')
+plt.ylabel('Coherence Score')
+plt.xticks(topic_numbers)
+plt.savefig(f'ctm_plots/sentences_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
 
 ```
 
+```{python}
+
+# Train the models with the optimal number of topics
+ctm = tp.CTModel(k=2)
+ctms = tp.CTModel(k=2)
+
+# Add documents to the model
+for tokens in tokenized_docs:
+    ctm.add_doc(tokens)
+
+# Add sentences to the model
+for tokens in tokenized_sentences:
+    ctms.add_doc(tokens)
+
+# Train the model
+ctm.train(0)
+ctms.train(0)
+
+for _ in range(100):
+    ctm.train(10)
+    ctms.train(10)
+
+```
+
+```{python}
+
+# Function to plot the top words for one topic
+def plot_top_words_for_topic(model, modtype, topic_num, top_n=10):
+    # Extract the top words for this topic
+    top_words = model.get_topic_words(topic_num, top_n=top_n)
+    words, weights = zip(*top_words)
+
+    # Create a bar chart for the top words in this topic
+    plt.figure(figsize=(10, 6))
+    plt.barh(words, weights, color='midnightblue')
+    plt.xlabel('Weight')
+    plt.gca().invert_yaxis()  # Highest weights on top
+    plt.savefig(f'ctm_plots/{modtype}_{topic_num+1}.png', bbox_inches='tight')
+    plt.close()
+
+# Plot the top words for each topic for the CTModel of documents
+for k in range(ctm.k):
+    plot_top_words_for_topic(ctm, 'speeches', k)
+
+# Plot the top words for each topic for the CTModel of sentences
+for k in range(ctms.k):
+    plot_top_words_for_topic(ctms, 'sentences', k)
+
+```
 
 ## ATM (Author-Topic Model)
 
