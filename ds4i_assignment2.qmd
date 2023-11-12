@@ -716,8 +716,8 @@ tokenized_sentences = [simple_preprocess(doc, deacc=True) for doc in sentences] 
 dictionary = corpora.Dictionary(tokenized_texts)
 dict_sentences = corpora.Dictionary(tokenized_sentences)
 
-dictionary.filter_extremes(no_below=2, no_above=0.75)
-dict_sentences.filter_extremes(no_below=2, no_above=0.75)
+#dictionary.filter_extremes(no_below=2, no_above=0.75)
+#dict_sentences.filter_extremes(no_below=2, no_above=0.75)
 
 # Create a BOW corpus
 bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
@@ -758,6 +758,7 @@ tfidf_model_list_sentences, tfidf_coherence_values_sentences = compute_coherence
 
 
 ```{python}
+from matplotlib.ticker import MaxNLocator
 
 # Plotting the coherence values
 x = range(start, limit, step)
@@ -766,9 +767,11 @@ plt.plot(x, bow_coherence_values, label='BOW Coherence', color='midnightblue')
 plt.plot(x, tfidf_coherence_values, label='TF-IDF Coherence', color='darkgray')
 plt.xlabel("Number of Topics")
 plt.ylabel("Coherence score")
-plt.title("Coherence Scores by Number of Topics")
-plt.legend()
-plt.show()
+plt.legend(loc='lower left')
+plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+plt.savefig(f'lsa_plots/words_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
 
 # Plotting the coherence values
 x = range(start, limit, step)
@@ -777,9 +780,10 @@ plt.plot(x, bow_coherence_values_sentences, label='BOW Coherence', color='midnig
 plt.plot(x, tfidf_coherence_values_sentences, label='TF-IDF Coherence', color='darkgray')
 plt.xlabel("Number of Topics")
 plt.ylabel("Coherence score")
-plt.title("Coherence Scores by Number of Topics")
 plt.legend(loc='lower left')
-plt.show()
+plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+plt.savefig(f'lsa_plots/sentence_coherence_plots.png', bbox_inches='tight')
+plt.close()
 
 ```
 
