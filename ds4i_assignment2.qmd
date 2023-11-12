@@ -1241,41 +1241,23 @@ for n_topics in topic_numbers:
     tfidf_plsa = PLSA(corpus, n_topics, tf_idf=True)
     bow_plsa = PLSA(corpus, n_topics, tf_idf=False)
 
-tfidf_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=True)
-bow_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=False)
+    tfidf_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=True)
+    bow_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=False)
 
-# Fit the models
-tfidf_result = tfidf_plsa.fit()
-bow_result = bow_plsa.fit()
-tfidf_result_sent = tfidf_plsa_sent.fit()
-bow_result_sent = bow_plsa_sent.fit()
+    # Fit the models
+    tfidf_result = tfidf_plsa.fit()
+    bow_result = bow_plsa.fit()
+    tfidf_result_sent = tfidf_plsa_sent.fit()
+    bow_result_sent = bow_plsa_sent.fit()
 
-```
-
-```{python}
-
-def calculate_umass_coherence(topic_word_distribution, doc_topic_distribution, total_docs):
-    """
-    Calculate UMass coherence for each topic.
-    """
-    coherence_scores = []
-    for t in range(len(topic_word_distribution)):
-        topic_coherence = 0.0
-        for m, word_prob1 in enumerate(topic_word_distribution[t][:-1]):
-            word_id1 = word_prob1[0]
-            for word_prob2 in topic_word_distribution[t][m + 1:]:
-                word_id2 = word_prob2[0]
-                # Get the number of documents that include word_id1
-                doc_count_word1 = np.sum(doc_topic_distribution[:, t] * (word_id1 in doc for doc in corpus))
-                # Get the number of documents that include both word_id1 and word_id2
-                doc_count_both = np.sum(doc_topic_distribution[:, t] * (word_id1 in doc and word_id2 in doc for doc in corpus))
-                # Calculate score for this word pair and add to topic coherence
-                if doc_count_word1 > 0 and doc_count_both > 0:
-                    topic_coherence += np.log((doc_count_both + 1.0) / doc_count_word1)
-        coherence_scores.append(topic_coherence)
-    return coherence_scores
+    # Calculate the coherence values
+    bow_coherence_values.append(calculate_umass_coherence(bow_result, corpus, tf_idf=False))
+    tfidf_coherence_values.append(calculate_umass_coherence(tfidf_result, corpus, tf_idf=True))
+    bow_coherence_values_sent.append(calculate_umass_coherence(bow_result_sent, corpus_sent, tf_idf=False))
+    tfidf_coherence_values_sent.append(calculate_umass_coherence(tfidf_result_sent, corpus_sent, tf_idf=True))
 
 ```
+
 
 ```{python}
 
@@ -1299,6 +1281,22 @@ plt.ylabel("Coherence score",  fontsize=16)
 plt.legend(loc='lower right')
 plt.savefig(f'plsa_plots/sentences_coherence.png', bbox_inches='tight')
 plt.close()
+
+```
+
+```{python}
+
+# Fit the models with the calibrated number of topics
+tfidf_plsa = PLSA(corpus, 4, tf_idf=True)
+bow_plsa = PLSA(corpus, 4, tf_idf=False)
+tfidf_plsa_sent = PLSA(corpus_sent, 8, tf_idf=True)
+bow_plsa_sent = PLSA(corpus_sent, 3, tf_idf=False)
+
+# Fit the models
+tfidf_result = tfidf_plsa.fit()
+bow_result = bow_plsa.fit()
+tfidf_result_sent = tfidf_plsa_sent.fit()
+bow_result_sent = bow_plsa_sent.fit()
 
 ```
 
