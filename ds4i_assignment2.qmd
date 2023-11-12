@@ -159,6 +159,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import wordnet, stopwords, words
 from nltk.stem import WordNetLemmatizer
 from ast import literal_eval
+from collections import defaultdict
 
 
 ```
@@ -654,7 +655,7 @@ plot_sentences_by_president(sona_sentences_all_untrans, 'afinn')
 ```
 
 ```{python}
-from collections import defaultdict
+
 
 # Function to calculate word sentiments across all speeches of a president
 def calculate_word_sentiments(president_speeches, lexicon):
@@ -720,6 +721,71 @@ for president, speeches in presidents_speeches.items():
 ```
 
 
+```{python}
+
+# Function to calculate word sentiments across all speeches
+def calculate_word_sentiments(speeches, lexicon):
+    # Combine all speeches into one large text
+    all_speeches = ' '.join(speeches)
+    # Tokenize the text into words and filter out stopwords and non-alphabetic tokens
+    words = [word for word in word_tokenize(all_speeches.lower()) if word.isalpha() and word not in stopwords.words('english')]
+    # Get sentiment score for each word
+    word_sentiments = defaultdict(int)
+    for word in words:
+        # Get the sentiment score for the word
+        if lexicon == 'bing':
+            sentiment = get_bing_sentiment(word)
+        elif lexicon == 'afinn':
+            sentiment = get_afinn_sentiment(word)
+
+        word_sentiments[word] += sentiment
+    return word_sentiments
+
+# Function to plot the top positive and negative words
+def plot_top_words(word_sentiments, lexicon):
+    # Sort words by sentiment score
+    sorted_words = sorted(word_sentiments.items(), key=lambda kv: kv[1])
+    # Select the top 10 positive and negative words
+    top_positive_words = sorted_words[-10:]
+    top_negative_words = sorted_words[:10]
+
+    # Words and their sentiment scores for plotting
+    words_positive, scores_positive = zip(*top_positive_words)
+    words_negative, scores_negative = zip(*top_negative_words)
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # Plot the top negative words
+    ax.barh(range(10), scores_negative, color=colormap[2], label='Negative')
+    # Plot the top positive words
+    ax.barh(range(10, 20), scores_positive, color=colormap[0], label='Positive')
+
+    # Add the word labels
+    ax.set_yticks(range(20))
+    ax.set_yticklabels(words_negative + words_positive)
+    
+    # Set the labels and title
+    ax.set_xlabel(f'Contribution to Sentiment Score: {lexicon}')
+    ax.legend()
+
+    # Adjust the view so negative words are at the bottom and positive at the top
+    ax.set_ylim(-1, 20)
+    
+    plt.tight_layout()
+    plt.savefig(f'sentiment_plots/word_contr_{lexicon}_all.png', bbox_inches='tight')
+    plt.close()  # Close the figure to avoid displaying it in the notebook
+
+# Calculate the word sentiments across all speeches for each lexicon
+all_speeches = sona_speeches_clean['speech_untrans'].tolist()
+word_sentiments_bing = calculate_word_sentiments(all_speeches, 'bing')
+word_sentiments_afinn = calculate_word_sentiments(all_speeches, 'afinn')
+
+# Plot the top words for each lexicon
+plot_top_words(word_sentiments_bing, 'bing')
+plot_top_words(word_sentiments_afinn, 'AFINN')
+
+```
+
 # Topic modelling
 
 ## LSA
@@ -743,8 +809,8 @@ tokenized_sentences = [simple_preprocess(doc, deacc=True) for doc in sentences] 
 dictionary = corpora.Dictionary(tokenized_texts)
 dict_sentences = corpora.Dictionary(tokenized_sentences)
 
-#dictionary.filter_extremes(no_below=2, no_above=0.75)
-#dict_sentences.filter_extremes(no_below=2, no_above=0.75)
+#dictionary.filter_extremes(no_below=2, no_above=0.7)
+#dict_sentences.filter_extremes(no_below=2, no_above=0.7)
 
 # Create a BOW corpus
 bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
@@ -815,14 +881,80 @@ plt.close()
 ```
 
 
+```{python}
+
+lsa_bow_words = LsiModel(corpus=bow_corpus, num_topics=4, id2word=dictionary)
+lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=4, id2word=dict_sentences)
+
+lsa_tfidf_words = LsiModel(corpus=tfidf_corpus, num_topics=3, id2word=dictionary)
+lsa_tfidf_sentences = LsiModel(corpus=tfidf_corpus_sentences, num_topics=4, id2word=dict_sentences)
+
+```
 
 ```{python}
 
-# Word frequency plots for the top 10 words for each topic
-from collections import Counter
+import matplotlib.pyplot as plt
 
+# Function to plot top words for each topic
+def plot_top_words_lsa(model, num_words=10):
+    topics = model.show_topics(num_topics=-1, num_words=num_words, formatted=False)
+    fig, axes = plt.subplots(1, len(topics), figsize=(5 * len(topics), 10), sharey=True)
+    axes = axes.flatten()
+    
+    for topic_id, topic in topics:
+        top_words = [word for word, _ in topic]
+        weights = [abs(weight) for _, weight in topic]  # Use absolute values to show contribution
+        
+        ax = axes[topic_id]
+        ax.barh(top_words, weights)
+        ax.set_title(f'Topic {topic_id + 1}')
+        ax.invert_yaxis()
+        
+        ax.set_xlabel('Word Importance')
+        ax.set_ylabel('Words')
+
+    plt.tight_layout()
+    plt.show()
+
+# Plot the top words for each topic for the LSA models
+plot_top_words_lsa(lsa_bow_words)
+plot_top_words_lsa(lsa_bow_sentences)
+
+plot_top_words_lsa(lsa_tfidf_words)
+plot_top_words_lsa(lsa_tfidf_sentences)
 
 ```
+
+
+```{python}
+
+import matplotlib.pyplot as plt
+
+# Function to plot the top words for each topic in a single LSA model
+def plot_top_words_for_each_topic(model, fiton, lexicon, num_words=10):
+    for i in range(model.num_topics):
+        # Extract the top words for this topic
+        top_words = model.show_topic(i, num_words)
+        # Separate the words and their corresponding weights
+        words, weights = zip(*top_words)
+        weights = [abs(weight) for weight in weights]  # Use absolute values for weights
+
+        # Create a bar chart for the top words in this topic
+        plt.figure(figsize=(10, 6))
+        plt.barh(words, weights, color = colormap[0])
+        plt.xlabel('Weight')
+        plt.gca().invert_yaxis()  # Highest weights on top
+        plt.savefig(f'lsa_plots/{fiton}_{lexicon}_topic_{i + 1}.png', bbox_inches='tight')
+        plt.close()
+
+# Apply the plotting function to each of your LSA models
+plot_top_words_for_each_topic(lsa_bow_words, 'words', 'bow')
+plot_top_words_for_each_topic(lsa_bow_sentences, 'sentences', 'bow')
+plot_top_words_for_each_topic(lsa_tfidf_words, 'words', 'tfidf')
+plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
+
+```
+
 
 ## pLSA (Probabilistic Latent Semantic Analysis)
 
