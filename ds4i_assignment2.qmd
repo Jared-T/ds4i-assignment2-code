@@ -844,8 +844,9 @@ Topic plots for LSA using words as tokens either applied within BoW or tf-idf ap
 :::
 
 
-![Sentences](lsa_plots/sentence_coherence_plots.png){#fig-sentences-coherence}
 
+
+![Sentences](lsa_plots/sentence_coherence_plots.png){#fig-sentences-coherence}
 
 ::: {#fig-LSA-sentences-BoW-topics layout-ncol=2}
 
@@ -867,7 +868,6 @@ Topic plots for LSA using words as tokens either applied within BoW or tf-idf ap
 
 Topic plots for LSA using sentences as token, comparing topics across BoW and tf-idf approaches. 
 :::
-
 
 
 ```{python}
@@ -1056,6 +1056,111 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 
 <h4> pLSA </h4> 
 
+![Words](plsa_plots/words_coherence.png){#fig-pLSA-words-coherence}
+
+
+::: {#fig-pLSA-words-BoW-topics layout-ncol=2}
+
+![BoW: Topic 1](plsa_plots/words-BoW_topic_1.png){#fig-pLSA-words-bow-topic1}
+
+![tf-idf: Topic 1](plsa_plots/words-tf-idf_topic_1.png){#fig-pLSA-words-tfidf-topic1}
+
+![BoW: Topic 2](plsa_plots/words-BoW_topic_2.png){#fig-pLSA-words-bow-topic2}
+
+![tf-idf: Topic 2](plsa_plots/words-tf-idf_topic_2.png){#fig-pLSA-words-tfidf-topic2}
+
+![BoW: Topic 3](plsa_plots/words-BoW_topic_3.png){#fig-pLSA-words-bow-topic3}
+
+![tf-idf: Topic 3](plsa_plots/words-tf-idf_topic_3.png){#fig-pLSA-words-tfidf-topic3}
+
+![BoW: Topic 4](plsa_plots/words-BoW_topic_4.png){#fig-pLSA-words-bow-topic4}
+
+![tf-idf: Topic 4](plsa_plots/words-tf-idf_topic_4.png){#fig-pLSA-words-tfidf-topic4}
+
+![BoW: Topic 5](plsa_plots/words-BoW_topic_5.png){#fig-pLSA-words-bow-topic5}
+
+![tf-idf: Topic 5](plsa_plots/words-tf-idf_topic_5.png){#fig-pLSA-words-tfidf-topic5}
+
+![BoW: Topic 6](plsa_plots/words-BoW_topic_6.png){#fig-pLSA-words-bow-topic6}
+
+![tf-idf: Topic 6](plsa_plots/words-tf-idf_topic_6.png){#fig-pLSA-words-tfidf-topic6}
+
+![BoW: Topic 7](plsa_plots/words-BoW_topic_7.png){#fig-pLSA-words-bow-topic7}
+
+![tf-idf: Topic 7](plsa_plots/words-tf-idf_topic_7.png){#fig-pLSA-words-tfidf-topic7}
+
+![BoW: Topic 8](plsa_plots/words-BoW_topic_8.png){#fig-pLSA-words-bow-topic8}
+
+![tf-idf: Topic 8](plsa_plots/words-tf-idf_topic_8.png){#fig-pLSA-words-tfidf-topic8}
+
+![BoW: Topic 9](plsa_plots/words-BoW_topic_8.png){#fig-pLSA-words-bow-topic9}
+
+![tf-idf: Topic 9](plsa_plots/words-tf-idf_topic_8.png){#fig-pLSA-words-tfidf-topic9}
+
+![BoW: Topic 10](plsa_plots/words-BoW_topic_10.png){#fig-pLSA-words-bow-topic10}
+
+![tf-idf: Topic 10](plsa_plots/words-tf-idf_topic_10.png){#fig-pLSA-words-tfidf-topic10}
+
+![BoW: Topic 11](plsa_plots/words-BoW_topic_11.png){#fig-pLSA-words-bow-topic11}
+
+![tf-idf: Topic 11](plsa_plots/words-tf-idf_topic_11.png){#fig-pLSA-words-tfidf-topic11}
+
+Topic plots for pLSA using words as tokens either applied within BoW or tf-idf approach. 
+:::
+
+![Sentences](plsa_plots/sentences_coherence.png){#fig-pLSA-sentences-coherence}
+
+
+::: {#fig-pLSA-words-BoW-topics layout-ncol=2}
+
+![BoW: Topic 1](plsa_plots/sentences-BoW_topic_1.png){#fig-pLSA-sentences-bow-topic1}
+
+![tf-idf: Topic 1](plsa_plots/sentences-tf-idf_topic_1.png){#fig-pLSA-sentences-tfidf-topic1}
+
+![BoW: Topic 2](plsa_plots/sentences-BoW_topic_2.png){#fig-pLSA-sentences-bow-topic2}
+
+![tf-idf: Topic 2](plsa_plots/sentences-tf-idf_topic_2.png){#fig-pLSA-sentences-tfidf-topic2}
+
+![BoW: Topic 3](plsa_plots/sentences-BoW_topic_3.png){#fig-pLSA-sentences-bow-topic3}
+
+![tf-idf: Topic 3](plsa_plots/sentences-tf-idf_topic_3.png){#fig-pLSA-sentences-tfidf-topic3}
+
+![BoW: Topic 4](plsa_plots/sentences-BoW_topic_4.png){#fig-pLSA-sentences-bow-topic4}
+
+![tf-idf: Topic 4](plsa_plots/sentences-tf-idf_topic_4.png){#fig-pLSA-sentences-tfidf-topic4}
+
+![BoW: Topic 5](plsa_plots/sentences-BoW_topic_5.png){#fig-pLSA-sentences-tfidf-topic5}
+
+![tf-idf: Topic 5](plsa_plots/sentences-tf-idf_topic_5.png){#fig-pLSA-sentences-tfidf-topic5}
+
+![BoW: Topic 6](plsa_plots/sentences-BoW_topic_6.png){#fig-pLSA-sentences-bow-topic6}
+
+![tf-idf: Topic 6](plsa_plots/sentences-tf-idf_topic_6.png){#fig-pLSA-sentences-tfidf-topic6}
+
+![BoW: Topic 7](plsa_plots/sentences-BoW_topic_7.png){#fig-pLSA-sentences-bow-topic7}
+
+![tf-idf: Topic 7](plsa_plots/sentences-tf-idf_topic_7.png){#fig-pLSA-sentences-tfidf-topic7}
+
+![BoW: Topic 8](plsa_plots/sentences-BoW_topic_8.png){#fig-pLSA-sentences-bow-topic8}
+
+![tf-idf: Topic 8](plsa_plots/sentences-tf-idf_topic_8.png){#fig-pLSA-sentences-tfidf-topic8}
+
+![BoW: Topic 9](plsa_plots/sentences-BoW_topic_8.png){#fig-pLSA-sentences-bow-topic9}
+
+![tf-idf: Topic 9](plsa_plots/sentences-tf-idf_topic_8.png){#fig-pLSA-sentences-tfidf-topic9}
+
+![BoW: Topic 10](plsa_plots/sentences-BoW_topic_10.png){#fig-pLSA-sentences-bow-topic10}
+
+![tf-idf: Topic 10](plsa_plots/sentences-tf-idf_topic_10.png){#fig-pLSA-sentences-tfidf-topic10}
+
+![BoW: Topic 11](plsa_plots/sentences-BoW_topic_11.png){#fig-pLSA-sentences-bow-topic11}
+
+![tf-idf: Topic 11](plsa_plots/sentences-tf-idf_topic_11.png){#fig-pLSA-sentences-tfidf-topic11}
+
+Topic plots for pLSA using sentences as tokens either applied within BoW or tf-idf approach. 
+:::
+
+
 
 
 ```{python}
@@ -1181,7 +1286,7 @@ plt.plot(topic_numbers, tfidf_coherence_values, label='tf-idf Coherence', color=
 plt.xlabel("Number of Topics", fontsize=16)
 plt.ylabel("Coherence score",  fontsize=16)
 plt.legend(loc='lower right')
-plt.savefig(f'plsa_plots/speeches_coherence.png', bbox_inches='tight')
+plt.savefig(f'plsa_plots/words_coherence.png', bbox_inches='tight')
 plt.close()
 
 
@@ -1223,8 +1328,8 @@ def plot_word_contribution(result, corptype):
         plot_top_words_for_topic(result.word_given_topic, topic_num, corptype)
 
 # Plot the word contribution for each topic for each model
-plot_word_contribution(bow_result, 'speeches-BoW')
-plot_word_contribution(tfidf_result, 'speeches-tf-idf')
+plot_word_contribution(bow_result, 'words-BoW')
+plot_word_contribution(tfidf_result, 'words-tf-idf')
 plot_word_contribution(bow_result_sent, 'sentences-BoW')
 plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
 
@@ -1643,6 +1748,8 @@ plt.close()
 
 
 ```
+
+
 
 ```{python}
 
