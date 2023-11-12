@@ -25,7 +25,7 @@ Given such political context, it is of specific interest to analyse the  annual 
 
 ![Illustration of how sentA will be implemented within a different-scales-within-different-levels framework for the presidential-SONA-speeech text analysis.](SentA_MacroMicroScheme.png){width=400 height=250 #fig-SentA_MacroMicroScheme}
 
-![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences).](TM_MacroMicroScheme.png){width=400 height=250 #fig-TM_MacroMicroScheme}
+![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences).](TM_MacroMicroScheme.png){height=200 #fig-TM_MacroMicroScheme}
 
 Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country's serving presidents during different date periods. 
 
@@ -112,33 +112,6 @@ The R-based $\texttt{AFINN}$ lexicon scores words across a range spanning from t
 <b><u>  Bing </b></u>
 
 Unlike $\texttt{AFINN}$ , the R-based $\texttt{bing}$ lexicon does not provide sentiments via some scoring system. Instead, it simply assigns a binary label of a word being interpreted as either positive or negative [@SilgeRobinson2017].  
-
-<h4> Exploratory Data Analysis</h4>
-<hr>
-
-![Most frequent words used across all SONA speeches, irrespective of president.](saved_plots/overall_top_words.png){#fig-EDA-speeches}
-
-From @fig-EDA-speeches, it is evident that the word "government" is mainly referenced to across all SONA speeches. This word dominance draws upon the importance of this authority body that is integral to the governance of South Africa. The frequent usage of the words "people" and "public" suggests a sense of inclusivity, where the idea of togetherness is implicitly emphasized. Other words, such as "development" and "new", are indicative of ideas of growth and renewal. Lastly, a sense of security and safety is provided with the recurring use of the word "ensure".
-
-::: {#fig-EDA-presidents layout-ncol=2}
-
-![de Klerk](saved_plots/deKlerk_top_words.png){#fig-deKlerk}
-
-![Mandela](saved_plots/Mandela_top_words.png){#fig-Mandela}
-
-![Mbeki](saved_plots/Mbeki_top_words.png){#fig-Mbeki}
-
-![Motlanthe](saved_plots/ Motlanthe_top_words.png){#fig-Motlanthe}
-
-![Zuma](saved_plots/Zuma_top_words.png){#fig-Zuma}
-
-![Ramaphosa](saved_plots/Ramaphosa_top_words.png){#fig-Ramaphosa}
-
-Most frequent words used in SONA speeches, faceted by president.
-:::
-
-The two words, "government" and "people", 
-
 
 
 ```{python}
@@ -378,7 +351,32 @@ colormap = [cividis_no_yellow_light(norm(0)),
 
 ```
 
-# Exploratory Data Analysis
+<h4> Exploratory Data Analysis</h4>
+<hr>
+
+![Most frequent words used across all SONA speeches, irrespective of president.](saved_plots/overall_top_words.png){#fig-EDA-speeches}
+
+From @fig-EDA-speeches, it is evident that the word "government" is mainly referenced to across all SONA speeches. This word dominance draws upon the importance of this authority body that is integral to the governance of South Africa. The frequent usage of the words "people" and "public" suggests a sense of inclusivity, where the idea of togetherness is implicitly emphasized. Other words, such as "development" and "new", are indicative of ideas of growth and renewal. Lastly, a sense of security and safety is provided with the recurring use of the word "ensure".
+
+::: {#fig-EDA-presidents layout-ncol=2}
+
+![de Klerk](saved_plots/deKlerk_top_words.png){#fig-deKlerk}
+
+![Mandela](saved_plots/Mandela_top_words.png){#fig-Mandela}
+
+![Mbeki](saved_plots/Mbeki_top_words.png){#fig-Mbeki}
+
+![Motlanthe](saved_plots/ Motlanthe_top_words.png){#fig-Motlanthe}
+
+![Zuma](saved_plots/Zuma_top_words.png){#fig-Zuma}
+
+![Ramaphosa](saved_plots/Ramaphosa_top_words.png){#fig-Ramaphosa}
+
+Most frequent words used in SONA speeches, faceted by president.
+:::
+
+The two words, "government" and "people", 
+
 
 ```{python}
 
@@ -411,6 +409,8 @@ plt.figure(figsize=(10, 6))
 plt.bar([word for word, count in top_10_words], [count for word, count in top_10_words], color=colormap[2])
 plt.xlabel('Words', fontsize=12)
 plt.ylabel('Frequency', fontsize=12)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
 plt.xticks(rotation=45)
 
 # Save the plot as a PNG file
@@ -455,14 +455,22 @@ for president, top_words in top_10_words_by_president.items():
 ```
 
 
-# Sentiment analysis
+<h4> Results </h4>
+<hr>
+
+<h5> Sentiment Analysis </h5>
+
+
+::: {#fig-sent-speeches layout-ncol=2}
 
 ![$\texttt{AFINN}$: All speeches](sentiment_plots/speech_afinn_all.png){#fig-sent-speeches-afinn}
 
 ![$\texttt{bing}$: All speeches](sentiment_plots/speech_bing_all.png){#fig-sent-speeches-bing}
 
-    
-::: {#fig-sentlayout-ncol=2}
+Most frequent words used in SONA speeches. 
+ :::
+
+::: {#fig-sent-presidents layout-ncol=2}
 
 ![$\texttt{AFINN}$: de Klerk](sentiment_plots/sent_afinn_deKlerk.png){#fig-sent-deKlerk-afinn}
 
@@ -492,12 +500,19 @@ Most frequent words used in SONA speeches, faceted by president.
 :::
 
 
-::: {#fig-wordcontr layout-ncol=2}
+
+
+::: {#fig-wordcontr-speeches layout-ncol=2}
 
 ![$\texttt{AFINN}$: All speeches](sentiment_plots/word_contr_AFINN_all.png){#fig-wordcontr-speeches-afinn}
 
 ![$\texttt{bing}$: All speeches](sentiment_plots/word_contr_bing_all.png){#fig-wordcontr-speeches-bing}
 
+Contribution to sentiment score across all SONA speeches. 
+:::
+
+
+::: {#fig-wordcontr-presidents layout-ncol=2}
 
 ![$\texttt{AFINN}$: de Klerk](sentiment_plots/word_contr_AFINN_deKlerk.png){#fig-wordcontr-deKlerk-afinn}
 
@@ -795,62 +810,57 @@ plot_top_words(word_sentiments_afinn, 'AFINN')
 
 ```
 
-# Topic modelling
 
-## LSA
+<h5> Topic modelling Results </h5>
+<hr> 
 
-::: {#fig-LSA-coherence layout-ncol=2}
+<h4> Latent Semantic Analysis (LSA) </h4> 
+
 
 ![Words](lsa_plots/words_coherence_plots){#fig-words-coherence}
-
-![Sentences](lsa_plots/sentences_coherence_plots.png){#fig-sentences-coherence}
-
-Coherence plots for LSA 
-:::
 
 
 ::: {#fig-LSA-words-BoW-topics layout-ncol=2}
 
-![Topic 1](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
+![BoW: Topic 1](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
 
-![Topic 2](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
+![tf-idf: Topic 1](lsa_plots/words_tfidf_topic_1.png){#fig-words-tfidf-topic1}
 
-![Topic 3](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
+![BoW: Topic 2](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
 
-![Topic 4](lsa_plots/words_bow_topic_4.png){#fig-words-bow-topic4}
+![tf-idf: Topic 2](lsa_plots/words_tfidf_topic_2.png){#fig-words-tfidf-topic2}
 
-Topic plots for LSA - BoW
+![BoW: Topic 3](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
+
+![tf-idf: Topic 3](lsa_plots/words_tfidf_topic_3.png){#fig-words-tfidf-topic3}
+
+Topic plots for LSA using words as tokens either applied within BoW or tf-idf approach. 
 :::
+
+
+![Sentences](lsa_plots/sentence_coherence_plots.png){#fig-sentences-coherence}
 
 
 ::: {#fig-LSA-sentences-BoW-topics layout-ncol=2}
 
-![Topic 1](lsa_plots/sentences_bow_topic_1.png){#fig-words-bow-topic1}
+![BoW: Topic 1](lsa_plots/sentences_bow_topic_1.png){#fig-sentences-bow-topic1}
 
-![Topic 2](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
+![tf-idf: Topic 1](lsa_plots/sentences_tfidf_topic_1.png){#fig-sentences-tfidf-topic1}
 
-![Topic 3](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
+![BoW: Topic 2](lsa_plots/sentences_bow_topic_2.png){#fig-sentences-bow-topic2}
 
-![Topic 4](lsa_plots/words_bow_topic_4.png){#fig-words-bow-topic4}
+![tf-idf: Topic 2](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
 
-Topic plots for LSA - BoW
+![BoW: Topic 3](lsa_plots/sentences_bow_topic_3.png){#fig-sentences-bow-topic3}
+
+![tf-idf: Topic 3](lsa_plots/sentences_tfidf_topic_3.png){#fig-sentences-tfidf-topic3}
+
+![BoW: Topic 4](lsa_plots/sentences_bow_topic_4.png){#fig-sentences-bow-topic4}
+
+![tf-idf: Topic 4](lsa_plots/sentences_tfidf_topic_4.png){#fig-sentences-tfidf-topic4}
+
+Topic plots for LSA using sentences as token, comparing topics across BoW and tf-idf approaches. 
 :::
-
-
-::: {#fig-LSA-tfidf-topics layout-ncol=2}
-
-![Topic 1](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
-
-![Topic 2](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
-
-![Topic 3](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
-
-![Topic 4](lsa_plots/words_bow_topic_4.png){#fig-words-bow-topic4}
-
-Topic plots for LSA - BoW
-:::
-
-
 
 
 
@@ -920,10 +930,10 @@ from matplotlib.ticker import MaxNLocator
 # Plotting the coherence values
 x = range(start, limit, step)
 plt.figure(figsize=(10, 6))
-plt.plot(x, bow_coherence_values, label='BOW Coherence', color='midnightblue')
-plt.plot(x, tfidf_coherence_values, label='TF-IDF Coherence', color='darkgray')
-plt.xlabel("Number of Topics", fontsize=20)
-plt.ylabel("Coherence score",  fontsize=20)
+plt.plot(x, bow_coherence_values, label='BoW Coherence', color='midnightblue')
+plt.plot(x, tfidf_coherence_values, label='tf-idf Coherence', color='darkgray')
+plt.xlabel("Number of Topics", fontsize=16)
+plt.ylabel("Coherence score",  fontsize=16)
 plt.legend(loc='lower left')
 plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.savefig(f'lsa_plots/words_coherence_plots.png', bbox_inches='tight')
@@ -933,10 +943,10 @@ plt.close()
 # Plotting the coherence values
 x = range(start, limit, step)
 plt.figure(figsize=(10, 6))
-plt.plot(x, bow_coherence_values_sentences, label='BOW Coherence', color='midnightblue')
-plt.plot(x, tfidf_coherence_values_sentences, label='TF-IDF Coherence', color='darkgray')
-plt.xlabel("Number of Topics", fontsize=20)
-plt.ylabel("Coherence score",  fontsize=20)
+plt.plot(x, bow_coherence_values_sentences, label='BoW Coherence', color='midnightblue')
+plt.plot(x, tfidf_coherence_values_sentences, label='tf-idf Coherence', color='darkgray')
+plt.xlabel("Number of Topics", fontsize=16)
+plt.ylabel("Coherence score",  fontsize=16)
 plt.legend(loc='lower right')
 plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.savefig(f'lsa_plots/sentence_coherence_plots.png', bbox_inches='tight')
@@ -1038,7 +1048,8 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 ```
 
 
-## pLSA (Probabilistic Latent Semantic Analysis)
+<h4> pLSA </h4> 
+
 
 ```{python}
 
@@ -1090,7 +1101,7 @@ fig.tight_layout()
 ```
 
 
-## LDA (Latent Dirichlet Allocation)
+<h4> LDA </h4> 
 
 ```{python}
 
@@ -1334,7 +1345,34 @@ pyLDAvis.display(vis_data_sentences)
 
 ```
 
-## CTM (Correlated Topic Model)
+<h4> CTM </h4> 
+
+
+::: {#fig-CTM-coherence layout-ncol=2}
+
+![Words](ctm_plots/words_1.png){#fig-ctm-coherence-words}
+
+![Sentences](ctm_plots/sentences_1.png){#fig-ctm-coherence-sentences}
+
+Coherence plots 
+:::
+
+
+::: {#fig-CTM-topics layout-ncol=2}
+
+![Words: Topic 1](ctm_plots/words_1.png){#fig-ctm-words-topic1}
+
+![Sentences: Topic 1](ctm_plots/sentences_1.png){#fig-ctm-sentences-topic1}
+
+![Words: Topic 2](ctm_plots/words_2.png){#fig-ctm-words-topic2}
+
+![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-ctm-sentences-topic2}
+
+Coherence plots 
+:::
+
+
+
 
 ```{python}
 
@@ -1397,7 +1435,7 @@ for k in topic_numbers:
 # Plot the speech coherence scores
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, coherence_scores,  color='midnightblue')
-plt.title('Coherence Scores by Number of Topics')
+# plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
 plt.xticks(topic_numbers)
@@ -1407,7 +1445,7 @@ plt.close()
 # Plot the sentence coherence scores
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, coherence_scores_sentences, color='midnightblue')
-plt.title('Coherence Scores by Number of Topics')
+# plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
 plt.xticks(topic_numbers)
@@ -1459,7 +1497,7 @@ def plot_top_words_for_topic(model, modtype, topic_num, top_n=10):
 
 # Plot the top words for each topic for the CTModel of documents
 for k in range(ctm.k):
-    plot_top_words_for_topic(ctm, 'speeches', k)
+    plot_top_words_for_topic(ctm, 'words', k)
 
 # Plot the top words for each topic for the CTModel of sentences
 for k in range(ctms.k):
@@ -1467,7 +1505,33 @@ for k in range(ctms.k):
 
 ```
 
-## ATM (Author-Topic Model)
+<h4> ATM (Author-Topic Model) <h/4> 
+
+
+::: {#fig-ATM-coherence layout-ncol=2}
+
+![Words](atm_plots/words_1.png){#fig-atm-coherence-words}
+
+![Sentences](atm_plots/sentences_1.png){#fig-atm-coherence-sentences}
+
+Coherence plots 
+:::
+
+
+::: {#fig-ATM-topics layout-ncol=2}
+
+![Words: Topic 1](ctm_plots/words_1.png){#fig-atm-words-topic1}
+
+![Sentences: Topic 1](ctm_plots/sentences_1.png){#fig-atm-sentences-topic1}
+
+![Words: Topic 2](ctm_plots/words_2.png){#fig-atm-words-topic2}
+
+![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-atm-sentences-topic2}
+
+:::
+
+
+
 
 ```{python}
 
@@ -1590,7 +1654,7 @@ def plot_top_words_for_author_topic_model(model, modtype, topic_num, top_n=10):
 
 # Plot the top words for each topic for the AuthorTopicModel of documents
 for k in range(author_topic_model.num_topics):
-    plot_top_words_for_author_topic_model(author_topic_model, "speeches",k)
+    plot_top_words_for_author_topic_model(author_topic_model, "words",k)
 
 # Plot the top words for each topic for the AuthorTopicModel of sentences
 for k in range(author_topic_model_sentences.num_topics):
@@ -1599,3 +1663,4 @@ for k in range(author_topic_model_sentences.num_topics):
 ```
 
 </div> 
+
