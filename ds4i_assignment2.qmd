@@ -1143,42 +1143,9 @@ bow_result = bow_plsa.fit()
 tfidf_result_sent = tfidf_plsa_sent.fit()
 bow_result_sent = bow_plsa_sent.fit()
 
-# Relative importance of latent topics
-print(tfidf_result.topic)
-
-# Word given topic
-print(tfidf_result.word_given_topic)
-
-# Topic given document - Dimensions are number of docs x number of topics
-print(tfidf_result.topic_given_doc)
-
-
-# visualize = Visualize(result)
-
-# fig, ax = plt.subplots()
-# _ = visualize.topics_in_doc(35, ax)
-# fig.tight_layout()
-
-# fig, ax = plt.subplots()
-# _ = visualize.topics(ax)
-# fig.tight_layout()
-
-
-# To visualize the word-topic distributions
-# Visualize.words(plsa.word_topics, corpus)
-
 ```
 
 ```{python}
-
-# Relative importance of latent topics
-print(tfidf_result.topic)
-
-# Word given topic
-print(tfidf_result.word_given_topic)
-
-# Topic given document
-print(tfidf_result.topic_given_doc)
 
 def calculate_umass_coherence(topic_word_distribution, doc_topic_distribution, total_docs):
     """
@@ -1230,27 +1197,34 @@ plt.close()
 
 ```{python}
 
-# # Function to plot the top words for a given topic
-# def plot_top_words_for_topic(word_given_topic, topic_num, top_n=10):
-#     # Extract the top words for this topic
-#     top_words_data = word_given_topic[topic_num][:top_n]
-#     words, probabilities = zip(*top_words_data)
+# Function to plot the top words for a given topic
+def plot_top_words_for_topic(word_given_topic, topic_num, corptype, top_n=10):
+    # Extract the top words for this topic
+    top_words_data = word_given_topic[topic_num][:top_n]
+    words, probabilities = zip(*top_words_data)
 
     # Create a bar plot
     plt.figure(figsize=(10, 6))
-    plt.barh(words, probabilities, color='skyblue')
-    plt.xlabel('Probability')
-    plt.title(f'Top {top_n} Words for Topic #{topic_num + 1}')
-    plt.gca().invert_yaxis()  # To have the highest probabilities on top
-    plt.show()
+    plt.barh(words, probabilities, color='midnightblue')
+    plt.xlabel('Probability', fontsize=16)
+    plt.gca().invert_yaxis() 
+    plt.savefig(f'plsa_plots/{corptype}_topic_{topic_num + 1}.png', bbox_inches='tight')
+    plt.close()
 
-# # Number of topics in your model
-# n_topics = len(tfidf_result.word_given_topic)
 
-# # Plot the top words for each topic
-# for topic_num in range(n_topics):
-#     plot_top_words_for_topic(tfidf_result.word_given_topic, topic_num)
+def plot_word_contribution(result, corptype):
+    # Number of topics in your model
+    n_topics = len(result.word_given_topic)
 
+    # Plot the top words for each topic
+    for topic_num in range(n_topics):
+        plot_top_words_for_topic(result.word_given_topic, topic_num, corptype)
+
+# Plot the word contribution for each topic for each model
+plot_word_contribution(bow_result, 'speeches-BoW')
+plot_word_contribution(tfidf_result, 'speeches-tf-idf')
+plot_word_contribution(bow_result_sent, 'sentences-BoW')
+plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
 
 ```
 
