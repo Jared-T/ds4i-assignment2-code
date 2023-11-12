@@ -11,36 +11,29 @@ author:
 <div style="text-align: justify"> 
 
 <h4> Abstract </h4>
-
-```{python}
-# TODO AT THE END!
-a = 1
-
-```
+<hr> 
 
 <h4> Introduction </h4>
+<hr>
 The field of Natural Language Processing (NLP) is faceted by techniques tailored for theme tracking and opinion mining which merge part of text analysis. Though, of particular prominence, is the extraction of latent thematic patterns and the establishment of the extent of emotionality expressed in political-based texts. 
 
-Given such political context, it is of specific interest to analyse the  annual State of the Nation Address (SONA) speeches delivered by six different South African presidents (F.W. de Klerk, N.R. Mandela, T.M. Mbeki, K.P. Motlanthe, J.G. Zuma, and M.C. Ramaphosa) ranging over twenty-nine years (from 1994 to 2023). This analysis, descriptive and data-driven in nature, endeavours to examine the content of the SONA speeches in terms of themes via topic modelling (TM) and emotions via sentiment analysis (SentA). In general, as illustrated in @fig-MacroMicroScheme, this exploration will be double-bifurcated, executing the aforementioned techniques within a macro and micro context both at the text (all-presidents versus by-president SONA speeches, respectively) and token (sentences versus words, respectively) level.  
+Given such political context, it is of specific interest to analyse the  annual State of the Nation Address (SONA) speeches delivered by six different South African presidents (F.W. de Klerk, N.R. Mandela, T.M. Mbeki, K.P. Motlanthe, J.G. Zuma, and M.C. Ramaphosa) ranging over twenty-nine years (from 1994 to 2023). This analysis, descriptive and data-driven in nature, endeavours to examine the content of the SONA speeches in terms of themes via topic modelling (TM) and emotions via sentiment analysis (SentA). Applying a double-bifurcated approach, SentA will be executed within a macro and micro context both at the text (all-presidents versus by-president SONA speeches, respectively) and token (sentences versus words, respectively) level, as shown in @fig-SentA_MacroMicroScheme. This underlying framework is also utilized for TM, with an exception of only employing it within a micro-context at the token level, as seen in @fig-TM_MacroMicroScheme.
 
-![Illustration of how the NLP techniques, sentiment analysis and topic modelling, will be implemented within a different-scales-within-different-levels framework for the presidential-SONA-speeech text analysis.](MacroMicroScheme.png){width=400 height=250 #fig-MacroMicroScheme}
+![Illustration of how sentA will be implemented within a different-scales-within-different-levels framework for the presidential-SONA-speeech text analysis.](SentA_MacroMicroScheme.png){width=400 height=250 #fig-SentA_MacroMicroScheme}
 
-Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country\'s serving presidents during different date periods. 
+![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences).](TM_MacroMicroScheme.png){width=400 height=250 #fig-TM_MacroMicroScheme}
 
-To achieve all of the above-mentioned, it is first relevant to revise foundational terms and review related literature in context of politics and NLP. All pertinent pre-processing of the political text data is then considered, followed by a discussion delving into the details of each SentA and TM approach applied as part of the analysis. Specifically, three different lexicons are leveraged to describe sentiments, whilst five different topic models are tackled to uncover themes   within South-African-presidents’ SONA speeches. Ensuing the implementation of these methodologies, the results thereof are detailed in terms insights and interpretations. Thereafter, an overall evaluation of the techniques in terms of efficacy and inadequacy is overviewed. Finally, focal findings are highlighted and potential improvements as part of future research are recommended.  
+Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country's serving presidents during different date periods. 
+
+To achieve all of the above-mentioned, it is first relevant to revise foundational terms and review related literature in context of politics and NLP. All pertinent pre-processing of the political text data is then considered, followed by a discussion delving into the details of each SentA and TM approach applied. Specifically, two different lexicons are leveraged to describe sentiments, whilst five different topic models are tackled to uncover themes within South-African-presidents’ SONA speeches. Ensuing the implementation of these methodologies, the results thereof are detailed in terms insights and interpretations. Thereafter, an overall evaluation of the techniques in terms of efficacy and inadequacy is overviewed. Finally, focal findings are highlighted and potential improvements as part of future research are recommended.  
 
 
 <h4> Literature Review </h4>
-
-<b><u> SONA and analysis thereof </b></u>
+<hr>
+<b><u> SONA  </b></u>
 
 SONA, a pivotal event in the political programme of Parliament, serves as a presidential summary for the South African public. Specifically, the country’s current domestic affairs and international relations are reflected upon, past governmental work is perused, and future plans in terms of policies and civil projects are proposed. Through this address, accountability on the part of government is re-instilled and transparency with the public is re-affirmed on an annual basis, either once (non-election year) or twice (pre-and-post election) [@Muthambi2017].
 The text analysis of such SONA speeches, via the implementation of TM and SentA, has been previously done for Philippine presidents [@MirandaBringula2021]. Though, it is now of interest to extend such an application to another country, South Africa. 
-
-
-<b><u> Tokenization process </b></u>
-
-The process of tokenization entails breaking up given text into units, referred to as tokens (or terms), which are meaningful for analysis [@Zhang2018]. In this case, these tokens take on different structures, based on either a macro-context (i.e., sentences) or micro-context (i.e., words, as a unigram or bigram). At both scales, the way in which these tokens are valued will be varied. The value will either be defined by a bag-of-words (BoW) or term-frequency, inverse-document-frequency (tf-idf) approach. The former way implicates accounting for the number of occurrences of some token in some document. On the other hand, the latter way not only regards the frequency of some token, but also the significance thereof. Thus, tf-idf involves the assignment of some weight to each token in a document which in turn reflects its importance relative to the entire collection of documents (corpus). It then follows that the tf-idf value of a token t in a document *d* within a corpus *D* is calculated as the product of two constituents. The first being tf(*t*,*d*) defined as the quotient of the frequency of token *t* in document *d* and the total number of tokens in document *d*, whereas the second is idf(*t*, *D*) denoted by the quotient of the natural logarithm of the total number of documents in corpus *D* and the number of documents containing the token *t* [@SilgeRobinson2017]. 
 
 
 <b><u> Topic modelling (TM) </b></u>
@@ -48,70 +41,80 @@ The process of tokenization entails breaking up given text into units, referred 
 TM, an unsupervised learning approach, implicates the identification of underlying abstract themes in some body of text, in the absence of pre-specified labels [@Cho2019]. In general, there are two topic-model assumptions: each document comprises of a mixture of topics and each topic consists of a collection of words [@Zhang2018]. Different types of topic models exist, each with varying complexity in terms of the way in which topics are generated. The simplest one, Latent Semantic Analysis (LSA), has previously been implemented to discover patterns of lexical cohesion in political speech, specifically that of the former Prime Minister of the United Kingdom, Margaret Thatcher [@Klebanov2008]. Improving on LSA methodology, Probabilistic LSA (pLSA) has been implemented in healthcare [@Zhu2014] and educational [@Ming2014] contexts, albeit no application thereof in political science was found. A further sophisticated model, Latent Dirichlet Allocation (LDA), has been used to determine trending topics in  news on governmental YouTube channels [@Subhan2023]. 
 
 <b><u> Sentiment analysis (SentA) </b></u>
-SentA involves deciphering the intent of words to infer certain emotional dimensions labelled either in polarized (negative/positive) or higher-dimensional terms (niche feelings like joy/sadness). Various unigram lexicons have been derived to such extents. For example, the R-based nrc lexicon dichotomously classifies words with yes/no labels in categories such as positive, negative, anticipation, anger, and so forth. Using such pre-defined lexicons has been previously utilized to analyze political communication, specifically in terms of campaign polarization, via SentA [@Haselmayer2017]. 
 
-<b><u> Optimal number of topics </b></u>
-Two approaches can be applied to determine the optimum topic number. Within the first approach, each topic can be viewed as a cluster and a metric showing how similar each word is to its own topic (cohesion) compared to other topics (separation) can be computed. The Silhouette Coefficient is such a measure ranging from a value of negative one to positive one. Here, higher positive values are indicative of words being well-compacted within the topic to which it belongs. The second approach involves the calculation of a coherence score. This measures the ability of the topic model to distinguish well between topics that are semantically interpretable by humans and are not simply statistical-inference artifacts. Hence, the number of topics as well as any other topic-model hyperparameters are tuned to values that yield the maximum coherence score, allowing for the most understandable themes. This latter approach will largely be applied in this SONA-speech analysis. 
+SentA involves deciphering the intent of words to infer certain emotional dimensions labelled either in polarized (negative/positive) or higher-dimensional terms (niche feelings like joy/sadness). Various unigram lexicons have been derived to such extents. For example, the R-based $\texttt{nrc}$ lexicon dichotomously classifies words with yes/no labels in categories such as positive, negative, anticipation, anger, and so forth. In contrast, the Python-based $\texttt{TextBlob}$ lexicon processes textual data in the form of a tuple where a polarity score (ranges between -1 and +1 which relates to negative and positive sentiment, respectively) and a subjectivity score (ranges between 0 and 1 which refers to being very objective or very subjective, respectively) is produced. Using such pre-defined lexicons has been previously utilized to analyze political communication, specifically in terms of campaign polarization, via SentA [@Haselmayer2017]. 
+
+
+<h4> Data </h4>
+<hr>
+
+<b><u> Tokenization </b></u>
+
+The process of tokenization entails breaking up given text into units, referred to as tokens (or terms), which are meaningful for analysis [@Zhang2018]. In this case, these tokens take on different structures, based on either a macro-context (i.e., sentences) or micro-context (i.e., words). At both scales, the way in which these tokens are valued will be varied. The value will either be defined by a bag-of-words (BoW) or term-frequency, inverse-document-frequency (tf-idf) approach. The former way implicates accounting for the number of occurrences of some token in some document. On the other hand, the latter way not only regards the frequency of some token, but also the significance thereof. Thus, tf-idf involves the assignment of some weight to each token in a document which in turn reflects its importance relative to the entire collection of documents (corpus). It then follows that the tf-idf value of a token *t* in a document *d* within a corpus *D* is calculated as the product of two constituents. The first being tf(*t*,*d*) defined as the quotient of the frequency of token *t* in document *d* and the total number of tokens in document *d*, whereas the second is idf(*t*, *D*) denoted by the quotient of the natural logarithm of the total number of documents in corpus *D* and the number of documents containing the token *t* [@SilgeRobinson2017]. 
+
+
+<b><u> Number of topics </b></u>
+
+In order to determine the optimal number of topics, a coherence score is calculated.  This metric measures the ability of a topic model to distinguish well between topics that are semantically interpretable by humans and are not simply statistical-inference artifacts. Hence, the number of topics as well as any other topic-model hyperparameters (like $\alpha$ and $\beta$ for LDA) are tuned to values that yield the maximum coherence score, allowing for the most understandable themes. 
+
+<!-- Two approaches can be applied to determine the optimum topic number. Within the first approach, each topic can be viewed as a cluster and a metric showing how similar each word is to its own topic (cohesion) compared to other topics (separation) can be computed. The Silhouette Coefficient is such a measure ranging from a value of negative one to positive one. Here, higher positive values are indicative of words being well-compacted within the topic to which it belongs. The second approach involves the calculation of a coherence score. This measures the ability of the topic model to distinguish well between topics that are semantically interpretable by humans and are not simply statistical-inference artifacts. Hence, the number of topics as well as any other topic-model hyperparameters are tuned to values that yield the maximum coherence score, allowing for the most understandable themes. This latter approach will largely be applied in this SONA-speech analysis.  -->
 
 <h4> Methods </h4>
-<h5> Topic modelling </h5>
 <hr>
+<h5> Topic modelling </h5>
 
 <b><u> Latent Semantic Analysis (LSA) </b></u> 
 
-![](LSA.png){fig-alt="Schematic representation of LSA."}
+![Schematic representation of LSA outlining the factorization of the *DTM* matrix.](LSA.png){#fig-LSA}
 
-LSA [@Deerwester1990] is a non-probabilistic, non-generative model where a form of matrix factorization is utilized to uncover few latent topics, capturing meaningful relationships among documents/tokens. As depicted in Figure, in the first step, a document-term matrix DTM is generated from the raw text data by tokenizing d documents into w words (or sentences), forming the columns and rows respectively. Each row-column entry is either valued via the BoW or tf-idf approach. This DTM-matrix, which is often sparse and high-dimensional, is then decomposed via a dimensionality-reduction-technique, namely truncated Singular Value Decomposition (SVD). Consequently, in the second step the DTM-matrix becomes the product of three matrices: the topic-word matrix At* (for the tokens), the topic-prevalence matrix Bt* (for the latent semantic factors), and the transposed document-topic matrix CTt* (for the document). Here, t*, the optimal number of topics, is a hyperparameter which is refined at a value (either via the Silhouette-Coefficient or the coherence-measure approach) that retains the most significant dimensions in the transformed space. In the final step, the text data is then encoded using this top-topic number. 
+LSA [@Deerwester1990] is a non-probabilistic, non-generative model where a form of matrix factorization is utilized to uncover few latent topics, capturing meaningful relationships among documents/tokens. As depicted in @fig-LSA, in the first step, a document-term matrix *DTM* is generated from the raw text data by tokenizing *d* documents into *w* words (or sentences), forming the columns and rows respectively. Each row-column entry is either valued via the BoW or tf-idf approach. This *DTM*-matrix, which is often sparse and high-dimensional, is then decomposed via a dimensionality-reduction-technique, namely truncated Singular Value Decomposition (SVD). Consequently, in the second step the *DTM*-matrix becomes the product of three matrices: the topic-word matrix $A_{t*}$ (for the tokens), the topic-prevalence matrix $B_{t*}$ (for the latent semantic factors), and the transposed document-topic matrix $C^{T}_{t*}$ (for the document). Here, *t\**, the optimal number of topics, is a hyperparameter which is refined at a value (via the coherence-measure approach) that retains the most significant dimensions in the transformed space. In the final step, the text data is then encoded using this top-topic number. 
 
-Given LSA only implicates a DTM-matrix, the implementation thereof is generally efficient. Though, with the involvement of truncated SVD, some computational intensity and a lack of quick updates with new, incoming text-data can arise. Additional LSA drawbacks include: the lack of interpretability, the underlying linear-model framework (which results in poor performance on text-data with non-linear dependencies), and the underlying Gaussian assumption for tokens in documents (which may not be an appropriate distribution). 
+Given LSA only implicates a *DTM*-matrix, the implementation thereof is generally efficient. Though, with the involvement of truncated SVD, some computational intensity and a lack of quick updates with new, incoming text-data can arise. Additional LSA drawbacks include: the lack of interpretability, the underlying linear-model framework (which results in poor performance on text-data with non-linear dependencies), and the underlying Gaussian assumption for tokens in documents (which may not be an appropriate distribution). 
 
 <b><u> Probabilistic Latent Semantic Analysis (pLSA) </b></u>
 
-![](pLSA.png){fig-alt="Schematic representation of pLSA."}
+![Schematic representation of pLSA, where the different-shade-of-blue colours highlight similarities shared with LSA-related matrices shown in Figure 3.](pLSA.png){#fig-pLSA height=250}
 
-Instead of implementing truncated SVD, pLSA [@Hofmann1999] rather utilizes a generative, probabilistic model. Within this framework, a document d is first selected with probability P(d). Then given this, a latent topic t is present in this selected document d and so chosen with probability of P(t|d). Finally, given this chosen topic t, a word w (or sentence) is generated from it with probability P(w|t), as shown in Figure. It is noted that the values of P(d) is determined directly from the corpus D which is defined in terms of a DTM matrix. In contrast, the probabilities P(t|d) and P(w|t) are parameters modelled as multinomial distributions and iteratively updated via the Expectation-Maximization (EM) algorithm. Direct parallelism between LSA and pLSA can be drawn via the methods’ parameterization, as conveyed via matching colours of the topic-word matrix and P(w|t), the document-topic matrix and P(d|t) as well as the topic-prevalence matrix and P(t) displayed in Figure and Figure, respectively. 
+Instead of implementing truncated SVD, pLSA [@Hofmann1999] rather utilizes a generative, probabilistic model. Within this framework, a document *d* is first selected with probability P(d). Then given this, a latent topic *t* is present in this selected document *d* and so chosen with probability of P(t|d). Finally, given this chosen topic *t*, a word *w* (or sentence) is generated from it with probability P(w|t), as shown in @fig-pLSA. It is noted that the values of P(d) is determined directly from the corpus *D* which is defined in terms of a *DTM* matrix. In contrast, the probabilities P(t|d) and P(w|t) are parameters modelled as multinomial distributions and iteratively updated via the Expectation-Maximization (EM) algorithm. Direct parallelism between LSA and pLSA can be drawn via the methods’ parameterization, as conveyed via matching colours of the topic-word matrix and P(w|t), the document-topic matrix and P(d|t) as well as the topic-prevalence matrix and P(t) displayed in @fig-LSA and @fig-pLSA, respectively. 
 
 Despite pLSA implicitly addressing LSA-related disadvantages, this method still involves two main drawbacks. There is no probability model for the document-topic probabilities P(t|d), resulting in the inability to assign topic mixtures to new, unseen documents not trained on. Model parameters also then increase linearly with the number of documents added, making this method more susceptible to overfitting. 
 
 <b><u>  Latent Dirichlet Allocation </b></u>
 
-![](LDA.png){fig-alt="Schematic representation of LDA."}
+![Schematic representation of LDA where the dark-blue-shaded block represents observed words.](LDA.png){height=370 #fig-LDA}
 
-LDA is another generative, probabilistic model which can be deemed as a hierarchical Bayesian version of pLSA. Via explicitly defining a generative model for the document-topic probabilities, both the above-mentioned pitfalls of pLSA are improved upon. The number of parameters to estimate drastically decrease and the ability to apply and generalize to new, unseen documents is attainable. As presented in Figure, the initial steps first involve randomly sampling a document-topic probability distribution ($\theta$) from a Dirichlet (Dir) distribution ($\eta$), followed by randomly sampling a topic-word probability distribution ($\phi$) from another Dirichlet distribution ($\tau$). From the $\theta$ distribution, a topic t is selected by drawing from a multinomial (Mult) distribution (third step) and from the $\phi$ distribution given said topic t, a word w (or sentences) is sampled from another multinomial distribution (fourth step). The associated LDA-parameters are then estimated via a variational expectation maximization algorithm or collapsed Gibbs sampling. 
+LDA is another generative, probabilistic model which can be deemed as a hierarchical Bayesian version of pLSA. Via explicitly defining a generative model for the document-topic probabilities, both the above-mentioned pitfalls of pLSA are improved upon. The number of parameters to estimate drastically decrease and the ability to apply and generalize to new, unseen documents is attainable. As presented in @fig-LDA, the initial steps first involve randomly sampling a document-topic probability distribution $\theta$ from a Dirichlet (Dir) distribution $\eta$, followed by randomly sampling a topic-word probability distribution $\phi$ from another Dirichlet distribution $\tau$. From the $\theta$ distribution, a topic *t* is selected by drawing from a multinomial (Mult) distribution (third step) and from the $\phi$ distribution given said topic *t*, a word *w* (or sentences) is sampled from another multinomial distribution (fourth step). The associated LDA-parameters are then estimated via a variational expectation maximization algorithm or collapsed Gibbs sampling. 
 
 
 <b><u>  Correlated Topic Model (CTM) </b></u>
 
-![](CTM.png){fig-alt="Schematic representation of CTM."}
+![Schematic representation of CTM where the dark-blue-shaded block represents observed words, whilst the light-grey colour outlines the distinctions from the LDA topic model presented in Figure 5.](CTM.png){height=300 #fig-CTM}
 
-Following closely to LDA, the CTM [@LaffertyBlei2005] additionally allows for the ability to model the presence of any correlated topics.  Such topic correlations are introduced via the inclusion of the multivariate normal (MultNorm) distribution with t length-vector of means ($\mu$) and t $\times$ t covariance matrix ($\Sigma$) where the resulting values are then mapped into probabilities by passing through a logistic (log) transformation. Comparing Figure and Figure, the nuance between LDA and CTM is highlighted in light-blue, where the discrepancy in the models come about from replacing the Dirichlet distribution (which involves the implicit assumption of independence across topics) with the logit-normal distribution (which now explicitly enables for topic dependency via a covariance structure) for generating document-topic probabilities. The other generative processes previously outlined for LDA is retained and repeated for CTM. Given this additional model complexity, the more convoluted mean-field variational inference algorithm is employed for CTM-parameter estimation which necessitate many iterations for optimization purposes. CTM is consequently computationally more expensive than LDA. Though, this snag is far outweighed by the procurement of richer topics with overt relationships acknowledged between these. 
+Following closely to LDA, the CTM [@LaffertyBlei2005] additionally allows for the ability to model the presence of any correlated topics.  Such topic correlations are introduced via the inclusion of the multivariate normal (MultNorm) distribution with *t* length-vector of means $\mu$ and *t* $\times$ *t* covariance matrix $\Sigma$ where the resulting values are then mapped into probabilities by passing through a logistic (log) transformation. Comparing @fig-LDA and @fig-CTM, the nuance between LDA and CTM is highlighted using a light-grey colour, where the discrepancy in the models come about from replacing the Dirichlet distribution (which involves the implicit assumption of independence across topics) with the logit-normal distribution (which now explicitly enables for topic dependency via a covariance structure) for generating document-topic probabilities. The other generative processes previously outlined for LDA is retained and repeated for CTM. Given this additional model complexity, the more convoluted mean-field variational inference algorithm is employed for CTM-parameter estimation which necessitates many iterations for optimization purposes. CTM is consequently computationally more expensive than LDA. Though, this snag is far outweighed by the procurement of richer topics with overt relationships acknowledged between these. 
 
 
 <b><u>  Author Topic Model (ATM) </b></u>
 
-![](ATM.png){fig-alt="Schematic representation of ATM."}
+![Schematic representation of ATM where the dark-blue-shaded blocks represents observed words and authors, whilst the light-grey colour highlights the differences compared to the LDA topic model presented in Figure 5.](ATM.png){#fig-ATM height=450}
 
-ATM [@RosenZvi2012] extends LDA via the inclusion of authorship information with topics. Again, inspecting Figure and Figure, the slight differences between these two models are accentuated with light-blue colour. Here, for each word w in the document d an author a is sampled uniformly (Uni) at random. Each author is associated with a distribution over topics ($\Psi$) sampled from a Dirichlet prior $\alpha$. The resultant mixture weights corresponding to the chosen author are used to select a topic t, then a word w (or sentence) is generated according to the topic-word distribution $\phi$ (drawn from another Dirichlet prior $\beta$) corresponding to that said chosen topic t. Therefore, through the estimation of the $\psi$ and $\phi$ parameters, not only is information obtained about which topics authors generally relate to, but also a representation of these document contents in terms of these topics, respectively. 
+ATM [@RosenZvi2012] extends LDA via the inclusion of authorship information with topics. Again, inspecting @fig-LDA and @fig-ATM, the slight discrepancies between these two models are accentuated with the light-grey colour. Here, for each word *w* in the document *d* an author *a* is sampled uniformly (Uni) at random. Each author is associated with a distribution over topics ($\Psi$) sampled from a Dirichlet prior $\alpha$. The resultant mixture weights corresponding to the chosen author are used to select a topic *t*, then a word *w* (or sentence) is generated according to the topic-word distribution $\phi$ (drawn from another Dirichlet prior $\beta$) corresponding to that said chosen topic *t*. Therefore, through the estimation of the $\psi$ and $\phi$ parameters, not only is information obtained about which topics authors generally relate to, but also a representation of these document contents in terms of these topics, respectively. 
 
 <h5> Sentiment analysis </h5>
-<hr>
 
 <b><u>  AFINN </b></u>
-The R-based AFINN lexicon scores words across a range spanning from the value of -5 to +5. Intuitively, words scored closer to the lower-boundary value relate to more negative sentiment, and in contrast higher positive sentiment is revealed if rather closer to the upper-boundary value [@SilgeRobinson2017]. 
 
-<b><u>  TextBlob </b></u>
-The Python-based TextBlob lexicon processes textual data in the form of a tuple where a polarity score (ranges between -1 and +1 which relates to negative and positive sentiment, respectively) and a subjectivity score (ranges between 0 and 1 which refers to being very objective or very subjective, respectively) is produced. 
+The R-based $\texttt{AFINN}$ lexicon scores words across a range spanning from the value of -5 to +5. Intuitively, words scored closer to the lower-boundary value relate to more negative sentiment, and in contrast higher positive sentiment is revealed if rather closer to the upper-boundary value [@SilgeRobinson2017]. 
 
 <b><u>  Bing </b></u>
-Unlike AFINN and TextBlob, the R-based bing lexicon does not provide sentiments via some scoring system. Rather, it simply assigns a binary label of a word being interpreted as either positive or negative [@SilgeRobinson2017].  
 
-
-
-
+Unlike $\texttt{AFINN}$ , the R-based $\texttt{bing}$ lexicon does not provide sentiments via some scoring system. Instead, it simply assigns a binary label of a word being interpreted as either positive or negative [@SilgeRobinson2017].  
 
 <h4> Exploratory Data Analysis</h4>
+<hr>
 
-![](saved_plots/overall_top_words.png){fig-alt="Most frequent words across all speeches"}
+![Most frequent words used across all SONA speeches, irrespective of president.](saved_plots/overall_top_words.png){#fig-EDA-speeches}
+
+From @fig-EDA-speeches, it is evident that the word "government" is mainly referenced to across all SONA speeches. This word dominance draws upon the importance of this authority body that is integral to the governance of South Africa. The frequent usage of the words "people" and "public" suggests a sense of inclusivity, where the idea of togetherness is implicitly emphasized. Other words, such as "development" and "new", are indicative of ideas of growth and renewal. Lastly, a sense of security and safety is provided with the recurring use of the word "ensure".
 
 ::: {#fig-EDA-presidents layout-ncol=2}
 
@@ -127,8 +130,10 @@ Unlike AFINN and TextBlob, the R-based bing lexicon does not provide sentiments 
 
 ![Ramaphosa](saved_plots/Ramaphosa_top_words.png){#fig-Ramaphosa}
 
-Presidents
+Most frequent words used in SONA speeches, faceted by president.
 :::
+
+The two words, "government" and "people", 
 
 
 
