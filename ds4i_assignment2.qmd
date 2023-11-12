@@ -561,6 +561,7 @@ def plot_sentences_by_president(df, lexicon):
     df['sentence_num'] = df.groupby('date_str').cumcount() + 1
 
     for idx, president in enumerate(presidents):
+        plt.figure(figsize=(10, 6))
         president_df = df[df['president'] == president]
         plt.bar(president_df['sentence_num'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
         plt.xlabel('Sentence')
@@ -661,19 +662,29 @@ from gensim import corpora
 from gensim.utils import simple_preprocess
 
 texts = sona_speeches_clean['speech']
+sentences = sona_sentences_alltogether['sentence']
+
 # Further process tokens using gensim's simple_preprocess
 tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc=True removes punctuations
+tokenized_sentences = [simple_preprocess(doc, deacc=True) for doc in sentences]  # deacc=True removes punctuations
 
 # Create a Gensim dictionary from the tokenized documents
 dictionary = corpora.Dictionary(tokenized_texts)
+dict_sentences = corpora.Dictionary(tokenized_sentences)
+
 dictionary.filter_extremes(no_below=2, no_above=0.75)
+dict_sentences.filter_extremes(no_below=2, no_above=0.75)
 
 # Create a BOW corpus
 bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
+bow_corpus_sentences = [dict_sentences.doc2bow(text) for text in tokenized_sentences]
 
 # Create a TF-IDF corpus
 tfidf = TfidfModel(bow_corpus)
 tfidf_corpus = tfidf[bow_corpus]
+
+tfidf_sentences = TfidfModel(bow_corpus_sentences)
+tfidf_corpus_sentences = tfidf_sentences[bow_corpus_sentences]
 
 # Define the function to compute coherence values
 def compute_coherence_values(dictionary, corpus, texts, start, limit, step, coherence='u_mass'):
@@ -692,9 +703,12 @@ start, limit, step = 2, 20, 1
 # Compute coherence values for BOW
 bow_model_list, bow_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=bow_corpus, texts=texts, start=start, limit=limit, step=step)
 
+bow_model_list_sentences, bow_coherence_values_sentences = compute_coherence_values(dictionary=dict_sentences, corpus=bow_corpus_sentences, texts=sentences, start=start, limit=limit, step=step)
+
 # Compute coherence values for TF-IDF
 tfidf_model_list, tfidf_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=tfidf_corpus, texts=tokenized_texts, start=start, limit=limit, step=step)
 
+tfidf_model_list_sentences, tfidf_coherence_values_sentences = compute_coherence_values(dictionary=dict_sentences, corpus=tfidf_corpus_sentences, texts=sentences, start=start, limit=limit, step=step)
 
 ```
 
@@ -704,15 +718,27 @@ tfidf_model_list, tfidf_coherence_values = compute_coherence_values(dictionary=d
 # Plotting the coherence values
 x = range(start, limit, step)
 plt.figure(figsize=(10, 5))
-plt.plot(x, bow_coherence_values, label='BOW Coherence')
-plt.plot(x, tfidf_coherence_values, label='TF-IDF Coherence')
+plt.plot(x, bow_coherence_values, label='BOW Coherence', color='midnightblue')
+plt.plot(x, tfidf_coherence_values, label='TF-IDF Coherence', color='darkgray')
 plt.xlabel("Number of Topics")
 plt.ylabel("Coherence score")
 plt.title("Coherence Scores by Number of Topics")
 plt.legend()
 plt.show()
 
+# Plotting the coherence values
+x = range(start, limit, step)
+plt.figure(figsize=(10, 5))
+plt.plot(x, bow_coherence_values_sentences, label='BOW Coherence', color='midnightblue')
+plt.plot(x, tfidf_coherence_values_sentences, label='TF-IDF Coherence', color='darkgray')
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
+plt.title("Coherence Scores by Number of Topics")
+plt.legend(loc='lower left')
+plt.show()
+
 ```
+
 
 
 ```{python}
