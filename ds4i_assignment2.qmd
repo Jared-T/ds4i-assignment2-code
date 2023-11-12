@@ -572,7 +572,7 @@ def plot_speeches_by_president(df, lexicon):
         president_df = df[df['president'] == president]
         plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
     plt.xlabel('Date')
-    plt.ylabel(f'{lexicon_lab} Sentiment Score')
+    plt.ylabel(f'Sentiment Score: {lexicon_lab}')
     plt.xticks(rotation=65)
     plt.legend(loc ="upper left")
     plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
@@ -589,19 +589,10 @@ def plot_sentences_by_president(df, lexicon):
 
     colors = ['dimgray', 'midnightblue', 'lightsteelblue',  'darkgray', 'lightgray', colormap[1]]
 
-    # plot 1 = dimgray ; pos = 6
-    # plot 2 = lightsteelblue ; pos = 1
-    # plot 3 = midnightblue ; pos = 3 
-    # plot 4 = darkgray ; pos = 5 
-    # plot 5 = lightgray ; pos = 4
-    # plot 6 = colormap[1] ; pos = 2
+   lexicon_lab = lexicon
 
-    # plot 1 ; pos = 2 
-    # plot 2 ; pos = 6 
-    # plot 3 ; pos = 3
-    # plot 4 ; pos = 5
-    # plot 5 ; pos = 1
-    # plot 6 ; pos = 4
+    if lexicon == 'afinn':
+        lexicon_lab = 'AFINN'
     
     # Create a copy of the DataFrame
     df = df.copy()
@@ -615,7 +606,7 @@ def plot_sentences_by_president(df, lexicon):
         president_df = df[df['president'] == president]
         plt.bar(president_df['sentence_num'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[i])
         plt.xlabel('Sentence')
-        plt.ylabel(f'{lexicon} Sentiment Score')
+        plt.ylabel(f'Sentiment Score: {lexicon_lab}')
         plt.xticks(rotation=65)
         plt.savefig(f'sentiment_plots/sent_{lexicon}_{president}.png', bbox_inches='tight')
         plt.close()  # Close the figure to avoid displaying it in the notebook
