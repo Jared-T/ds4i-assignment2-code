@@ -25,7 +25,7 @@ Given such political context, it is of specific interest to analyse the  annual 
 
 ![Illustration of how sentA will be implemented within a different-scales-within-different-levels framework for the presidential-SONA-speeech text analysis.](SentA_MacroMicroScheme.png){width=400 height=250 #fig-SentA_MacroMicroScheme}
 
-![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences).](TM_MacroMicroScheme.png){height=160 #fig-TM_MacroMicroScheme}
+![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences).](TM_MacroMicroScheme.png){height=150 #fig-TM_MacroMicroScheme}
 
 Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country's serving presidents during different date periods. 
 
@@ -466,7 +466,6 @@ for president, top_words in top_10_words_by_president.items():
 
 <h5> Sentiment Analysis </h5>
 
-
 ::: {#fig-sent-speeches layout-ncol=2}
 
 ![$\texttt{AFINN}$: All speeches](sentiment_plots/speech_afinn_all.png){#fig-sent-speeches-afinn}
@@ -474,7 +473,7 @@ for president, top_words in top_10_words_by_president.items():
 ![$\texttt{bing}$: All speeches](sentiment_plots/speech_bing_all.png){#fig-sent-speeches-bing}
 
 Overall sentiment score for SONA speeches across time (segmented by presidential terms), compared for two different lexicons.
- :::
+:::
 
 Comparing @fig-sent-speeches-afinn and @fig-sent-speeches-bing, it is evident that there is no obvious, overt difference in the computed sentiment scores, which are overall positive, across time and presidents for the two different lexicons. Any slight variation between $\texttt{AFINN}$ and $\texttt{bing}$ is most likely attributed to the lexicons’ varying scales (+5/-5 versus +1/-1, respectively). Hence, any sentiment derived from the former lexicon might be slightly more exaggerated in nature compared to the latter lexicon. 
 
