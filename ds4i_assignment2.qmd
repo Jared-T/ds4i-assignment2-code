@@ -25,7 +25,7 @@ Given such political context, it is of specific interest to analyse the  annual 
 
 ![Illustration of how sentA will be implemented within a different-scales-within-different-levels framework for the presidential-SONA-speeech text analysis.](SentA_MacroMicroScheme.png){width=400 height=250 #fig-SentA_MacroMicroScheme}
 
-![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences).](TM_MacroMicroScheme.png){height=250 #fig-TM_MacroMicroScheme}
+![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences).](TM_MacroMicroScheme.png){height=160 #fig-TM_MacroMicroScheme}
 
 Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country's serving presidents during different date periods. 
 
@@ -444,7 +444,7 @@ top_10_words_by_president = get_top_words_by_president(sona_speeches_clean, 10, 
 
 ```{python}
 
-# Plot the word frequenceis for each president
+# Plot the word frequencies for each president
 for president, top_words in top_10_words_by_president.items():
     
     # Individual plot for each president
@@ -473,7 +473,7 @@ for president, top_words in top_10_words_by_president.items():
 
 ![$\texttt{bing}$: All speeches](sentiment_plots/speech_bing_all.png){#fig-sent-speeches-bing}
 
-Most frequent words used in SONA speeches. 
+Overall sentiment score for SONA speeches across time (segmented by presidential terms), compared for two different lexicons.
  :::
 
 Comparing @fig-sent-speeches-afinn and @fig-sent-speeches-bing, it is evident that there is no obvious, overt difference in the computed sentiment scores, which are overall positive, across time and presidents for the two different lexicons. Any slight variation between $\texttt{AFINN}$ and $\texttt{bing}$ is most likely attributed to the lexicons’ varying scales (+5/-5 versus +1/-1, respectively). Hence, any sentiment derived from the former lexicon might be slightly more exaggerated in nature compared to the latter lexicon. 
@@ -507,9 +507,8 @@ Across both lexicons, from de Klerk to Mbeki’s presidential terms, positive se
 
 ![$\texttt{bing}$: Ramaphosa](sentiment_plots/sent_bing_Ramaphosa.png){#fig-sent-Ramaphosa-bing}
 
-Most frequent words used in SONA speeches, faceted by president.
+Trajectory of sentiment score through SONA speech sentences stratified by president, comparing across two different lexicons. 
 :::
-
 
 
 
@@ -519,7 +518,7 @@ Most frequent words used in SONA speeches, faceted by president.
 
 ![$\texttt{bing}$: All speeches](sentiment_plots/word_contr_bing_all.png){#fig-wordcontr-speeches-bing}
 
-Contribution to sentiment score across all SONA speeches. 
+Words which contribute to the positive and negative sentiment across all SONA speeches. 
 :::
 
 
@@ -549,9 +548,8 @@ Contribution to sentiment score across all SONA speeches.
 
 ![$\texttt{bing}$: Ramaphosa](sentiment_plots/word_contr_bing_Ramaphosa.png){#fig-wordcontr-Ramaphosa-bing}
 
-Contribution to sentiment score, faceted by president.
+Words which contribute to the positive and negative sentiment for each specific presidents' SONA speech/speeches. 
 :::
-
 
 
 ```{python}
@@ -639,7 +637,8 @@ def plot_speeches_by_president(df, lexicon):
         plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
     plt.xlabel('Date', fontsize=12)
     plt.ylabel(f'Sentiment Score', fontsize=12)
-    plt.xticks(rotation=65)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     plt.legend(loc ="upper left")
     plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
     plt.close()  # Close the figure to avoid displaying it in the notebook
@@ -798,10 +797,12 @@ def plot_top_words(word_sentiments, lexicon):
     # Add the word labels
     ax.set_yticks(range(20))
     ax.set_yticklabels(words_negative + words_positive, fontsize=20)
-    
+    # ax.yticks(fontsize=16)
+
     # Set the labels and title
-    ax.set_xlabel(f'Contribution to Sentiment Score: {lexicon}')
+    ax.set_xlabel(f'Contribution to Sentiment Score',fontsize=20)
     ax.legend()
+    # ax.xticks(fontsize=16)
 
     # Adjust the view so negative words are at the bottom and positive at the top
     ax.set_ylim(-1, 20)
@@ -827,9 +828,7 @@ plot_top_words(word_sentiments_afinn, 'AFINN')
 
 <h4> Latent Semantic Analysis (LSA) </h4> 
 
-
-![Words](lsa_plots/words_coherence_plots){#fig-words-coherence}
-
+![Coherence plot for LSA where SONA speeches were tokenized by words.](lsa_plots/words_coherence_plots){#fig-words-coherence}
 
 ::: {#fig-LSA-words-BoW-topics layout-ncol=2}
 
@@ -845,13 +844,10 @@ plot_top_words(word_sentiments_afinn, 'AFINN')
 
 ![tf-idf: Topic 3](lsa_plots/words_tfidf_topic_3.png){#fig-words-tfidf-topic3}
 
-Topic plots for LSA using words as tokens either applied within BoW or tf-idf approach. 
+Topic-by-word plots for BoW (left) and tf-idf (right) approach for LSA implementation.
 :::
 
-
-
-
-![Sentences](lsa_plots/sentence_coherence_plots.png){#fig-sentences-coherence}
+![Coherence plot for LSA where SONA speeches were tokenized by sentences.](lsa_plots/sentence_coherence_plots.png){#fig-sentences-coherence}
 
 ::: {#fig-LSA-sentences-BoW-topics layout-ncol=2}
 
@@ -871,7 +867,7 @@ Topic plots for LSA using words as tokens either applied within BoW or tf-idf ap
 
 ![tf-idf: Topic 4](lsa_plots/sentences_tfidf_topic_4.png){#fig-sentences-tfidf-topic4}
 
-Topic plots for LSA using sentences as token, comparing topics across BoW and tf-idf approaches. 
+SONA speeches tokenized by sentences for BoW (left) and tf-idf (right) approach for LSA implementation.
 :::
 
 
@@ -941,8 +937,8 @@ from matplotlib.ticker import MaxNLocator
 # Plotting the coherence values
 x = range(start, limit, step)
 plt.figure(figsize=(10, 6))
-plt.plot(x, bow_coherence_values, label='BoW Coherence', color='midnightblue')
-plt.plot(x, tfidf_coherence_values, label='tf-idf Coherence', color='darkgray')
+plt.plot(x, bow_coherence_values, label='BoW', color='midnightblue')
+plt.plot(x, tfidf_coherence_values, label='tf-idf', color='darkgray')
 plt.xlabel("Number of Topics", fontsize=16)
 plt.ylabel("Coherence score",  fontsize=16)
 plt.legend(loc='lower left')
@@ -954,8 +950,8 @@ plt.close()
 # Plotting the coherence values
 x = range(start, limit, step)
 plt.figure(figsize=(10, 6))
-plt.plot(x, bow_coherence_values_sentences, label='BoW Coherence', color='midnightblue')
-plt.plot(x, tfidf_coherence_values_sentences, label='tf-idf Coherence', color='darkgray')
+plt.plot(x, bow_coherence_values_sentences, label='BoW', color='midnightblue')
+plt.plot(x, tfidf_coherence_values_sentences, label='tf-idf', color='darkgray')
 plt.xlabel("Number of Topics", fontsize=16)
 plt.ylabel("Coherence score",  fontsize=16)
 plt.legend(loc='lower right')
@@ -1061,10 +1057,10 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 
 <h4> pLSA </h4> 
 
-![Words](plsa_plots/words_coherence.png){#fig-pLSA-words-coherence}
+![Coherence plot for pLSA where SONA speeches were tokenized by words.](plsa_plots/words_coherence.png){#fig-pLSA-words-coherence}
 
 
-<!-- ::: {#fig-pLSA-words-BoW-topics layout-ncol=2}
+::: {#fig-pLSA-words-tfidf-topics layout-ncol=2}
 
 ![BoW: Topic 1](plsa_plots/words-BoW_topic_1.png){#fig-pLSA-words-bow-topic1}
 
@@ -1082,88 +1078,35 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 
 ![tf-idf: Topic 4](plsa_plots/words-tf-idf_topic_4.png){#fig-pLSA-words-tfidf-topic4}
 
-![BoW: Topic 5](plsa_plots/words-BoW_topic_5.png){#fig-pLSA-words-bow-topic5}
+Topic plots for pLSA tokenized by words and executed within a BoW (left) and tf-idf (right) framework. 
+:::
 
-![tf-idf: Topic 5](plsa_plots/words-tf-idf_topic_5.png){#fig-pLSA-words-tfidf-topic5}
+![Coherence plot for pLSA where SONA speeches were tokenized by sentences.](plsa_plots/sentences_coherence.png){#fig-pLSA-sentences-coherence}
 
-![BoW: Topic 6](plsa_plots/words-BoW_topic_6.png){#fig-pLSA-words-bow-topic6}
-
-![tf-idf: Topic 6](plsa_plots/words-tf-idf_topic_6.png){#fig-pLSA-words-tfidf-topic6}
-
-![BoW: Topic 7](plsa_plots/words-BoW_topic_7.png){#fig-pLSA-words-bow-topic7}
-
-![tf-idf: Topic 7](plsa_plots/words-tf-idf_topic_7.png){#fig-pLSA-words-tfidf-topic7}
-
-![BoW: Topic 8](plsa_plots/words-BoW_topic_8.png){#fig-pLSA-words-bow-topic8}
-
-![tf-idf: Topic 8](plsa_plots/words-tf-idf_topic_8.png){#fig-pLSA-words-tfidf-topic8}
-
-![BoW: Topic 9](plsa_plots/words-BoW_topic_8.png){#fig-pLSA-words-bow-topic9}
-
-![tf-idf: Topic 9](plsa_plots/words-tf-idf_topic_8.png){#fig-pLSA-words-tfidf-topic9}
-
-![BoW: Topic 10](plsa_plots/words-BoW_topic_10.png){#fig-pLSA-words-bow-topic10}
-
-![tf-idf: Topic 10](plsa_plots/words-tf-idf_topic_10.png){#fig-pLSA-words-tfidf-topic10}
-
-![BoW: Topic 11](plsa_plots/words-BoW_topic_11.png){#fig-pLSA-words-bow-topic11}
-
-![tf-idf: Topic 11](plsa_plots/words-tf-idf_topic_11.png){#fig-pLSA-words-tfidf-topic11}
-
-Topic plots for pLSA using words as tokens either applied within BoW or tf-idf approach. 
-::: -->
-
-![Sentences](plsa_plots/sentences_coherence.png){#fig-pLSA-sentences-coherence}
-
-
-<!-- ::: {#fig-pLSA-words-BoW-topics layout-ncol=2}
+::: {#fig-pLSA-sentences-topics layout-ncol=2}
 
 ![BoW: Topic 1](plsa_plots/sentences-BoW_topic_1.png){#fig-pLSA-sentences-bow-topic1}
 
-![tf-idf: Topic 1](plsa_plots/sentences-tf-idf_topic_1.png){#fig-pLSA-sentences-tfidf-topic1}
-
 ![BoW: Topic 2](plsa_plots/sentences-BoW_topic_2.png){#fig-pLSA-sentences-bow-topic2}
-
-![tf-idf: Topic 2](plsa_plots/sentences-tf-idf_topic_2.png){#fig-pLSA-sentences-tfidf-topic2}
 
 ![BoW: Topic 3](plsa_plots/sentences-BoW_topic_3.png){#fig-pLSA-sentences-bow-topic3}
 
-![tf-idf: Topic 3](plsa_plots/sentences-tf-idf_topic_3.png){#fig-pLSA-sentences-tfidf-topic3}
+Topic plots for pLSA using sentences as tokens within a BoW approach. 
+:::
 
-![BoW: Topic 4](plsa_plots/sentences-BoW_topic_4.png){#fig-pLSA-sentences-bow-topic4}
+
+::: {#fig-pLSA-sentences-topics layout-ncol=2}
+
+![tf-idf: Topic 1](plsa_plots/sentences-tf-idf_topic_1.png){#fig-pLSA-sentences-tfidf-topic1}
+
+![tf-idf: Topic 2](plsa_plots/sentences-tf-idf_topic_2.png){#fig-pLSA-sentences-tfidf-topic2}
+
+![tf-idf: Topic 3](plsa_plots/sentences-tf-idf_topic_3.png){#fig-pLSA-sentences-tfidf-topic3}
 
 ![tf-idf: Topic 4](plsa_plots/sentences-tf-idf_topic_4.png){#fig-pLSA-sentences-tfidf-topic4}
 
-![BoW: Topic 5](plsa_plots/sentences-BoW_topic_5.png){#fig-pLSA-sentences-tfidf-topic5}
-
-![tf-idf: Topic 5](plsa_plots/sentences-tf-idf_topic_5.png){#fig-pLSA-sentences-tfidf-topic5}
-
-![BoW: Topic 6](plsa_plots/sentences-BoW_topic_6.png){#fig-pLSA-sentences-bow-topic6}
-
-![tf-idf: Topic 6](plsa_plots/sentences-tf-idf_topic_6.png){#fig-pLSA-sentences-tfidf-topic6}
-
-![BoW: Topic 7](plsa_plots/sentences-BoW_topic_7.png){#fig-pLSA-sentences-bow-topic7}
-
-![tf-idf: Topic 7](plsa_plots/sentences-tf-idf_topic_7.png){#fig-pLSA-sentences-tfidf-topic7}
-
-![BoW: Topic 8](plsa_plots/sentences-BoW_topic_8.png){#fig-pLSA-sentences-bow-topic8}
-
-![tf-idf: Topic 8](plsa_plots/sentences-tf-idf_topic_8.png){#fig-pLSA-sentences-tfidf-topic8}
-
-![BoW: Topic 9](plsa_plots/sentences-BoW_topic_8.png){#fig-pLSA-sentences-bow-topic9}
-
-![tf-idf: Topic 9](plsa_plots/sentences-tf-idf_topic_8.png){#fig-pLSA-sentences-tfidf-topic9}
-
-![BoW: Topic 10](plsa_plots/sentences-BoW_topic_10.png){#fig-pLSA-sentences-bow-topic10}
-
-![tf-idf: Topic 10](plsa_plots/sentences-tf-idf_topic_10.png){#fig-pLSA-sentences-tfidf-topic10}
-
-![BoW: Topic 11](plsa_plots/sentences-BoW_topic_11.png){#fig-pLSA-sentences-bow-topic11}
-
-![tf-idf: Topic 11](plsa_plots/sentences-tf-idf_topic_11.png){#fig-pLSA-sentences-tfidf-topic11}
-
-Topic plots for pLSA using sentences as tokens either applied within BoW or tf-idf approach. 
-::: -->
+Topic plots for pLSA using sentences as tokens implemented within a tf-idf approach. 
+:::
 
 
 
@@ -1268,8 +1211,8 @@ for n_topics in topic_numbers:
 
 # Plot the speech coherence values - updated
 plt.figure(figsize=(10, 6))
-plt.plot(topic_numbers, bow_coherence_values, label='BoW Coherence', color='midnightblue')
-plt.plot(topic_numbers, tfidf_coherence_values, label='tf-idf Coherence', color='darkgray')
+plt.plot(topic_numbers, bow_coherence_values, label='BoW', color='midnightblue')
+plt.plot(topic_numbers, tfidf_coherence_values, label='tf-idf', color='darkgray')
 plt.xlabel("Number of Topics", fontsize=16)
 plt.ylabel("Coherence score",  fontsize=16)
 plt.legend(loc='lower right')
@@ -1279,8 +1222,8 @@ plt.close()
 
 # Plot the sentence coherence values - updated
 plt.figure(figsize=(10, 6))
-plt.plot(topic_numbers, bow_coherence_values_sent, label='BoW Coherence', color='midnightblue')
-plt.plot(topic_numbers, tfidf_coherence_values_sent, label='tf-idf Coherence', color='darkgray')
+plt.plot(topic_numbers, bow_coherence_values_sent, label='BoW', color='midnightblue')
+plt.plot(topic_numbers, tfidf_coherence_values_sent, label='tf-idf', color='darkgray')
 plt.xlabel("Number of Topics", fontsize=16)
 plt.ylabel("Coherence score",  fontsize=16)
 plt.legend(loc='lower right')
@@ -1315,7 +1258,7 @@ def plot_top_words_for_topic(word_given_topic, topic_num, corptype, top_n=10):
 
     # Create a bar plot
     plt.figure(figsize=(10, 6))
-    plt.barh(words, probabilities, color='darkgray')
+    plt.barh(words, probabilities, color='midnightblue')
     plt.xlabel('Probability', fontsize=16)
     plt.gca().invert_yaxis() 
     plt.savefig(f'plsa_plots/{corptype}_topic_{topic_num + 1}.png', bbox_inches='tight')
@@ -1343,12 +1286,13 @@ plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
 
 ::: {#fig-LDA-contours layout-ncol=2}
 
-![Words](lda_plots/words_contour_plot.png.png){#fig-LDA-contour-words}
+![Words](lda_plots/words_contour_plot.png){#fig-LDA-contour-words}
 
 ![Sentences](lda_plots/sentences_contour_plot.png){#fig-LDA-contour-sentences}
 
-Contour plots for words and sentences. 
+Contour plots visualizing variation in coherence scores tuned across range of different $\alpha$ and $\beta$ hyperparameter values. 
 :::
+
 
 ```{python}
 
@@ -1557,7 +1501,7 @@ cp = plt.contourf(Alpha, Beta, pivot_table.values, cmap='seismic', levels=100)
 plt.colorbar(cp)
 plt.xlabel('Beta')
 plt.ylabel('Alpha')
-plt.savefig(f'lda_plots/speeches_contour_plot.png', bbox_inches='tight')
+plt.savefig(f'lda_plots/words_contour_plot.png', bbox_inches='tight')
 plt.close()
 
 plt.figure(figsize=(8, 6))
@@ -1578,7 +1522,9 @@ def style_df(df):
     format_dict = {col: "{:.2f}" for col in numeric_cols}
     return df.style.set_table_styles({
         '': [{'selector': '',
-              'props': [('border', '1px solid black')]}]
+              'props': [('border', '1px solid black'),
+               ('margin', 'auto'),
+               ]}]
     }).format(format_dict).hide()
 
 # Save the results to a csv
@@ -1623,6 +1569,8 @@ vis_data_sentences = pyLDAvis.gensim_models.prepare(lda_model_sentences, bow_cor
 ```
 
 
+<b><u> pyLDAvis for Words </b></u>
+
 ```{python}
 
 # Enable the automatic display of visualizations in the Jupyter notebook
@@ -1631,10 +1579,9 @@ pyLDAvis.enable_notebook()
 # Display the visualization
 pyLDAvis.display(vis_data_speeches)
 
-
 ```
 
-
+<b><u> pyLDAvis for Sentences </b></u>
 
 ```{python}
 
@@ -1653,9 +1600,8 @@ pyLDAvis.display(vis_data_sentences)
 
 ![Sentences](ctm_plots/sentences_1.png){#fig-ctm-coherence-sentences}
 
-Coherence plots 
+Coherence plots for CTM across different tokens (words or sentences) implemented within BoW approach.
 :::
-
 
 ::: {#fig-CTM-topics layout-ncol=2}
 
@@ -1667,7 +1613,7 @@ Coherence plots
 
 ![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-ctm-sentences-topic2}
 
-Coherence plots 
+Topic plots where either words (left) or sentences (right) were used as tokens for CTM application. 
 :::
 
 
@@ -1720,7 +1666,7 @@ for k in topic_numbers:
     coherence_scores.append(score)
     coherence_scores_sentences.append(score_sentences)
 
-    print(f"Topics: {k}, Coherence Score: {score}")
+    #(f"Topics: {k}, Coherence Score: {score}")
 
 
 
@@ -1788,7 +1734,7 @@ def plot_top_words_for_topic(model, modtype, topic_num, top_n=10):
 
     # Create a bar chart for the top words in this topic
     plt.figure(figsize=(10, 6))
-    plt.barh(words, weights, color='midnightblue')
+    plt.barh(words, weights, color='lightsteelblue')
     plt.xlabel('Weight')
     plt.gca().invert_yaxis()  # Highest weights on top
     plt.savefig(f'ctm_plots/{modtype}_{topic_num+1}.png', bbox_inches='tight')
@@ -1804,7 +1750,7 @@ for k in range(ctms.k):
 
 ```
 
-<h4> ATM (Author-Topic Model) <h/4> 
+<h4> ATM (Author-Topic Model) </h4> 
 
 
 ::: {#fig-ATM-coherence layout-ncol=2}
@@ -1813,7 +1759,7 @@ for k in range(ctms.k):
 
 ![Sentences](atm_plots/sentences_1.png){#fig-atm-coherence-sentences}
 
-Coherence plots 
+Coherence plots for ATM across different tokens (words or sentences) implemented within BoW approach.
 :::
 
 
@@ -1827,6 +1773,7 @@ Coherence plots
 
 ![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-atm-sentences-topic2}
 
+Topic plots where either words (left) or sentences (right) were used as tokens for ATM application. 
 :::
 
 
@@ -1895,7 +1842,7 @@ for num_topics in topic_numbers:
     coherence_scores.append(coherence)
     coherence_scores_sentences.append(coherence_sentences)
 
-    print(f"Num Topics: {num_topics}, Coherence Score: {coherence}")
+    # print(f"Num Topics: {num_topics}, Coherence Score: {coherence}")
 
 ```
 
