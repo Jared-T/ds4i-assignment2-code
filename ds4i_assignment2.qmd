@@ -955,6 +955,7 @@ lsa_tfidf_sentences = LsiModel(corpus=tfidf_corpus_sentences, num_topics=4, id2w
 
 ```
 
+
 ```{python}
 
 import matplotlib.pyplot as plt
