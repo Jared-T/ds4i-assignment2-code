@@ -476,6 +476,11 @@ for president, top_words in top_10_words_by_president.items():
 Most frequent words used in SONA speeches. 
  :::
 
+Comparing @fig-sent-speeches-afinn and @fig-sent-speeches-bing, it is evident that there is no obvious, overt difference in the computed sentiment scores, which are overall positive, across time and presidents for the two different lexicons. Any slight variation between $\texttt{AFINN}$ and $\texttt{bing}$ is most likely attributed to the lexicons’ varying scales (+5/-5 versus +1/-1, respectively). Hence, any sentiment derived from the former lexicon might be slightly more exaggerated in nature compared to the latter lexicon. 
+
+Across both lexicons, from de Klerk to Mbeki’s presidential terms, positive sentiment seems to steadily rise. Though, after a peak of high, positive sentiment scores from Mbeki’s SONA speeches, there is a slight decline in this positivity. This is especially present throughout Zuma’s presidential term. 
+
+
 ::: {#fig-sent-presidents layout-ncol=2}
 
 ![$\texttt{AFINN}$: de Klerk](sentiment_plots/sent_afinn_deKlerk.png){#fig-sent-deKlerk-afinn}
