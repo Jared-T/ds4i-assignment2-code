@@ -1177,10 +1177,10 @@ def calculate_umass_coherence(topic_word_distribution, doc_topic_distribution, t
 # Plot the speech coherence values - updated
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, bow_coherence_values, label='BoW Coherence', color='midnightblue')
-plt.plot(topic_numbers, tfidf_coherence_values, label='TF-IDF Coherence', color='darkgray')
+plt.plot(topic_numbers, tfidf_coherence_values, label='tf-idf Coherence', color='darkgray')
 plt.xlabel("Number of Topics", fontsize=16)
 plt.ylabel("Coherence score",  fontsize=16)
-plt.legend(loc='lower left')
+plt.legend(loc='lower right')
 plt.savefig(f'plsa_plots/speeches_coherence.png', bbox_inches='tight')
 plt.close()
 
@@ -1188,10 +1188,10 @@ plt.close()
 # Plot the sentence coherence values - updated
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, bow_coherence_values_sent, label='BoW Coherence', color='midnightblue')
-plt.plot(topic_numbers, tfidf_coherence_values_sent, label='TF-IDF Coherence', color='darkgray')
+plt.plot(topic_numbers, tfidf_coherence_values_sent, label='tf-idf Coherence', color='darkgray')
 plt.xlabel("Number of Topics", fontsize=16)
 plt.ylabel("Coherence score",  fontsize=16)
-plt.legend(loc='lower left')
+plt.legend(loc='lower right')
 plt.savefig(f'plsa_plots/sentences_coherence.png', bbox_inches='tight')
 plt.close()
 
@@ -1207,7 +1207,7 @@ def plot_top_words_for_topic(word_given_topic, topic_num, corptype, top_n=10):
 
     # Create a bar plot
     plt.figure(figsize=(10, 6))
-    plt.barh(words, probabilities, color='midnightblue')
+    plt.barh(words, probabilities, color='darkgray')
     plt.xlabel('Probability', fontsize=16)
     plt.gca().invert_yaxis() 
     plt.savefig(f'plsa_plots/{corptype}_topic_{topic_num + 1}.png', bbox_inches='tight')
@@ -1445,7 +1445,7 @@ Alpha_sentences, Beta_sentences = np.meshgrid(pivot_table_sentences.columns, piv
 # Create the contour plot using the values of the pivot_table
 # We need to use the values attribute to get the coherence scores as a 2D array
 plt.figure(figsize=(8, 6))
-cp = plt.contourf(Alpha, Beta, pivot_table.values, cmap='viridis', levels=100)
+cp = plt.contourf(Alpha, Beta, pivot_table.values, cmap='seismic', levels=100)
 plt.colorbar(cp)
 plt.xlabel('Beta')
 plt.ylabel('Alpha')
@@ -1453,7 +1453,7 @@ plt.savefig(f'lda_plots/speeches_contour_plot.png', bbox_inches='tight')
 plt.close()
 
 plt.figure(figsize=(8, 6))
-cp = plt.contourf(Alpha_sentences, Beta_sentences, pivot_table_sentences.values, cmap='viridis', levels=100)
+cp = plt.contourf(Alpha_sentences, Beta_sentences, pivot_table_sentences.values, cmap='seismic', levels=100)
 plt.colorbar(cp)
 plt.xlabel('Beta')
 plt.ylabel('Alpha')
@@ -1633,7 +1633,7 @@ plt.close()
 
 # Plot the sentence coherence scores
 plt.figure(figsize=(10, 6))
-plt.plot(topic_numbers, coherence_scores_sentences, color='midnightblue')
+plt.plot(topic_numbers, coherence_scores_sentences, color='darkgray')
 # plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
@@ -1804,7 +1804,7 @@ plt.close()
 
 # Plot the sentence coherence scores
 plt.figure(figsize=(10, 6))
-plt.plot(topic_numbers, coherence_scores_sentences, color='midnightblue')
+plt.plot(topic_numbers, coherence_scores_sentences, color='darkgray')
 plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
