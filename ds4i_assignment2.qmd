@@ -7,6 +7,7 @@ execute:
   echo: false
   cache: true
   freeze: auto
+  output: false
 author: 
     - "Jared Tavares (TVRJAR001)"
     - "Heiletjé van Zyl (VZYHEI003)"
@@ -1187,6 +1188,7 @@ from plsa.algorithms import PLSA
 import random 
 
 random.seed(5)
+np.random.seed(5)
 
 pipeline = Pipeline(*DEFAULT_PIPELINE)
 
@@ -1251,6 +1253,8 @@ plt.close()
 
 ```{python}
 
+# TODO: Change to the official number of topics
+
 # Fit the models with the calibrated number of topics
 tfidf_plsa = PLSA(corpus, 4, tf_idf=True)
 bow_plsa = PLSA(corpus, 4, tf_idf=False)
@@ -1268,14 +1272,14 @@ bow_result_sent = bow_plsa_sent.fit()
 ```{python}
 
 # Function to plot the top words for a given topic
-def plot_top_words_for_topic(word_given_topic, topic_num, corptype, top_n=10):
+def plot_top_words_for_topic(word_given_topic, topic_num, corptype, color, top_n=10):
     # Extract the top words for this topic
     top_words_data = word_given_topic[topic_num][:top_n]
     words, probabilities = zip(*top_words_data)
 
     # Create a bar plot
     plt.figure(figsize=(10, 6))
-    plt.barh(words, probabilities, color='midnightblue')
+    plt.barh(words, probabilities, color=color)
     plt.xlabel('Probability', fontsize=16)
     plt.gca().invert_yaxis() 
     plt.savefig(f'plsa_plots/{corptype}_topic_{topic_num + 1}.png', bbox_inches='tight')
@@ -1286,9 +1290,14 @@ def plot_word_contribution(result, corptype):
     # Number of topics in your model
     n_topics = len(result.word_given_topic)
 
+    colours = ['lightsteelblue', 'midnightblue', 'lightgray', 'dimgray']
+    
+    i = 0
+
     # Plot the top words for each topic
     for topic_num in range(n_topics):
-        plot_top_words_for_topic(result.word_given_topic, topic_num, corptype)
+        plot_top_words_for_topic(result.word_given_topic, topic_num, corptype, colours[i])
+        i+=1
 
 # Plot the word contribution for each topic for each model
 plot_word_contribution(bow_result, 'words-BoW')
@@ -1532,17 +1541,19 @@ plt.close()
 ```
 
 ```{python}
+#| output: true
 
 def style_df(df):
     # Select the numeric columns except the first one
     numeric_cols = df.select_dtypes(include=['number']).columns[1:]
     format_dict = {col: "{:.2f}" for col in numeric_cols}
-    return df.style.set_table_styles({
-        '': [{'selector': '',
-              'props': [('border', '1px solid black'),
-               ('margin', 'auto'),
-               ]}]
-    }).format(format_dict).hide()
+    styles = [
+        dict(selector="th", props=[("text-align", "center")]),
+        dict(selector="td", props=[("text-align", "center")]),
+        dict(selector="", props=[("margin", "auto"), ("border", "1px solid black")])
+    ]
+    return df.style.set_table_styles(styles).format(format_dict).hide()
+
 
 # Save the results to a csv
 style_df(combined_speeches_df)
@@ -1551,6 +1562,7 @@ style_df(combined_speeches_df)
 
 
 ```{python}
+#| output: true
 
 # Save the results to a csv
 style_df(combined_sentences_df)
@@ -1744,26 +1756,32 @@ for _ in range(100):
 ```{python}
 
 # Function to plot the top words for one topic
-def plot_top_words_for_topic(model, modtype, topic_num, top_n=10):
+def plot_top_words_for_topic(model, modtype, topic_num, color, top_n=10):
     # Extract the top words for this topic
     top_words = model.get_topic_words(topic_num, top_n=top_n)
     words, weights = zip(*top_words)
 
     # Create a bar chart for the top words in this topic
     plt.figure(figsize=(10, 6))
-    plt.barh(words, weights, color='lightsteelblue')
+    plt.barh(words, weights, color=color)
     plt.xlabel('Weight')
     plt.gca().invert_yaxis()  # Highest weights on top
     plt.savefig(f'ctm_plots/{modtype}_{topic_num+1}.png', bbox_inches='tight')
     plt.close()
 
 # Plot the top words for each topic for the CTModel of documents
-for k in range(ctm.k):
-    plot_top_words_for_topic(ctm, 'words', k)
+i = 0
+colours = ['midnightblue', 'lightsteelblue']
 
+for k in range(ctm.k):
+    plot_top_words_for_topic(ctm, 'words', k, colours[i])
+    i+=1
+
+i = 0
 # Plot the top words for each topic for the CTModel of sentences
 for k in range(ctms.k):
-    plot_top_words_for_topic(ctms, 'sentences', k)
+    plot_top_words_for_topic(ctms, 'sentences', k, colours[i])
+    i+=1
 
 ```
 
