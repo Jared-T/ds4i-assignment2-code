@@ -1,15 +1,15 @@
 ---
-title: "Assignment 2"
-author: "Jared Tavares"
+title: "STA5073Z Data Science for Industry Assignment 2"
+author: 
+    - "Jared Tavares (TVRJAR001)"
+    - "Heiletjé van Zyl (VZYHEI003)"
 ---
 
-This is the website for Assignment 1 of the course "Data Science for Industry" at the University of Cape Town.
+This is the website for Assignment 2 of the Masters-level course "Data Science for Industry" (DS4I) at the University of Cape Town.
 
 ## Links to the repos:
 
 ### Website files
 [Link to the website files](https://github.com/Jared-T/DS4I_Ass1Code)
 
-### Colab notebooks
-[Colab BERT model training file](https://colab.research.google.com/drive/1cLsYHNhxntK15903QujABPTsNC_EoqfV?usp=sharing)
 
