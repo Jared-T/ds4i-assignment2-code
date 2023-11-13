@@ -1995,27 +1995,41 @@ author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, aut
 author_topic_model.update(bow_corpus, author2doc=author2doc)
 author_topic_model_sentences.update(bow_corpus_sentences, author2doc=author2sent)
 
+colours = ['midnightblue', 'lightsteelblue', 'darkgray']
+
 # Function to plot the top words for one topic in an AuthorTopicModel
-def plot_top_words_for_author_topic_model(model, modtype, topic_num, top_n=10):
+def plot_top_words_for_author_topic_model(model, modtype, topic_num, colour, top_n=10):
     # Extract the top words for this topic
     top_words = model.get_topic_terms(topic_num, topn=top_n)
     words, weights = zip(*[(model.id2word[word_id], weight) for word_id, weight in top_words])
 
     # Create a bar chart for the top words in this topic
     plt.figure(figsize=(10, 6))
-    plt.barh(words, weights, color='midnightblue')
+    plt.barh(words, weights, color=colour)
     plt.xlabel('Weight')
     plt.gca().invert_yaxis()  # Highest weights on top
     plt.savefig(f'atm_plots/{modtype}_{topic_num+1}.png', bbox_inches='tight')
     plt.close()
 
 # Plot the top words for each topic for the AuthorTopicModel of documents
+i = 0
 for k in range(author_topic_model.num_topics):
-    plot_top_words_for_author_topic_model(author_topic_model, "words",k)
+    plot_top_words_for_author_topic_model(author_topic_model, "words",k, colours[i])
 
+    i += 1
+
+    if i == 3:
+        i = 0
+
+i = 0
 # Plot the top words for each topic for the AuthorTopicModel of sentences
 for k in range(author_topic_model_sentences.num_topics):
-    plot_top_words_for_author_topic_model(author_topic_model_sentences, "sentences", k)
+    plot_top_words_for_author_topic_model(author_topic_model_sentences, "sentences", k, colours[i])
+
+    i += 1
+
+    if i == 3:
+        i = 0
 
 ```
 
