@@ -1132,9 +1132,6 @@ sona_sentences_alltogether['sentence'].to_csv('data/sona_sentences_only.csv', in
 ```{python}
 
 import math
-import random 
-
-random.seed(5)
 
 def calculate_umass_coherence(plsa_result, corpus, top_n=10, tf_idf=False):
     # Extract the top N words for each topic
@@ -1184,9 +1181,6 @@ import matplotlib.pyplot as plt
 from plsa import Corpus, Pipeline, Visualize
 from plsa.pipeline import DEFAULT_PIPELINE
 from plsa.algorithms import PLSA
-import random 
-
-random.seed(5)
 
 pipeline = Pipeline(*DEFAULT_PIPELINE)
 
