@@ -862,7 +862,7 @@ In the micro-context (i.e., word tokenization) of LSA implementation, the maximu
 
 Unlike within the micro-context, LSA now applied in the maro-context (i.e., sentence tokenization) indicates more variability in the choice of the optimal topic number for both BoW and tf-idf approaches. Due to the excessive jumps between high and low coherence scores across the topic amounts seen in Figure, it is opted to choose the lowest number (but greater than two). This choice aims to limit potential theme-overlapping (i.e., many common words shared across topics) and allow for more conciseness. 
 
-::: {#fig-LSA-words-BoW-topics layout-ncol=2}
+::: {#fig-LSA-words-topics layout-ncol=2}
 
 ![BoW: Topic 1](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
 
@@ -881,29 +881,23 @@ Topic-by-word plots for BoW (left) and tf-idf (right) approach for LSA implement
 
 ![Coherence plot for LSA where SONA speeches were tokenized by sentences.](lsa_plots/sentence_coherence_plots.png){width=500 height=300 #fig-sentences-coherence}
 
-::: {#fig-LSA-sentences-BoW-topics layout-ncol=3}
+::: {#fig-LSA-sentences-topics layout-ncol=3}
 
 ![BoW: Topic 1](lsa_plots/sentences_bow_topic_1.png){#fig-sentences-bow-topic1}
 
-![BoW: Topic 2](lsa_plots/sentences_bow_topic_2.png){#fig-sentences-bow-topic2}
-
-![BoW: Topic 3](lsa_plots/sentences_bow_topic_3.png){#fig-sentences-bow-topic3}
-
-SONA speeches tokenized by sentences for BoW approach for LSA implementation.
-:::
-
-::: {#fig-LSA-sentences-tfidf-topics layout-ncol=2}
-
 ![tf-idf: Topic 1](lsa_plots/sentences_tfidf_topic_1.png){#fig-sentences-tfidf-topic1}
+
+![BoW: Topic 2](lsa_plots/sentences_bow_topic_2.png){#fig-sentences-bow-topic2}
 
 ![tf-idf: Topic 2](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
 
+![BoW: Topic 3](lsa_plots/sentences_bow_topic_3.png){#fig-sentences-bow-topic3}
+
 ![tf-idf: Topic 3](lsa_plots/sentences_tfidf_topic_3.png){#fig-sentences-tfidf-topic3}
 
-![tf-idf: Topic 4](lsa_plots/sentences_tfidf_topic_4.png){#fig-sentences-tfidf-topic4}
-
-SONA speeches tokenized by sentences for tf-idf approach for LSA implementation.
+SONA speeches tokenized by sentences for BoW (left) and tf-idf (right) approach for LSA implementation.
 :::
+
 
 
 ```{python}
@@ -1021,10 +1015,10 @@ plt.close()
 
 # TODO: Set the number of topics based on the plots
 lsa_bow_words = LsiModel(corpus=bow_corpus, num_topics=3, id2word=dictionary)
-lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=3, id2word=dict_sentences)
+lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=2, id2word=dict_sentences)
 
 lsa_tfidf_words = LsiModel(corpus=tfidf_corpus, num_topics=3, id2word=dictionary)
-lsa_tfidf_sentences = LsiModel(corpus=tfidf_corpus_sentences, num_topics=4, id2word=dict_sentences)
+lsa_tfidf_sentences = LsiModel(corpus=tfidf_corpus_sentences, num_topics=2, id2word=dict_sentences)
 
 ```
 
@@ -1038,7 +1032,7 @@ import matplotlib.pyplot as plt
 # Function to plot the top words for each topic in a single LSA model
 def plot_top_words_for_each_topic(model, fiton, lexicon, num_words=10):
 
-    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'dimgray']
+    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'darkgray', 'dimgray']
     
     j = 0
 
@@ -1079,7 +1073,7 @@ As previously found with the implementation of LSA, there is essentially no vari
 
 ![Coherence plot for pLSA where SONA speeches were tokenized by words.](plsa_plots/words_coherence.png){width=500 height=300 #fig-pLSA-words-coherence}
 
-::: {#fig-pLSA-words-tfidf-topics layout-ncol=2}
+::: {#fig-pLSA-words-topics layout-ncol=2}
 
 ![BoW: Topic 1](plsa_plots/words-BoW_topic_1.png){#fig-pLSA-words-bow-topic1}
 
@@ -1097,8 +1091,13 @@ As previously found with the implementation of LSA, there is essentially no vari
 
 ![tf-idf: Topic 4](plsa_plots/words-tf-idf_topic_4.png){#fig-pLSA-words-tfidf-topic4}
 
+![BoW: Topic 5](plsa_plots/words-BoW_topic_5.png){#fig-pLSA-words-bow-topic5}
+
+![tf-idf: Topic 5](plsa_plots/words-tf-idf_topic_5.png){#fig-pLSA-words-tfidf-topic5}
+
 Topic plots for pLSA tokenized by words and executed within a BoW (left) and tf-idf (right) framework. 
 :::
+
 
 ![Coherence plot for pLSA where SONA speeches were tokenized by sentences.](plsa_plots/sentences_coherence.png){width=500 height=300 #fig-pLSA-sentences-coherence}
 
@@ -1106,27 +1105,22 @@ Topic plots for pLSA tokenized by words and executed within a BoW (left) and tf-
 
 ![BoW: Topic 1](plsa_plots/sentences-BoW_topic_1.png){#fig-pLSA-sentences-bow-topic1}
 
-![BoW: Topic 2](plsa_plots/sentences-BoW_topic_2.png){#fig-pLSA-sentences-bow-topic2}
-
-![BoW: Topic 3](plsa_plots/sentences-BoW_topic_3.png){#fig-pLSA-sentences-bow-topic3}
-
-Topic plots for pLSA using sentences as tokens within a BoW approach. 
-:::
-
-
-::: {#fig-pLSA-sentences-topics layout-ncol=2}
-
 ![tf-idf: Topic 1](plsa_plots/sentences-tf-idf_topic_1.png){#fig-pLSA-sentences-tfidf-topic1}
+
+![BoW: Topic 2](plsa_plots/sentences-BoW_topic_2.png){#fig-pLSA-sentences-bow-topic2}
 
 ![tf-idf: Topic 2](plsa_plots/sentences-tf-idf_topic_2.png){#fig-pLSA-sentences-tfidf-topic2}
 
+![BoW: Topic 3](plsa_plots/sentences-BoW_topic_3.png){#fig-pLSA-sentences-bow-topic3}
+
 ![tf-idf: Topic 3](plsa_plots/sentences-tf-idf_topic_3.png){#fig-pLSA-sentences-tfidf-topic3}
+
+![BoW: Topic 4](plsa_plots/sentences-BoW_topic_4.png){#fig-pLSA-sentences-bow-topic4}
 
 ![tf-idf: Topic 4](plsa_plots/sentences-tf-idf_topic_4.png){#fig-pLSA-sentences-tfidf-topic4}
 
-Topic plots for pLSA using sentences as tokens implemented within a tf-idf approach. 
+Topic plots for pLSA using sentences as tokens and applied within a BoW (left) and tf-idf (right) framework. 
 :::
-
 
 
 
@@ -1277,6 +1271,8 @@ plt.close()
 
 ```
 
+
+
 ```{python}
 
 # Run 5
@@ -1284,10 +1280,10 @@ plt.close()
 # TODO: Change to the official number of topics
 
 # Fit the models with the calibrated number of topics
-tfidf_plsa = PLSA(corpus, 4, tf_idf=True)
-bow_plsa = PLSA(corpus, 4, tf_idf=False)
-tfidf_plsa_sent = PLSA(corpus_sent, 8, tf_idf=True)
-bow_plsa_sent = PLSA(corpus_sent, 3, tf_idf=False)
+tfidf_plsa = PLSA(corpus, 5, tf_idf=True)
+bow_plsa = PLSA(corpus, 5, tf_idf=False)
+tfidf_plsa_sent = PLSA(corpus_sent, 4, tf_idf=True)
+bow_plsa_sent = PLSA(corpus_sent, 4, tf_idf=False)
 
 # Fit the models
 tfidf_result = tfidf_plsa.fit()
@@ -1320,7 +1316,7 @@ def plot_word_contribution(result, corptype):
     # Number of topics in your model
     n_topics = len(result.word_given_topic)
 
-    colours = ['lightsteelblue', 'midnightblue', 'lightgray', 'dimgray']
+    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'darkgray', 'dimgray']
     
     i = 0
 
@@ -1329,8 +1325,8 @@ def plot_word_contribution(result, corptype):
         plot_top_words_for_topic(result.word_given_topic, topic_num, corptype, colours[i])
         i+=1
 
-        if i == 4:
-            i = 0
+        # if i == 4:
+        #     i = 0
 
 # Plot the word contribution for each topic for each model
 plot_word_contribution(bow_result, 'words-BoW')
@@ -1790,7 +1786,7 @@ plt.close()
 
 # Train the models with the optimal number of topics
 ctm = tp.CTModel(k=2)
-ctms = tp.CTModel(k=2)
+ctms = tp.CTModel(k=3)
 
 # Add documents to the model
 for tokens in tokenized_docs:
@@ -1992,8 +1988,8 @@ plt.close()
 # TODO: Set the number of topics based on the plots
 
 # Author-Topic LDA model with the current number of topics
-author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=3)
-author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, author2doc=author2sent, id2word=dict_sentences, num_topics=2)
+author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=2)
+author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, author2doc=author2sent, id2word=dict_sentences, num_topics=3)
 
 # Train the model
 author_topic_model.update(bow_corpus, author2doc=author2doc)
