@@ -1299,6 +1299,9 @@ def plot_word_contribution(result, corptype):
         plot_top_words_for_topic(result.word_given_topic, topic_num, corptype, colours[i])
         i+=1
 
+        if i == 4:
+            i = 0
+
 # Plot the word contribution for each topic for each model
 plot_word_contribution(bow_result, 'words-BoW')
 plot_word_contribution(tfidf_result, 'words-tf-idf')
@@ -1781,11 +1784,17 @@ for k in range(ctm.k):
     plot_top_words_for_topic(ctm, 'words', k, colours[i])
     i+=1
 
+    if i == 2:
+        i = 0
+
 i = 0
 # Plot the top words for each topic for the CTModel of sentences
 for k in range(ctms.k):
     plot_top_words_for_topic(ctms, 'sentences', k, colours[i])
     i+=1
+
+    if i == 2:
+        i = 0
 
 ```
 

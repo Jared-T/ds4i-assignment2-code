@@ -17,6 +17,7 @@ format:
     theme: lux
     css: styles.css
     toc: true
+    max-width: 42em
 
 execute:
   cache: true
