@@ -1954,5 +1954,36 @@ for k in range(author_topic_model_sentences.num_topics):
 
 ```
 
+
+```{python}
+
+from pprint import pprint
+
+def show_author(name, model):
+    print('\n%s' % name)
+    print('Docs:', model.author2doc[name])
+    print('Topics:')
+    pprint([(topic_labels[topic[0]], topic[1]) for topic in model[name]])
+
+```
+
+```{python}
+
+# TODO: Add topic labels
+
+topic_labels_words = ['Circuits', 'Neuroscience', 'Numerical optimization', 'Object recognition', \
+               'Math/general', 'Robotics', 'Character recognition', \
+                'Reinforcement learning', 'Speech recognition', 'Bayesian modelling']
+
+topic_labels_sents = ['Circuits', 'Neuroscience', 'Numerical optimization', 'Object recognition', \
+               'Math/general', 'Robotics', 'Character recognition', \
+                'Reinforcement learning', 'Speech recognition', 'Bayesian modelling']
+
+# Show the topics for each author
+show_author('deKlerk', author_topic_model)
+show_author('deKlerk', author_topic_model_sentences)
+
+```
+
 </div> 
 
