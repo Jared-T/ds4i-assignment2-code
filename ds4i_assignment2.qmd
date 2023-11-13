@@ -146,6 +146,7 @@ from plsa.algorithms import PLSA
 from gensim.models import AuthorTopicModel
 from gensim.models import LdaModel
 import tqdm
+import tomotopy as tp
 
 # Global params
 plt.rcParams['xtick.labelsize'] = 18
@@ -1315,7 +1316,7 @@ def plot_word_contribution(result, corptype):
     # Number of topics in your model
     n_topics = len(result.word_given_topic)
 
-    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'darkgray', 'dimgray']
+    colours = ['lightsteelblue', 'midnightblue', 'lightgray', 'darkgray', 'dimgray']
     
     i = 0
 
@@ -1323,9 +1324,6 @@ def plot_word_contribution(result, corptype):
     for topic_num in range(n_topics):
         plot_top_words_for_topic(result.word_given_topic, topic_num, corptype, colours[i])
         i+=1
-
-        # if i == 4:
-        #     i = 0
 
 # Plot the word contribution for each topic for each model
 plot_word_contribution(bow_result, 'words-BoW')
@@ -1675,15 +1673,15 @@ Coherence plots for CTM across different tokens (words or sentences) implemented
 
 ![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-ctm-sentences-topic2}
 
+![Sentences: Topic 3](ctm_plots/sentences_3.png){#fig-ctm-sentences-topic3}
+
 Topic plots where either words (left) or sentences (right) were used as tokens for CTM application. 
 :::
 
 
 ```{python}
 
-
-import tomotopy as tp
-import matplotlib.pyplot as plt
+# Run 6.5
 
 # Function to calculate coherence scores
 def calculate_coherence(model, metric='u_mass'):
@@ -1868,14 +1866,14 @@ Coherence plots for ATM across different tokens (words or sentences) implemented
 
 ![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-atm-sentences-topic2}
 
-![Words: Topic 3](ctm_plots/words_3.png){#fig-atm-words-topic3}
+![Sentences: Topic 3](ctm_plots/sentences_3.png){#fig-atm-sentences-topic3}
 
 Topic plots where either words (left) or sentences (right) were used as tokens for ATM application. 
 :::
 
 
 ```{python}
-
+# Run 8.5
 # Note that ATM only works for BoW. Raw word counts (BoW) is standard because these models are based on the assumption that the data is generated from a multinomial distribution, which does not hold with TF-IDF weights.
 
 texts = sona_speeches_clean['speech']
@@ -1960,7 +1958,6 @@ coherence_scores_sentences = coherence_values['bow_coherence_values_sentences']
 # Plot the speech coherence scores
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, coherence_scores,  color='midnightblue')
-plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
 plt.xticks(topic_numbers)
@@ -1970,7 +1967,6 @@ plt.close()
 # Plot the sentence coherence scores
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, coherence_scores_sentences, color='lightsteelblue')
-plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
 plt.xticks(topic_numbers)
