@@ -119,6 +119,8 @@ Unlike $\texttt{AFINN}$ , the R-based $\texttt{bing}$ lexicon does not provide s
 ```{python}
 #| eval: true
 
+# Run 1
+
 # Loading in the necessary libraries
 import zipfile
 import os
@@ -142,10 +144,22 @@ from gensim.models import LsiModel, TfidfModel
 from gensim.models.coherencemodel import CoherenceModel
 from gensim import corpora
 from gensim.utils import simple_preprocess
+from plsa import Corpus, Pipeline, Visualize
+from plsa.pipeline import DEFAULT_PIPELINE
+from plsa.algorithms import PLSA
+from gensim.models import AuthorTopicModel
+from gensim.models import LdaModel
+import tqdm
 
 # Global params
-plt.rcParams['xtick.labelsize'] = 14
-plt.rcParams['ytick.labelsize'] = 14
+plt.rcParams['xtick.labelsize'] = 18
+plt.rcParams['ytick.labelsize'] = 18
+
+# Set the global label sizes for the plots
+plt.rcParams['axes.labelsize'] = 20
+
+# Set the global legend size
+plt.rcParams['legend.fontsize'] = 18
 
 ```
 
@@ -308,6 +322,8 @@ sona_sentences_clean.to_csv('data/sona_sentences_clean.csv', index=False)
 ```{python}
 #| eval: true
 
+# Run 2
+
 sona_sentences_clean = pd.read_csv('data/sona_sentences_clean.csv')
 sona_sentences_clean['sentence'] = sona_sentences_clean['sentence'].apply(literal_eval)
 sona_sentences_clean['sent_untrans'] = sona_sentences_clean['sent_untrans'].apply(literal_eval)
@@ -426,10 +442,10 @@ top_10_words = word_frequencies.most_common(10)
 # Plotting
 plt.figure(figsize=(10, 6))
 plt.bar([word for word, count in top_10_words], [count for word, count in top_10_words], color=colormap[2])
-plt.xlabel('Words', fontsize=12)
-plt.ylabel('Frequency', fontsize=12)
-plt.xticks(fontsize=16)
-plt.yticks(fontsize=16)
+plt.xlabel('Words')
+plt.ylabel('Frequency')
+plt.xticks()
+plt.yticks()
 plt.xticks(rotation=45)
 
 # Save the plot as a PNG file
@@ -463,8 +479,8 @@ for president, top_words in top_10_words_by_president.items():
     # Individual plot for each president
     plt.figure(figsize=(10, 6))
     plt.bar([word for word, count in top_words], [count for word, count in top_words], color=colormap[0])
-    plt.xlabel('Words', fontsize=20)
-    plt.ylabel('Frequency', fontsize=20)
+    plt.xlabel('Words')
+    plt.ylabel('Frequency')
     plt.xticks(rotation=45)
 
     # Save the plot as a PNG file
@@ -651,10 +667,10 @@ def plot_speeches_by_president(df, lexicon):
     for idx, president in enumerate(presidents):
         president_df = df[df['president'] == president]
         plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
-    plt.xlabel('Date', fontsize=20)
-    plt.ylabel(f'Sentiment Score', fontsize=20)
-    plt.xticks(fontsize=14, rotation=45)
-    plt.yticks(fontsize=14)
+    plt.xlabel('Date')
+    plt.ylabel(f'Sentiment Score')
+    plt.xticks(rotation=45)
+    plt.yticks()
     plt.legend(loc ="upper left")
     plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
     plt.close()  # Close the figure to avoid displaying it in the notebook
@@ -685,9 +701,9 @@ def plot_sentences_by_president(df, lexicon):
         plt.figure(figsize=(10, 6))
         president_df = df[df['president'] == president]
         plt.bar(president_df['sentence_num'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[i])
-        plt.xlabel('Sentence', fontsize=20)
-        plt.ylabel(f'Sentiment Score', fontsize=20)
-        plt.xticks(rotation=65)
+        plt.xlabel('Sentence')
+        plt.ylabel(f'Sentiment Score')
+        plt.xticks()
         plt.savefig(f'sentiment_plots/sent_{lexicon}_{president}.png', bbox_inches='tight')
         plt.close()  # Close the figure to avoid displaying it in the notebook
 
@@ -746,11 +762,11 @@ def plot_top_words(word_sentiments, president, lexicon):
 
     # Add the word labels
     ax.set_yticks(range(20))
-    ax.set_yticklabels(words_negative + words_positive, fontsize=20)
+    ax.set_yticklabels(words_negative + words_positive)
     
     # Set the labels and title
-    ax.set_xlabel(f'Contribution to Sentiment Score', fontsize=20)
-    ax.legend(prop = { "size": 16 }, loc = "lower right")
+    ax.set_xlabel(f'Contribution to Sentiment Score')
+    ax.legend(loc = "lower right")
 
     # Adjust the view so negative words are at the bottom and positive at the top
     ax.set_ylim(-1, 20)
@@ -812,11 +828,11 @@ def plot_top_words(word_sentiments, lexicon):
 
     # Add the word labels
     ax.set_yticks(range(20))
-    ax.set_yticklabels(words_negative + words_positive, fontsize=20)
+    ax.set_yticklabels(words_negative + words_positive)
     # ax.yticks(fontsize=16)
 
     # Set the labels and title
-    ax.set_xlabel(f'Contribution to Sentiment Score',fontsize=20)
+    ax.set_xlabel(f'Contribution to Sentiment Score')
     ax.legend()
     # ax.xticks(fontsize=16)
 
@@ -946,6 +962,11 @@ tfidf_model_list, tfidf_coherence_values = compute_coherence_values(dictionary=d
 
 tfidf_model_list_sentences, tfidf_coherence_values_sentences = compute_coherence_values(dictionary=dict_sentences, corpus=tfidf_corpus_sentences, texts=sentences, start=start, limit=limit, step=step)
 
+# Save the to csv
+coherence_df = pd.DataFrame({'bow_coherence_values': bow_coherence_values, 'tfidf_coherence_values': tfidf_coherence_values, 'bow_coherence_values_sentences': bow_coherence_values_sentences, 'tfidf_coherence_values_sentences': tfidf_coherence_values_sentences})
+
+coherence_df.to_csv('lsa_plots/coherence_values.csv', index=False)
+
 ```
 
 
@@ -954,13 +975,22 @@ tfidf_model_list_sentences, tfidf_coherence_values_sentences = compute_coherence
 
 from matplotlib.ticker import MaxNLocator
 
+# Read in the coherence values
+coherence_df = pd.read_csv('lsa_plots/coherence_values.csv')
+
+# Extract the coherence values
+bow_coherence_values = coherence_df['bow_coherence_values']
+tfidf_coherence_values = coherence_df['tfidf_coherence_values']
+bow_coherence_values_sentences = coherence_df['bow_coherence_values_sentences']
+tfidf_coherence_values_sentences = coherence_df['tfidf_coherence_values_sentences']
+
 # Plotting the coherence values
 x = range(start, limit, step)
 plt.figure(figsize=(10, 6))
 plt.plot(x, bow_coherence_values, label='BoW', color='midnightblue')
 plt.plot(x, tfidf_coherence_values, label='tf-idf', color='darkgray')
-plt.xlabel("Number of Topics", fontsize=16)
-plt.ylabel("Coherence score",  fontsize=16)
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
 plt.legend(loc='lower left')
 plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.savefig(f'lsa_plots/words_coherence_plots.png', bbox_inches='tight')
@@ -972,8 +1002,8 @@ x = range(start, limit, step)
 plt.figure(figsize=(10, 6))
 plt.plot(x, bow_coherence_values_sentences, label='BoW', color='midnightblue')
 plt.plot(x, tfidf_coherence_values_sentences, label='tf-idf', color='darkgray')
-plt.xlabel("Number of Topics", fontsize=16)
-plt.ylabel("Coherence score",  fontsize=16)
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
 plt.legend(loc='lower right')
 plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.savefig(f'lsa_plots/sentence_coherence_plots.png', bbox_inches='tight')
@@ -984,6 +1014,9 @@ plt.close()
 
 ```{python}
 
+# Run 3
+
+# TODO: Set the number of topics based on the plots
 lsa_bow_words = LsiModel(corpus=bow_corpus, num_topics=3, id2word=dictionary)
 lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=3, id2word=dict_sentences)
 
@@ -995,47 +1028,7 @@ lsa_tfidf_sentences = LsiModel(corpus=tfidf_corpus_sentences, num_topics=4, id2w
 
 ```{python}
 
-import matplotlib.pyplot as plt
-
-# Function to plot top words for each topic
-def plot_top_words_lsa(model, num_words=10):
-    topics = model.show_topics(num_topics=-1, num_words=num_words, formatted=False)
-    fig, axes = plt.subplots(1, len(topics), figsize=(5 * len(topics), 10), sharey=True)
-    axes = axes.flatten()
-    
-    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'dimgray']
-    
-    i = 0
-    
-    for topic_id, topic in topics:
-        top_words = [word for word, _ in topic]
-        weights = [abs(weight) for _, weight in topic]  # Use absolute values to show contribution
-        
-        ax = axes[topic_id]
-        ax.barh(top_words, weights, color=colors[i])
-        ax.set_title(f'Topic {topic_id + 1}')
-        ax.invert_yaxis()
-        
-        ax.set_xlabel('Word Importance', fontsize=20)
-        ax.set_ylabel('Words', fontsize=20)
-
-        i += 1
-
-    plt.tight_layout()
-    plt.figure(figsize=(10, 6))
-    plt.show()
-
-# Plot the top words for each topic for the LSA models
-#plot_top_words_lsa(lsa_bow_words)
-#plot_top_words_lsa(lsa_bow_sentences)
-
-#plot_top_words_lsa(lsa_tfidf_words)
-#plot_top_words_lsa(lsa_tfidf_sentences)
-
-```
-
-
-```{python}
+# Run 4
 
 import matplotlib.pyplot as plt
 
@@ -1058,6 +1051,10 @@ def plot_top_words_for_each_topic(model, fiton, lexicon, num_words=10):
         plt.barh(words, weights, color = colors[j])
         # ax.set_yticklabels(words, fontsize=20)
         j += 1
+
+        if j == 4:
+            j = 0
+
         plt.xlabel('Weight')
         plt.gca().invert_yaxis()  # Highest weights on top
         plt.savefig(f'lsa_plots/{fiton}_{lexicon}_topic_{i + 1}.png', bbox_inches='tight')
@@ -1185,11 +1182,6 @@ def calculate_umass_coherence(plsa_result, corpus, top_n=10, tf_idf=False):
 
 ```{python}
 
-import matplotlib.pyplot as plt
-from plsa import Corpus, Pipeline, Visualize
-from plsa.pipeline import DEFAULT_PIPELINE
-from plsa.algorithms import PLSA
-
 pipeline = Pipeline(*DEFAULT_PIPELINE)
 
 corpus = Corpus.from_csv("data/sona_speeches_only.csv", pipeline)
@@ -1256,8 +1248,8 @@ tfidf_coherence_values_sent = coherence_values['tfidf_coherence_sent']
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, bow_coherence_values, label='BoW', color='midnightblue')
 plt.plot(topic_numbers, tfidf_coherence_values, label='tf-idf', color='darkgray')
-plt.xlabel("Number of Topics", fontsize=16)
-plt.ylabel("Coherence score",  fontsize=16)
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
 plt.legend(loc='lower right')
 plt.savefig(f'plsa_plots/words_coherence.png', bbox_inches='tight')
 plt.close()
@@ -1267,8 +1259,8 @@ plt.close()
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, bow_coherence_values_sent, label='BoW', color='midnightblue')
 plt.plot(topic_numbers, tfidf_coherence_values_sent, label='tf-idf', color='darkgray')
-plt.xlabel("Number of Topics", fontsize=16)
-plt.ylabel("Coherence score",  fontsize=16)
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
 plt.legend(loc='lower right')
 plt.savefig(f'plsa_plots/sentences_coherence.png', bbox_inches='tight')
 plt.close()
@@ -1276,6 +1268,8 @@ plt.close()
 ```
 
 ```{python}
+
+# Run 5
 
 # TODO: Change to the official number of topics
 
@@ -1295,6 +1289,8 @@ bow_result_sent = bow_plsa_sent.fit()
 
 ```{python}
 
+# Run 6
+
 # Function to plot the top words for a given topic
 def plot_top_words_for_topic(word_given_topic, topic_num, corptype, color, top_n=10):
     # Extract the top words for this topic
@@ -1304,7 +1300,7 @@ def plot_top_words_for_topic(word_given_topic, topic_num, corptype, color, top_n
     # Create a bar plot
     plt.figure(figsize=(10, 6))
     plt.barh(words, probabilities, color=color)
-    plt.xlabel('Probability', fontsize=16)
+    plt.xlabel('Probability')
     plt.gca().invert_yaxis() 
     plt.savefig(f'plsa_plots/{corptype}_topic_{topic_num + 1}.png', bbox_inches='tight')
     plt.close()
@@ -1349,15 +1345,6 @@ Contour plots visualizing variation in coherence scores tuned across range of di
 
 ```{python}
 #| eval: true
-
-import numpy as np
-import gensim
-from gensim.models import LdaModel
-from gensim.models.coherencemodel import CoherenceModel
-from gensim import corpora
-from gensim.models import TfidfModel
-import matplotlib.pyplot as plt
-import tqdm
 
 texts = sona_speeches_clean['speech']
 sentences = sona_sentences_alltogether['sentence']
@@ -1609,6 +1596,8 @@ style_df(combined_sentences_df)
 ```{python}
 #| eval: true
 
+# TODO: Set the number of topics based on the plots
+
 # Train the best models for each corpus
 lda_model_speeches = LdaModel(corpus=bow_corpus,
                          id2word=dictionary,
@@ -1741,17 +1730,28 @@ for k in topic_numbers:
 
     #(f"Topics: {k}, Coherence Score: {score}")
 
-
+# Save the coherence scores to a csv
+pd.DataFrame({
+    'topic_number': topic_numbers,
+    'bow_coherence_values': coherence_scores,
+    'bow_coherence_values_sentences': coherence_scores_sentences
+}).to_csv('data/saved_ctm_coherence_values.csv', index=False)
 
 ```
 
 
 ```{python}
 
+# Read in the saved values
+coherence_values = pd.read_csv('data/saved_ctm_coherence_values.csv')
+
+topic_numbers = coherence_values['topic_number']
+coherence_scores = coherence_values['bow_coherence_values']
+coherence_scores_sentences = coherence_values['bow_coherence_values_sentences']
+
 # Plot the speech coherence scores
 plt.figure(figsize=(10, 6))
 plt.plot(topic_numbers, coherence_scores,  color='midnightblue')
-# plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
 plt.xticks(topic_numbers)
@@ -1760,8 +1760,7 @@ plt.close()
 
 # Plot the sentence coherence scores
 plt.figure(figsize=(10, 6))
-plt.plot(topic_numbers, coherence_scores_sentences, color='darkgray')
-# plt.title('Coherence Scores by Number of Topics')
+plt.plot(topic_numbers, coherence_scores_sentences, color='lightsteelblue')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
 plt.xticks(topic_numbers)
@@ -1774,6 +1773,10 @@ plt.close()
 
 
 ```{python}
+
+# TODO: Set the number of topics based on the plots
+
+# Run 7
 
 # Train the models with the optimal number of topics
 ctm = tp.CTModel(k=2)
@@ -1798,6 +1801,8 @@ for _ in range(100):
 ```
 
 ```{python}
+
+# Run 8
 
 # Function to plot the top words for one topic
 def plot_top_words_for_topic(model, modtype, topic_num, color, top_n=10):
@@ -1868,12 +1873,6 @@ Topic plots where either words (left) or sentences (right) were used as tokens f
 
 # Note that ATM only works for BoW. Raw word counts (BoW) is standard because these models are based on the assumption that the data is generated from a multinomial distribution, which does not hold with TF-IDF weights.
 
-from gensim.models import AuthorTopicModel
-from gensim.models.coherencemodel import CoherenceModel
-import matplotlib.pyplot as plt
-from gensim.utils import simple_preprocess
-from gensim import corpora
-
 texts = sona_speeches_clean['speech']
 sentences = sona_sentences_alltogether['sentence']
 
@@ -1934,12 +1933,24 @@ for num_topics in topic_numbers:
     coherence_scores.append(coherence)
     coherence_scores_sentences.append(coherence_sentences)
 
-    # print(f"Num Topics: {num_topics}, Coherence Score: {coherence}")
+# Save the coherence scores to a csv
+pd.DataFrame({
+    'topic_number': topic_numbers,
+    'bow_coherence_values': coherence_scores,
+    'bow_coherence_values_sentences': coherence_scores_sentences
+}).to_csv('data/saved_atm_coherence_values.csv', index=False)
 
 ```
 
 
 ```{python}
+
+# Read in the saved values
+coherence_values = pd.read_csv('data/saved_atm_coherence_values.csv')
+
+topic_numbers = coherence_values['topic_number']
+coherence_scores = coherence_values['bow_coherence_values']
+coherence_scores_sentences = coherence_values['bow_coherence_values_sentences']
 
 # Plot the speech coherence scores
 plt.figure(figsize=(10, 6))
@@ -1953,7 +1964,7 @@ plt.close()
 
 # Plot the sentence coherence scores
 plt.figure(figsize=(10, 6))
-plt.plot(topic_numbers, coherence_scores_sentences, color='darkgray')
+plt.plot(topic_numbers, coherence_scores_sentences, color='lightsteelblue')
 plt.title('Coherence Scores by Number of Topics')
 plt.xlabel('Number of Topics')
 plt.ylabel('Coherence Score')
@@ -1965,6 +1976,10 @@ plt.close()
 
 
 ```{python}
+
+# Run 9
+
+# TODO: Set the number of topics based on the plots
 
 # Author-Topic LDA model with the current number of topics
 author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=3)
@@ -2001,33 +2016,44 @@ for k in range(author_topic_model_sentences.num_topics):
 
 ```{python}
 
+# Run 10
+
 from pprint import pprint
 
-def show_author(name, model):
+def show_author(name, model, topic_labels):
     print('\n%s' % name)
-    print('Docs:', model.author2doc[name])
+    print('Docs:', pd.Series(author_topic_model.author2doc[name]).unique())
     print('Topics:')
     pprint([(topic_labels[topic[0]], topic[1]) for topic in model[name]])
 
 ```
 
+
 ```{python}
+
+sona_speeches_clean['president'].unique()
+
+```
+
+```{python}
+
+# Run 11
 
 # TODO: Add topic labels
 
-topic_labels_words = ['Circuits', 'Neuroscience', 'Numerical optimization', 'Object recognition', \
-               'Math/general', 'Robotics', 'Character recognition', \
-                'Reinforcement learning', 'Speech recognition', 'Bayesian modelling']
+topic_labels_words = ['Circuits', 'Neuroscience', 'Numerical optimization']
 
 topic_labels_sents = ['Circuits', 'Neuroscience', 'Numerical optimization', 'Object recognition', \
                'Math/general', 'Robotics', 'Character recognition', \
                 'Reinforcement learning', 'Speech recognition', 'Bayesian modelling']
 
 # Show the topics for each author
-show_author('deKlerk', author_topic_model)
-show_author('deKlerk', author_topic_model_sentences)
+show_author('Mandela', author_topic_model, topic_labels_words)
+#show_author('deKlerk', author_topic_model_sentences)
 
 ```
+
+
 
 </div> 
 
