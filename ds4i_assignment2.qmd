@@ -21,11 +21,11 @@ author:
 <hr>
 The field of Natural Language Processing (NLP) is faceted by techniques tailored for theme tracking and opinion mining which merge part of text analysis. Though, of particular prominence, is the extraction of latent thematic patterns and the establishment of the extent of emotionality expressed in political-based texts. 
 
-Given such political context, it is of specific interest to analyse the  annual State of the Nation Address (SONA) speeches delivered by six different South African presidents (F.W. de Klerk, N.R. Mandela, T.M. Mbeki, K.P. Motlanthe, J.G. Zuma, and M.C. Ramaphosa) ranging over twenty-nine years (from 1994 to 2023). This analysis, descriptive and data-driven in nature, endeavours to examine the content of the SONA speeches in terms of themes via topic modelling (TM) and emotions via sentiment analysis (SentA). Applying a double-bifurcated approach, SentA will be executed within a macro and micro context both at the text (all-presidents versus by-president SONA speeches, respectively) and token (sentences versus words, respectively) level, as shown in @fig-SentA_MacroMicroScheme. This underlying framework is also utilized for TM, with an exception of only employing it within a micro-context at the token level, as seen in @fig-TM_MacroMicroScheme.
+Given such political context, it is of specific interest to analyse the  annual State of the Nation Address (SONA) speeches delivered by six different South African presidents (F.W. de Klerk, N.R. Mandela, T.M. Mbeki, K.P. Motlanthe, J.G. Zuma, and M.C. Ramaphosa) ranging over twenty-nine years (from 1994 to 2023). This analysis, descriptive and data-driven in nature, endeavours to examine the content of the SONA speeches in terms of themes via topic modelling (TM) and emotions via sentiment analysis (SentA). Applying a double-bifurcated approach, SentA will be executed within a macro and micro context both at the text (all-presidents versus by-president SONA speeches, respectively) and token (sentences versus words, respectively) level, as shown in @fig-SentA_MacroMicroScheme. This underlying framework is also assumed for TM, with the exceptions of only employing it within a macro-context at text level and a micro-context at the token level, as seen in @fig-TM_MacroMicroScheme.
 
 ![Illustration of how sentA will be implemented within a different-scales-within-different-levels framework for the presidential-SONA-speeech text analysis.](SentA_MacroMicroScheme.png){width=400 height=250 #fig-SentA_MacroMicroScheme}
 
-![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences).](TM_MacroMicroScheme.png){height=150 #fig-TM_MacroMicroScheme}
+![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences) at a text level of all SONA speeches (so disregarding the micro-president context).](TM_MacroMicroScheme.png){height=150 #fig-TM_MacroMicroScheme}
 
 Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country's serving presidents during different date periods. 
 
@@ -476,9 +476,9 @@ for president, top_words in top_10_words_by_president.items():
 Overall sentiment score for SONA speeches across time (segmented by presidential terms), compared for two different lexicons.
 :::
 
-Comparing @fig-sent-speeches-afinn and @fig-sent-speeches-bing, it is evident that there is no obvious, overt difference in the computed sentiment scores, which are overall positive, across time and presidents for the two different lexicons. Any slight variation between $\texttt{AFINN}$ and $\texttt{bing}$ is most likely attributed to the lexicons’ varying scales (+5/-5 versus +1/-1, respectively). Hence, any sentiment derived from the former lexicon might be slightly more exaggerated in nature compared to the latter lexicon. 
+Comparing @fig-sent-speeches-afinn and @fig-sent-speeches-bing, it is evident that there is no obvious, overt difference in the computed net sentiment scores, which are overall positive, across time and presidents for the two different lexicons. Any slight variation between $\texttt{AFINN}$ and $\texttt{bing}$ is most likely attributed to the lexicons’ varying scales (+5/-5 versus +1/-1, respectively). Hence, any sentiment derived from the former lexicon might be slightly more exaggerated in nature compared to the latter lexicon. This is noted when checking the $y$-axes range of the sentiment scores, which reach a maximum of 600 for the $\texttt{AFINN}$ lexicon and only 300 for the $\texttt{bing}$ lexicon.
 
-Across both lexicons, from de Klerk to Mbeki’s presidential terms, positive sentiment seems to steadily rise. Though, after a peak of high, positive sentiment scores from Mbeki’s SONA speeches, there is a slight decline in this positivity. This is especially present throughout Zuma’s presidential term. 
+Across both lexicons, from de Klerk to Mbeki’s presidential terms, positive sentiment seems to steadily rise. Though, after a peak of high, positive sentiment scores from Mbeki’s SONA speeches, there is a slight decline in this overall positivity. This is especially present throughout Zuma’s presidential term. 
 
 
 ::: {#fig-sent-presidents layout-ncol=2}
@@ -507,9 +507,10 @@ Across both lexicons, from de Klerk to Mbeki’s presidential terms, positive se
 
 ![$\texttt{bing}$: Ramaphosa speeches](sentiment_plots/sent_bing_Ramaphosa.png){#fig-sent-Ramaphosa-bing}
 
-Trajectory of sentiment score through SONA speech sentences stratified by president, comparing across two different lexicons. 
+Trajectory of sentiment score through SONA-speech sentences stratified by president, comparing across two different lexicons. 
 :::
 
+From inspecting @fig-sent-presidents , it is apparent that the relative trajectory of underlying emotion is generally similar for each president. The dips and troughs in sentiment prevalent for both $\texttt{bing}$ and $\texttt{AFINN}$ lexicons occur at approximately the same sentences in the respective presidents’ speeches. Though, there is some stark contrast found between the two lexicons when comparing for Zuma’s speeches. For this president, the negative falls and positive rises are more exaggerated for the $\texttt{AFINN}$ compared to the $\texttt{bing}$ lexicon. Additionally, the sentiment pattern of Mbeki’s speeches again seems more skewed to the positive side, with more frequent extreme rises to high sentiment score values across sentences. It is also again seen that more negative sentiment is expressed in Zuma’s speeches, give the more dominant dips. For Ramaphosa, there appears to be more of a balance between positive-and-negative sentiment. There are no extreme, outlying rises/falls, rather a more consistent sawtooth-like pattern is prominent. 
 
 
 ::: {#fig-wordcontr-speeches layout-ncol=2}
@@ -521,6 +522,7 @@ Trajectory of sentiment score through SONA speech sentences stratified by presid
 Words which contribute to the positive and negative sentiment across all SONA speeches. 
 :::
 
+Similarly with the general sentiment-score trajectories, there are more overlaps between the two lexicons when comparing the specific words which contribute to the positive and negative sentiments, as displayed in @fig-wordcontr-speeches. The same seven (out of the top ten) words commonly contribute to negative sentiment (“corruption”, “crime”, “violence”), in addition to positive sentiment (“improve”, “support”, “progress”) across both lexicons. Albeit, the extent of these aforementioned words’ contributions to the respective sentiments do slightly vary in amounts. Some unique, independent words also add to the negative sentiment for the $\texttt{AFINN}$ lexicon  (“problems”, “unemployment”) and $\texttt{bing}$ lexicon (“issues”). Likewise, there are distinctive words for this former  lexicon (“growth”, “ensure”, “great”) and latter lexicon (“well”) attributed to positive sentiment. 
 
 ::: {#fig-wordcontr-presidents layout-ncol=2}
 
@@ -550,6 +552,8 @@ Words which contribute to the positive and negative sentiment across all SONA sp
 
 Words which contribute to the positive and negative sentiment for each specific presidents' SONA speech/speeches. 
 :::
+
+After faceting @fig-wordcontr-speeches by president, as presented in the sub-plots of @fig-wordcontr-presidents, essentially no variability is indicated in terms of uniqueness and the contribution magnitude thereof. For both lexicons, the same set of words add the same amount to each sentiment. Furthermore,  commonalities between words contributing to the sentiments is evident between the five presidents after de Klerk. Negative-sentiment words like “unconstitutional”, “deprive”, “discrimination”, and “boycott” and positive-sentiment words such as “proud”, “succeeded”, and “peaceful” only features in de Klerk’s speech. All of these aforementioned words seem to directly relate to the change in political context during de Klerk’s term. Whilst, the words prevailing in the other five presidents’ speeches appear to foreground the continuation of this changed political climate with positive-sentiment words like “improve”, “better”, “freedom” and “peace”.  Additionally, the shared negative-sentiment words like “crime”, “corruption” and “poverty” foreground the commonality of perpetuating problems that became pronounced throughout all presidential terms after de Klerk. 
 
 
 ```{python}
@@ -636,8 +640,8 @@ def plot_speeches_by_president(df, lexicon):
         plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
     plt.xlabel('Date', fontsize=20)
     plt.ylabel(f'Sentiment Score', fontsize=20)
-    plt.xticks(fontsize=16, rotation=45)
-    plt.yticks(fontsize=16)
+    plt.xticks(fontsize=14, rotation=45)
+    plt.yticks(fontsize=14)
     plt.legend(loc ="upper left")
     plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
     plt.close()  # Close the figure to avoid displaying it in the notebook
@@ -827,7 +831,11 @@ plot_top_words(word_sentiments_afinn, 'AFINN')
 
 <h4> Latent Semantic Analysis (LSA) </h4> 
 
+In the micro-context (i.e., word tokenization) of LSA implementation, the maximum coherence score of -1.5 seen in @fig-words-coherence indicates that three topics are optimal when utilizing the tf-idf approach. In contrast, there is no discernible difference in the coherence scores across a range of topic numbers when instead using the BoW approach. Hence, for comparative purposes, three topics are also chosen as best in this instance.
+
 ![Coherence plot for LSA where SONA speeches were tokenized by words.](lsa_plots/words_coherence_plots){#fig-words-coherence}
+
+Unlike within the micro-context, LSA now applied in the maro-context (i.e., sentence tokenization) indicates more variability in the choice of the optimal topic number for both BoW and tf-idf approaches. Due to the excessive jumps between high and low coherence scores across the topic amounts seen in Figure, it is opted to choose the lowest number (but greater than two). This choice aims to limit potential theme-overlapping (i.e., many common words shared across topics) and allow for more conciseness. 
 
 ::: {#fig-LSA-words-BoW-topics layout-ncol=2}
 
@@ -848,25 +856,28 @@ Topic-by-word plots for BoW (left) and tf-idf (right) approach for LSA implement
 
 ![Coherence plot for LSA where SONA speeches were tokenized by sentences.](lsa_plots/sentence_coherence_plots.png){#fig-sentences-coherence}
 
-::: {#fig-LSA-sentences-BoW-topics layout-ncol=2}
+::: {#fig-LSA-sentences-BoW-topics layout-ncol=3}
 
 ![BoW: Topic 1](lsa_plots/sentences_bow_topic_1.png){#fig-sentences-bow-topic1}
 
-![tf-idf: Topic 1](lsa_plots/sentences_tfidf_topic_1.png){#fig-sentences-tfidf-topic1}
-
 ![BoW: Topic 2](lsa_plots/sentences_bow_topic_2.png){#fig-sentences-bow-topic2}
-
-![tf-idf: Topic 2](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
 
 ![BoW: Topic 3](lsa_plots/sentences_bow_topic_3.png){#fig-sentences-bow-topic3}
 
-![tf-idf: Topic 3](lsa_plots/sentences_tfidf_topic_3.png){#fig-sentences-tfidf-topic3}
+SONA speeches tokenized by sentences for BoW approach for LSA implementation.
+:::
 
-![BoW: Topic 4](lsa_plots/sentences_bow_topic_4.png){#fig-sentences-bow-topic4}
+::: {#fig-LSA-sentences-tfidf-topics layout-ncol=2}
+
+![tf-idf: Topic 1](lsa_plots/sentences_tfidf_topic_1.png){#fig-sentences-tfidf-topic1}
+
+![tf-idf: Topic 2](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
+
+![tf-idf: Topic 3](lsa_plots/sentences_tfidf_topic_3.png){#fig-sentences-tfidf-topic3}
 
 ![tf-idf: Topic 4](lsa_plots/sentences_tfidf_topic_4.png){#fig-sentences-tfidf-topic4}
 
-SONA speeches tokenized by sentences for BoW (left) and tf-idf (right) approach for LSA implementation.
+SONA speeches tokenized by sentences for tf-idf approach for LSA implementation.
 :::
 
 
@@ -964,7 +975,7 @@ plt.close()
 ```{python}
 
 lsa_bow_words = LsiModel(corpus=bow_corpus, num_topics=3, id2word=dictionary)
-lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=4, id2word=dict_sentences)
+lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=3, id2word=dict_sentences)
 
 lsa_tfidf_words = LsiModel(corpus=tfidf_corpus, num_topics=3, id2word=dictionary)
 lsa_tfidf_sentences = LsiModel(corpus=tfidf_corpus_sentences, num_topics=4, id2word=dict_sentences)
@@ -1056,8 +1067,9 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 
 <h4> pLSA </h4> 
 
-![Coherence plot for pLSA where SONA speeches were tokenized by words.](plsa_plots/words_coherence.png){#fig-pLSA-words-coherence}
+As previously found with the implementation of LSA, there is essentially no variability in the coherence scores when utilizing the BoW approach for the word-tokenized application of pLSA. Though, like with LSA, there are fluctuating changes in the coherence scores across topic numbers when considering the tf-idf approach. Again, it is opted to take the minimum-best (based on tf-idf) number of three topics for both approaches which
 
+![Coherence plot for pLSA where SONA speeches were tokenized by words.](plsa_plots/words_coherence.png){#fig-pLSA-words-coherence}
 
 ::: {#fig-pLSA-words-tfidf-topics layout-ncol=2}
 
@@ -1120,6 +1132,9 @@ sona_sentences_alltogether['sentence'].to_csv('data/sona_sentences_only.csv', in
 ```{python}
 
 import math
+import random 
+
+random.seed(5)
 
 def calculate_umass_coherence(plsa_result, corpus, top_n=10, tf_idf=False):
     # Extract the top N words for each topic
@@ -1169,6 +1184,9 @@ import matplotlib.pyplot as plt
 from plsa import Corpus, Pipeline, Visualize
 from plsa.pipeline import DEFAULT_PIPELINE
 from plsa.algorithms import PLSA
+import random 
+
+random.seed(5)
 
 pipeline = Pipeline(*DEFAULT_PIPELINE)
 
@@ -1595,9 +1613,9 @@ pyLDAvis.display(vis_data_sentences)
 
 ::: {#fig-CTM-coherence layout-ncol=2}
 
-![Words](ctm_plots/words_1.png){#fig-ctm-coherence-words}
+![Words](ctm_plots/words_coherence_plots.png){#fig-ctm-coherence-words}
 
-![Sentences](ctm_plots/sentences_1.png){#fig-ctm-coherence-sentences}
+![Sentences](ctm_plots/sentences_coherence_plots.png){#fig-ctm-coherence-sentences}
 
 Coherence plots for CTM across different tokens (words or sentences) implemented within BoW approach.
 :::
@@ -1754,9 +1772,9 @@ for k in range(ctms.k):
 
 ::: {#fig-ATM-coherence layout-ncol=2}
 
-![Words](atm_plots/words_1.png){#fig-atm-coherence-words}
+![Words](atm_plots/words_coherence_plots.png){#fig-atm-coherence-words}
 
-![Sentences](atm_plots/sentences_1.png){#fig-atm-coherence-sentences}
+![Sentences](atm_plots/sentences_coherence_plots.png){#fig-atm-coherence-sentences}
 
 Coherence plots for ATM across different tokens (words or sentences) implemented within BoW approach.
 :::
@@ -1771,6 +1789,8 @@ Coherence plots for ATM across different tokens (words or sentences) implemented
 ![Words: Topic 2](ctm_plots/words_2.png){#fig-atm-words-topic2}
 
 ![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-atm-sentences-topic2}
+
+![Words: Topic 3](ctm_plots/words_3.png){#fig-atm-words-topic3}
 
 Topic plots where either words (left) or sentences (right) were used as tokens for ATM application. 
 :::
@@ -1874,7 +1894,7 @@ plt.close()
 ```{python}
 
 # Author-Topic LDA model with the current number of topics
-author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=2)
+author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=3)
 author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, author2doc=author2sent, id2word=dict_sentences, num_topics=2)
 
 # Train the model
