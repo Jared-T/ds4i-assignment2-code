@@ -1185,10 +1185,17 @@ def calculate_umass_coherence(plsa_result, corpus, top_n=10, tf_idf=False):
 
 ```{python}
 
+# Run 4.5
+
 pipeline = Pipeline(*DEFAULT_PIPELINE)
 
 corpus = Corpus.from_csv("data/sona_speeches_only.csv", pipeline)
 corpus_sent = Corpus.from_csv("data/sona_sentences_only.csv", pipeline)
+
+```
+
+
+```{python}
 
 topic_numbers = range(2, 12, 1)
 
