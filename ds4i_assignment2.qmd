@@ -1182,10 +1182,6 @@ import matplotlib.pyplot as plt
 from plsa import Corpus, Pipeline, Visualize
 from plsa.pipeline import DEFAULT_PIPELINE
 from plsa.algorithms import PLSA
-<<<<<<< HEAD
-=======
-
->>>>>>> 667af5fbe3523d72ad0432317855a2ad7b00b157
 
 pipeline = Pipeline(*DEFAULT_PIPELINE)
 
