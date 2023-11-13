@@ -1542,6 +1542,8 @@ plt.close()
 
 ```{python}
 #| output: true
+#| label: word-lda
+#| tbl-cap: "A table of coherence values obtained from a grid search of hyperparameter combinations on dataset tokenized by words."
 
 def style_df(df):
     # Select the numeric columns except the first one
@@ -1563,6 +1565,8 @@ style_df(combined_speeches_df)
 
 ```{python}
 #| output: true
+#| label: sent-lda
+#| tbl-cap: "A table of coherence values obtained from a grid search of hyperparameter combinations on dataset tokenized by sentences."
 
 # Save the results to a csv
 style_df(combined_sentences_df)
