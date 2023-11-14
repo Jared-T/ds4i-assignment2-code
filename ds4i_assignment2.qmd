@@ -1684,7 +1684,7 @@ Coherence plots for CTM across different tokens (words or sentences) implemented
 
 ![Sentences: Topic 3 ~ social collectives](ctm_plots/sentences_3.png){#fig-ctm-sentences-topic3}
 
-Topic plots where either words (left) or sentences (right) were used as tokens for CTM application. 
+Topic plots where either sentences (left) or words (right) were used as tokens for CTM application. 
 :::
 
 
@@ -1867,17 +1867,17 @@ Coherence plots for ATM across different tokens (words or sentences) implemented
 
 ::: {#fig-ATM-topics layout-ncol=2}
 
-![Sentences: Topic 1](atm_plots/sentences_1.png){#fig-atm-sentences-topic1}
+![Sentences: Topic 1 ~ social cohesion](atm_plots/sentences_1.png){#fig-atm-sentences-topic1}
 
-![Words: Topic 1](atm_plots/words_1.png){#fig-atm-words-topic1}
+![Words: Topic  1 ~ diplomatic strategy](atm_plots/words_1.png){#fig-atm-words-topic1}
 
-![Sentences: Topic 2](atm_plots/sentences_2.png){#fig-atm-sentences-topic2}
+![Sentences: Topic 2 ~ prospective plans](atm_plots/sentences_2.png){#fig-atm-sentences-topic2}
 
-![Words: Topic 2](atm_plots/words_2.png){#fig-atm-words-topic2}
+![Words: Topic 2 ~ general strategic vision](atm_plots/words_2.png){#fig-atm-words-topic2}
 
-![Sentences: Topic 3](atm_plots/sentences_3.png){#fig-atm-sentences-topic3}
+![Sentences: Topic 3 ~ esteem within governmental structures](atm_plots/sentences_3.png){#fig-atm-sentences-topic3}
 
-Topic plots where either words (left) or sentences (right) were used as tokens for ATM application. 
+Topic plots where either sentences (left) or words (right) were used as tokens for ATM application. 
 :::
 
 
@@ -2065,11 +2065,9 @@ sona_speeches_clean['president'].unique()
 
 # TODO: Add topic labels
 
-# topic_labels_words = ['Circuits', 'Neuroscience', 'Numerical optimization']
+# topic_labels_words = ['Diplomatic strategy', 'General strategic vision']
 
-# topic_labels_sents = ['Circuits', 'Neuroscience', 'Numerical optimization', 'Object recognition', \
-#                'Math/general', 'Robotics', 'Character recognition', \
-#                 'Reinforcement learning', 'Speech recognition', 'Bayesian modelling']
+# topic_labels_sents = ['Social cohesion', 'Prospective plans', Respect within governmental structures']
 
 # Show the topics for each author
 # show_author('Mandela', author_topic_model, topic_labels_words)
