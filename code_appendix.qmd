@@ -9,6 +9,8 @@ execute:
   output: false
 ---
 
+<h4> Data pre-processing </h4> 
+<hr>
 ```{python}
 
 # Loading in the necessary libraries
@@ -228,7 +230,8 @@ tfidf_matrix_words = tfidf_vectorizer.fit_transform(sona_speeches_clean['speech'
 
 ```
 
-
+<h4> Exploratory data analysis </h4> 
+<hr>
 ```{python}
 
 from matplotlib.colors import LinearSegmentedColormap
@@ -313,7 +316,11 @@ for president, top_words in top_10_words_by_president.items():
     plt.savefig(f'saved_plots/{president}_top_words.png', bbox_inches='tight')
     plt.close()  # Close the figure to avoid displaying it in the notebook
 
+```
 
+<h4> Sentiment analysis </h4> 
+<hr>
+```{python}
 import pandas as pd
 import nltk
 from nltk.corpus import opinion_lexicon
@@ -568,6 +575,10 @@ plot_top_words(word_sentiments_afinn, 'AFINN')
 ```
 
 
+
+<h4> Topic modelling: LSA </h4> 
+<hr>
+
 ```{python}
 
 texts = sona_speeches_clean['speech']
@@ -624,7 +635,6 @@ tfidf_model_list_sentences, tfidf_coherence_values_sentences = compute_coherence
 coherence_df = pd.DataFrame({'bow_coherence_values': bow_coherence_values, 'tfidf_coherence_values': tfidf_coherence_values, 'bow_coherence_values_sentences': bow_coherence_values_sentences, 'tfidf_coherence_values_sentences': tfidf_coherence_values_sentences})
 
 coherence_df.to_csv('lsa_plots/coherence_values.csv', index=False)
-
 
 from matplotlib.ticker import MaxNLocator
 
@@ -706,7 +716,13 @@ plot_top_words_for_each_topic(lsa_bow_words, 'words', 'bow')
 plot_top_words_for_each_topic(lsa_bow_sentences, 'sentences', 'bow')
 plot_top_words_for_each_topic(lsa_tfidf_words, 'words', 'tfidf')
 plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
+```
 
+
+
+<h4> Topic modelling: pLSA </h4> 
+<hr>
+```{python}
 sona_speeches_clean['speech'].to_csv('data/sona_speeches_only.csv', index=False)
 sona_sentences_alltogether['sentence'].to_csv('data/sona_sentences_only.csv', index=False)
 
@@ -873,8 +889,11 @@ plot_word_contribution(bow_result, 'words-BoW')
 plot_word_contribution(tfidf_result, 'words-tf-idf')
 plot_word_contribution(bow_result_sent, 'sentences-BoW')
 plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
+```
 
-
+<h4> Topic modelling: LDA </h4>
+<hr>
+```{python}
 texts = sona_speeches_clean['speech']
 sentences = sona_sentences_alltogether['sentence']
 
@@ -1109,8 +1128,11 @@ pyLDAvis.display(vis_data_speeches)
 
 # Display the visualization
 pyLDAvis.display(vis_data_sentences)
+```
 
-
+<h4> Topic modelling: CTM </h4>
+<hr>
+```{python}
 import tomotopy as tp
 import matplotlib.pyplot as plt
 
@@ -1247,8 +1269,11 @@ for k in range(ctms.k):
 
     if i == 2:
         i = 0
+```
 
-
+<h4> Topic modelling: ATM </h4>
+<hr>
+```{python}
 # Note that ATM only works for BoW. Raw word counts (BoW) is standard because these models are based on the assumption that the data is generated from a multinomial distribution, which does not hold with TF-IDF weights.
 
 texts = sona_speeches_clean['speech']

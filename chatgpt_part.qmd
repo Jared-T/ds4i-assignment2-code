@@ -6,33 +6,33 @@ format: html
 
 In an endeavour to explore the capabilities of artificial intelligence in the realm of data analysis, specifically sentiment analysis and topic modelling, we employed ChatGPT, a large language model developed by OpenAI. This reflection critically assesses its performance across five distinct areas.
 
-<h4>Code Generation for Python:</h4>
-
+<h4>Code Generation for Python</h4>
+<hr>
 ChatGPT demonstrated a commendable aptitude in assisting with Python code generation. Using ChatGPT4, which has a Python interpreter, its ability to understand and generate code snippets was impressive, significantly streamlining the initial stages of the data analysis process. However, it is important to note that the model's suggestions occasionally required adjustments to align with specific project requirements, underscoring the necessity for a foundational understanding of Python. Prompts that were slightly vague also resulted in less relevant outputs, highlighting the importance of providing specific instructions to the model.
 
-<h4>Academic Writing:</h4>
-
+<h4>Academic Writing</h4>
+<hr>
 The model's proficiency extended to aiding in the creation of academic write-ups. Upon receiving a bullet-point list of key findings (from figures or tables), ChatGPT efficiently transformed it into a coherent and elegantly structured paragraph, adhering to an academic style. This feature was particularly beneficial in synthesising complex information into a format suitable for academic discourse.
 
-<h4>Debugging and Quarto Markdown:</h4>
-
+<h4>Debugging and Quarto Markdown</h4>
+<hr>
 ChatGPT's performance in debugging code and resolving Quarto markdown errors was a mixed experience. While it efficiently identified and suggested fixes for several common errors, its capability was somewhat limited in diagnosing more complex, context-specific issues (Quarto markdown is also relatively new, so the model may not have had enough data to train on for QMD files specifically). This limitation necessitated additional manual intervention, indicating an area for potential improvement. 
 
-<h4>Creative Writing Processes:</h4>
-
+<h4>Creative Writing Processes</h4>
+<hr>
 The model's utility in creative tasks, such as generating topic names based on a list of keywords, was noteworthy. It exhibited a creative flair, suggesting engaging and pertinent topic names that encapsulated the essence of the top words in a given topic (and often the same names as ones that a human would come up with). This feature was invaluable in adding a creative dimension to the otherwise technical task of topic modelling.
 
-<h4>Research Questions and Citations:</h4>
-
+<h4>Research Questions and Citations</h4>
+<hr>
 ChatGPT proved to be a reliable resource in answering general research questions, although it struggled to match those answers to accurate citations, which meant that sources would often have to be found manually. Despite this drawback, its ability to utilise a wide range of sources and present information in a concise manner was particularly advantageous. However, the model's reliance on pre-existing knowledge up to its last training cut-off in April 2023 meant that the most recent publications were not included, highlighting the importance of supplementing its suggestions with up-to-date research, if required.
 
-<h4>Additional comments:</h4>
+<h4>Additional comments</h4>
+<hr>
+ChatGPT, in its role as an assistant in this sentiment analysis and topic modelling project, exhibited strengths in code generation, academic writing, and creative brainstorming. However, its limitations in handling complex debugging tasks and its dependency on pre-trained data for research and citations suggest that while it is an invaluable tool, it cannot yet fully replace human expertise and up-to-date research methodologies. Prompts to guide the model towards more specific outputs and periodic validation of its suggestions against current standards were essential in optimising its performance. In a nutshell, it is currently a more powerful version of a search engine and just like a search engine, one needs an idea of what the exact information is desired.
 
-ChatGPT, in its role as an assistant in this sentiment analysis and topic modelling project, exhibited strengths in code generation, academic writing, and creative brainstorming. However, its limitations in handling complex debugging tasks and its dependency on pre-trained data for research and citations suggest that while it is an invaluable tool, it cannot yet fully replace human expertise and up-to-date research methodologies. Prompts to guide the model towards more specific outputs and periodic validation of its suggestions against current standards were essential in optimising its performance. In a nutshell, it is currently a more powerful version of a search engine and just like a search engine, you have to have an idea of what you are looking for.
-
-<h4>Link to ChatGPT examples:</h4>
-
-The link to some examples [here](https://chat.openai.com/share/2947cb96-db68-4ddc-bf15-9301d77a524c)
+<h4>Link to ChatGPT examples</h4>
+<hr>
+The exploration of our examples is found [here](https://chat.openai.com/share/2947cb96-db68-4ddc-bf15-9301d77a524c).
 
 
 </div> 

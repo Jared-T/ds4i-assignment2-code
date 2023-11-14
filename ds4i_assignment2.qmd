@@ -861,14 +861,11 @@ In the micro-context (i.e., word tokenization) of LSA implementation, the maximu
 
 ![Coherence plot for LSA where SONA speeches were tokenized by words.](lsa_plots/words_coherence_plots){width=500 height=300 #fig-words-coherence}
 
-Considering @fig-LSA-words-topics, a different overarching focus seems to come to the fore contingent on whether the BoW or tf-idf approach is examined. With reference to the BoW-related corpus, the broad scope of the three topics appears associated to national frameworks and the future thereof. More particularly, the first topic labelled as governance alludes to processes (“work”, “development”) established by institutions (“government”) which direct communities (“public”, “people”).
-Words like “infrastructure”, “investment” and “energy” seem to indicate structural resources, which encompasses the second topic.  The third topic, sustainability, is more related to the prospective of long-term (“years”) endurance (“continue”) across these governmental processes and resources. 
-
-On the other hand, with respect to the tf-idf-related corpus, the three topics now instead appear concentrated on current issues. The first topic centers on a sole problem, particularly that of common (“compatriots”) “pandemic” preparedness (“plan”). Whereas, the second topic broadens to other additional issues contextual to the country. Hence, in this case, the challenges range from energy (“eskom”) problems (“loadshedding”) to the “covid” “pandemic” to the government’s corruption (state “capture”). Most words contained in the third topic all already feature in topic one or two already. Given this lack of unique distinction, topic three is said to simply be a synthesis of the two, aforementioned topics. 
+Considering @fig-LSA-words-topics, a different overarching focus seems to come to the fore contingent on whether the BoW or tf-idf approach is examined. With respect to the tf-idf-related corpus, the topics appear concentrated on current issues. The first topic centers on a sole problem, particularly that of common (“compatriots”) “pandemic” preparedness (“plan”). Whereas, the second topic broadens to other additional issues contextual to the country. Hence, in this case, the challenges range from energy (“eskom”) problems (“loadshedding”) to the “covid” “pandemic” to the government’s corruption (state “capture”). Most words contained in the third topic all already feature in topic one or two already. Given this lack of unique distinction, topic three is said to simply be a synthesis of the two, aforementioned topics. In comparison, the BoW-related corpus alludes to a different array of topics. The first topic being that of societal collectives (“people”, “public”, “us”). The second topic encompassing structural resources suggested with words like “infrastructure”, “investment” and “energy”. Finally, the third topic, sustainability, relates to the prospective of long-term (“years”) endurance (“continue”) across these collectives and structures. 
 
 ::: {#fig-LSA-words-topics layout-ncol=2}
 
-![BoW: Topic 1 ~ governance](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
+![BoW: Topic 1 ~ societal collectives](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
 
 ![tf-idf: Topic 1 ~ pandemic preparedness](lsa_plots/words_tfidf_topic_1.png){#fig-words-tfidf-topic1}
 
@@ -888,21 +885,22 @@ Unlike within the micro-context, LSA now applied in the maro-context (i.e., sent
 ![Coherence plot for LSA where SONA speeches were tokenized by sentences.](lsa_plots/sentence_coherence_plots.png){width=500 height=300 #fig-sentences-coherence}
 
 
-Given @fig-LSA-sentences-topics, more of an overlap in topic scope across both corpus types is seen for the sentence-tokenized speeches. For instance, the second topic for the BoW-related corpus and the first topic for the tf-idf-related corpus are both labelled as governance, given the commonly shared words (“government”, “people”, “work” and “development”). The first topic for this former-mentioned corpus accounts for the internal structures (“leaders”, “assembly”, “president”, “members”) related to governance. Whilst, the second topic of the tf-idf-related corpus is very distinguishable with the dominant weighting of the word “thank”, connotated with a sense of gratitude. This topic also refers to some reformation indicators like “opportunity” and “growth”. 
+When instead tokenized by sentences, there is poor topic distinction for the BoW-related corpus. As seen in @fig-LSA-sentences-topics, both topics produced signal governmental structures with the overlap in words (“president”, “members”, “deputy”, “leaders”). Contrastingly, the tf-idf-related corpus allows for more distinguishable topics with one signifying the structures (“programme”) put in place by “government” for “social” and “economic” “development”, and the other suggesting a sense of gratitude (with the dominant weighting of the word “thank”) and some reformation indicators like “opportunity” and “growth”. 
 
 ::: {#fig-LSA-sentences-topics layout-ncol=2}
 
 ![BoW: Topic 1 ~ governmental structures](lsa_plots/sentences_bow_topic_1.png){#fig-sentences-bow-topic1}
 
-![tf-idf: Topic 1 ~ governance](lsa_plots/sentences_tfidf_topic_1.png){#fig-sentences-tfidf-topic1}
+![tf-idf: Topic 1 ~ economic and social governance](lsa_plots/sentences_tfidf_topic_1.png){#fig-sentences-tfidf-topic1}
 
-![BoW: Topic 2 ~  governance](lsa_plots/sentences_bow_topic_2.png){#fig-sentences-bow-topic2}
+![BoW: Topic 2 ~ governmental structures](lsa_plots/sentences_bow_topic_2.png){#fig-sentences-bow-topic2}
 
-![tf-idf: Topic 2 ~ reformation and gratitude](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
+![tf-idf: Topic 2 ~ gratitude and reformation](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
 
 
 SONA speeches tokenized by sentences for BoW (left) and tf-idf (right) approach for LSA implementation.
 :::
+
 
 
 ```{python}
@@ -1074,59 +1072,67 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 
 <h4> pLSA </h4> 
 
-As previously found with the implementation of LSA, there is essentially no variability in the coherence scores when utilizing the BoW approach for the word-tokenized application of pLSA. Though, like with LSA, there are fluctuating changes in the coherence scores across topic numbers when considering the tf-idf approach. Again, it is opted to take the minimum-best (based on tf-idf) topic number to apply in both approaches, amounting to five in this case. 
+As previously found with the implementation of LSA, there is essentially no variability in the coherence scores when utilizing the BoW approach for the word-tokenized application of pLSA. Though, like with LSA, there are fluctuating changes in the coherence scores across topic numbers when considering the tf-idf approach. Again, it is opted to take the minimum-best topic number (based on tf-idf) to apply in both approaches, amounting to five in this case. 
 
 ![Coherence plot for pLSA where SONA speeches were tokenized by words.](plsa_plots/words_coherence.png){width=500 height=300 #fig-pLSA-words-coherence}
 
+For the word-tokenized speeches within the BoW framework, the first four topics reflect four different facets of governance, the processes (“work”, “development”) established by institutions which direct communities (“public”, “people”). Emphasis on the arrangement and form of “government” is made via explicit reference to the “system” and “sector” of “service”, thereby denoting structural governance. Then, issues that affect the order and well-being of the “nation” and “society” in general like “crime” alludes to ideas of social governance. Economic governance forms the third topic with the mention of “business”, “economy”, “work”, “job” and “investment”, whilst the reference to the resource “water” produces the fourth topic and facet of governance. The re-appearance of the words, “service” and “sector” from topic one and “business” and “investment” from topic three means the fifth topic can be described as a combination of both structural and economic governance, respectively. 
+
+In comparison, the tf-idf framework, constructs completely different topics which are unrelated to governance. Firstly, the pandemic (“covid”) and the resultant strain on resources (“vaccine”, “energy”, “rand”, “emergency”) features in topic one. Ideas of prosperity (“happiness”, “dream”, “triumph”) and resolution (“question”, “sense”, “reconstruction”) then forms the second and third topic, respectively. The last two topics reference sport (“cricket”, “soccer”, “bafana”) as well as the idea of associated support (“compatriot”) or alternatively the effect on the economy (“rand”, “jobcreation”). 
+
 ::: {#fig-pLSA-words-topics layout-ncol=2}
 
-![BoW: Topic 1](plsa_plots/words-BoW_topic_1.png){#fig-pLSA-words-bow-topic1}
+![BoW: Topic 1 ~ structural governance](plsa_plots/words-BoW_topic_1.png){#fig-pLSA-words-bow-topic1}
 
-![tf-idf: Topic 1](plsa_plots/words-tf-idf_topic_1.png){#fig-pLSA-words-tfidf-topic1}
+![tf-idf: Topic 1 ~ pandemic and resources](plsa_plots/words-tf-idf_topic_1.png){#fig-pLSA-words-tfidf-topic1}
 
-![BoW: Topic 2](plsa_plots/words-BoW_topic_2.png){#fig-pLSA-words-bow-topic2}
+![BoW: Topic 2 ~ social governance](plsa_plots/words-BoW_topic_2.png){#fig-pLSA-words-bow-topic2}
 
-![tf-idf: Topic 2](plsa_plots/words-tf-idf_topic_2.png){#fig-pLSA-words-tfidf-topic2}
+![tf-idf: Topic 2 ~ prosperity](plsa_plots/words-tf-idf_topic_2.png){#fig-pLSA-words-tfidf-topic2}
 
-![BoW: Topic 3](plsa_plots/words-BoW_topic_3.png){#fig-pLSA-words-bow-topic3}
+![BoW: Topic 3 ~ economic governance](plsa_plots/words-BoW_topic_3.png){#fig-pLSA-words-bow-topic3}
 
-![tf-idf: Topic 3](plsa_plots/words-tf-idf_topic_3.png){#fig-pLSA-words-tfidf-topic3}
+![tf-idf: Topic 3 ~ resolution](plsa_plots/words-tf-idf_topic_3.png){#fig-pLSA-words-tfidf-topic3}
 
-![BoW: Topic 4](plsa_plots/words-BoW_topic_4.png){#fig-pLSA-words-bow-topic4}
+![BoW: Topic 4 ~ resource governance](plsa_plots/words-BoW_topic_4.png){#fig-pLSA-words-bow-topic4}
 
-![tf-idf: Topic 4](plsa_plots/words-tf-idf_topic_4.png){#fig-pLSA-words-tfidf-topic4}
+![tf-idf: Topic 4 ~ sport and support](plsa_plots/words-tf-idf_topic_4.png){#fig-pLSA-words-tfidf-topic4}
 
-![BoW: Topic 5](plsa_plots/words-BoW_topic_5.png){#fig-pLSA-words-bow-topic5}
+![BoW: Topic 5 ~ structural and economic governance](plsa_plots/words-BoW_topic_5.png){#fig-pLSA-words-bow-topic5}
 
-![tf-idf: Topic 5](plsa_plots/words-tf-idf_topic_5.png){#fig-pLSA-words-tfidf-topic5}
+![tf-idf: Topic 5 ~ sport and economy](plsa_plots/words-tf-idf_topic_5.png){#fig-pLSA-words-tfidf-topic5}
 
 Topic plots for pLSA tokenized by words and executed within a BoW (left) and tf-idf (right) framework. 
 :::
 
 
+Again, like in LSA, the coherence scores oscillate across a topic-number range when using sentence-tokenized speeches for pLSA. For both corpus approaches, the first peak is reached at four topics, as rendered in @fig-pLSA-sentences-coherence. 
+
 ![Coherence plot for pLSA where SONA speeches were tokenized by sentences.](plsa_plots/sentences_coherence.png){width=500 height=300 #fig-pLSA-sentences-coherence}
+
+
+From @fig-pLSA-sentences-topics, some slight similarity in topic type compared to the word-tokenized speeches is seen, specifically that of governance facets. Structural and social governance re-appear as the second and fourth topics for the BoW-related corpus, respectively. Whilst, economic governance is again seen for the tf-idf-related corpus, either combined with resource governance (topic one) or growth (topic four). Governmental structures, previously described as a topic part of the sentence-tokenized LSA implementation, also appears here again.  Evidently, there is some topic correspondence across the different tokenized corpora and different topic modelling approaches. 
 
 ::: {#fig-pLSA-sentences-topics layout-ncol=2}
 
-![BoW: Topic 1](plsa_plots/sentences-BoW_topic_1.png){#fig-pLSA-sentences-bow-topic1}
+![BoW: Topic 1 ~ governance growth](plsa_plots/sentences-BoW_topic_1.png){#fig-pLSA-sentences-bow-topic1}
 
-![tf-idf: Topic 1](plsa_plots/sentences-tf-idf_topic_1.png){#fig-pLSA-sentences-tfidf-topic1}
+![tf-idf: Topic 1 ~ economic and resource governance](plsa_plots/sentences-tf-idf_topic_1.png){#fig-pLSA-sentences-tfidf-topic1}
 
-![BoW: Topic 2](plsa_plots/sentences-BoW_topic_2.png){#fig-pLSA-sentences-bow-topic2}
+![BoW: Topic 2 ~ structural governance](plsa_plots/sentences-BoW_topic_2.png){#fig-pLSA-sentences-bow-topic2}
 
-![tf-idf: Topic 2](plsa_plots/sentences-tf-idf_topic_2.png){#fig-pLSA-sentences-tfidf-topic2}
+![tf-idf: Topic 2 ~ governmental structures](plsa_plots/sentences-tf-idf_topic_2.png){#fig-pLSA-sentences-tfidf-topic2}
 
-![BoW: Topic 3](plsa_plots/sentences-BoW_topic_3.png){#fig-pLSA-sentences-bow-topic3}
+![BoW: Topic 3 ~ social collectives in education](plsa_plots/sentences-BoW_topic_3.png){#fig-pLSA-sentences-bow-topic3}
 
-![tf-idf: Topic 3](plsa_plots/sentences-tf-idf_topic_3.png){#fig-pLSA-sentences-tfidf-topic3}
+![tf-idf: Topic 3 ~ overall governance](plsa_plots/sentences-tf-idf_topic_3.png){#fig-pLSA-sentences-tfidf-topic3}
 
-![BoW: Topic 4](plsa_plots/sentences-BoW_topic_4.png){#fig-pLSA-sentences-bow-topic4}
+![BoW: Topic 4 ~ social governance](plsa_plots/sentences-BoW_topic_4.png){#fig-pLSA-sentences-bow-topic4}
 
-![tf-idf: Topic 4](plsa_plots/sentences-tf-idf_topic_4.png){#fig-pLSA-sentences-tfidf-topic4}
+![tf-idf: Topic 4 ~ economic governance and growth](plsa_plots/sentences-tf-idf_topic_4.png){#fig-pLSA-sentences-tfidf-topic4}
 
 Topic plots for pLSA using sentences as tokens and applied within a BoW (left) and tf-idf (right) framework. 
 :::
-
 
 
 ```{python}
@@ -1662,23 +1668,25 @@ pyLDAvis.display(vis_data_sentences)
 
 <h4> CTM </h4> 
 
+When accounting for potential correlation between topics,  @fig-ctm-coherence-sentences (for sentence-tokenized speeches) and @Cfig-ctm-coherence-words (for word-tokenized speeches) indicate that the optimal number of topics for the BoW-related corpus is three and two, respectively. 
 
 ::: {#fig-CTM-coherence layout-ncol=2}
 
-![Words ~ economy](ctm_plots/words_coherence_plots.png){#fig-ctm-coherence-words}
+![Sentences](ctm_plots/sentences_coherence_plots.png){#fig-ctm-coherence-sentences}
 
-![Sentences ~ economy](ctm_plots/sentences_coherence_plots.png){#fig-ctm-coherence-sentences}
+![Words](ctm_plots/words_coherence_plots.png){#fig-ctm-coherence-words}
 
 Coherence plots for CTM across different tokens (words or sentences) implemented within BoW approach.
 :::
+
 
 ::: {#fig-CTM-topics layout-ncol=2}
 
 ![Sentences: Topic 1 ~ economy](ctm_plots/sentences_1.png){#fig-ctm-sentences-topic1}
 
-![Words: Topic 1 ~ economic governance](ctm_plots/words_1.png){#fig-ctm-words-topic1}
+![Words: Topic 1 ~ economic and social governance](ctm_plots/words_1.png){#fig-ctm-words-topic1}
 
-![Sentences: Topic 2 ~ economic and structural advancement](ctm_plots/sentences_2.png){#fig-ctm-sentences-topic2}
+![Sentences: Topic 2 ~ economic, social, and structural governance](ctm_plots/sentences_2.png){#fig-ctm-sentences-topic2}
 
 ![Words: Topic 2 ~ societal collectives](ctm_plots/words_2.png){#fig-ctm-words-topic2}
 
@@ -1702,6 +1710,7 @@ tokenized_docs = [text.split() for text in sona_speeches_clean['speech']]  # Ens
 tokenized_sentences = [text.split() for text in sona_sentences_alltogether['sentence']]  # Ensure the texts are tokenized
 
 ```
+
 
 ```{python}
 
