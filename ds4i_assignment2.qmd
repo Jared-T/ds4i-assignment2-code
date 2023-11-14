@@ -1668,7 +1668,7 @@ pyLDAvis.display(vis_data_sentences)
 
 <h4> CTM </h4> 
 
-When accounting for potential correlation between topics,  @fig-ctm-coherence-sentences (for sentence-tokenized speeches) and @Cfig-ctm-coherence-words (for word-tokenized speeches) indicate that the optimal number of topics for the BoW-related corpus is three and two, respectively. 
+When accounting for potential correlation between topics,  @fig-ctm-coherence-sentences (for sentence-tokenized speeches) and @fig-ctm-coherence-words (for word-tokenized speeches) indicate that the optimal number of topics for the BoW-related corpus is three and two, respectively. 
 
 ::: {#fig-CTM-coherence layout-ncol=2}
 
