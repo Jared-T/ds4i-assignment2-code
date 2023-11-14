@@ -1608,7 +1608,7 @@ style_df(combined_sentences_df)
 ```{python}
 #| eval: true
 
-# TODO: Set the number of topics based on the plots
+# Set the number of topics based on the plots
 
 # Train the best models for each corpus
 lda_model_speeches = LdaModel(corpus=bow_corpus,
@@ -1989,7 +1989,7 @@ plt.close()
 
 # Run 9
 
-# TODO: Set the number of topics based on the plots
+# Set the number of topics based on the plots
 
 # Author-Topic LDA model with the current number of topics
 author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=2)
@@ -2038,43 +2038,92 @@ for k in range(author_topic_model_sentences.num_topics):
 ```
 
 
+
 ```{python}
 
-# Run 10
-
+import pandas as pd
+import numpy as np
 from pprint import pprint
 
+# Assuming sona_speeches_clean and the topic models are already defined
+# Define the topic labels
+topic_labels_words = ['Diplomatic strategy', 'General strategic vision']
+topic_labels_sents = ['Social cohesion', 'Prospective plans', 'Esteem within governmental structures']
+
+# Function to show topics for each author
 def show_author(name, model, topic_labels):
-    print('\n%s' % name)
-    print('Docs:', pd.Series(author_topic_model.author2doc[name]).unique())
-    print('Topics:')
-    pprint([(topic_labels[topic[0]], topic[1]) for topic in model[name]])
+    if name not in model.author2doc:
+        print(f"No topics found for {name}")
+        return np.array([]), []
+
+    topics_data = model[name]
+    doc_ids = pd.Series(model.author2doc[name]).unique()
+
+    topics = []
+    for topic in topics_data:
+        if topic[0] < len(topic_labels):
+            topics.append((topic_labels[topic[0]], topic[1]))
+        else:
+            print(f"Topic index out of range for {name}: {topic[0]}")
+
+    return doc_ids, topics
+
+
+# Style function for the DataFrame
+def style_df(df):
+    numeric_cols = df.select_dtypes(include=['number']).columns[1:]
+    format_dict = {col: "{:.2f}" for col in numeric_cols}
+    styles = [
+        dict(selector="th", props=[("text-align", "center")]),
+        dict(selector="td", props=[("text-align", "center")]),
+        dict(selector="", props=[("margin", "auto"), ("border", "1px solid black")])
+    ]
+    return df.style.set_table_styles(styles).format(format_dict).hide()
+
+# Retrieve the unique presidents
+presidents = sona_speeches_clean['president'].unique()
+
+# Create a DataFrame to store the information
+df = pd.DataFrame(columns=['President', 'Document IDs', 'Word-Based Topics', 'Sentence-Based Topics'])
+
+# Populate the DataFrame
+rows = []
+for president in presidents:
+    doc_ids, word_topics = show_author(president, author_topic_model, topic_labels_words)
+    _, sent_topics = show_author(president, author_topic_model_sentences, topic_labels_sents)
+    rows.append({'President': president, 'Document IDs': doc_ids, 
+                 'Word-Based Topics': word_topics, 'Sentence-Based Topics': sent_topics})
+
+df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
+
+
+# Function to format topics for readability
+def format_topics(topic_list):
+    return '; '.join([f"{topic[0]} ({topic[1]:.2f})" for topic in topic_list])
+
+# Applying formatting to each row
+for idx, row in df.iterrows():
+    # Format document IDs as a comma-separated string
+    df.at[idx, 'Document IDs'] = ', '.join(map(str, row['Document IDs']))
+    
+    # Format topics
+    df.at[idx, 'Word-Based Topics'] = format_topics(row['Word-Based Topics'])
+    df.at[idx, 'Sentence-Based Topics'] = format_topics(row['Sentence-Based Topics'])
+
+# Apply the styling function after these modifications
+styled_df = style_df(df)
 
 ```
-
 
 ```{python}
+#| eval: true
+#| output: true
+#| label: atm-table
+#| tbl-cap: "Table 3: ATM topics for each president."
 
-sona_speeches_clean['president'].unique()
-
-```
-
-```{python}
-
-# Run 11
-
-# TODO: Add topic labels
-
-# topic_labels_words = ['Diplomatic strategy', 'General strategic vision']
-
-# topic_labels_sents = ['Social cohesion', 'Prospective plans', Esteem within governmental structures']
-
-# Show the topics for each author
-# show_author('Mandela', author_topic_model, topic_labels_words)
-# show_author('deKlerk', author_topic_model_sentences)
+styled_df
 
 ```
-
 
 
 </div> 
