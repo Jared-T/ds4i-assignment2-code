@@ -52,7 +52,7 @@ SentA involves deciphering the intent of words to infer certain emotional dimens
 
 <b><u> Tokenization </b></u>
 
-The process of tokenization entails breaking up given text into units, referred to as tokens (or terms), which are meaningful for analysis [@Zhang2018]. In this case, these tokens take on different structures, based on either a macro-context (i.e., sentences) or micro-context (i.e., words). At both scales, the way in which these tokens are valued will be varied. The value will either be defined by a bag-of-words (BoW) or term-frequency, inverse-document-frequency (tf-idf) approach. The former way implicates accounting for the number of occurrences of some token in some document. On the other hand, the latter way not only regards the frequency of some token, but also the significance thereof. Thus, tf-idf involves the assignment of some weight to each token in a document which in turn reflects its importance relative to the entire collection of documents (corpus). It then follows that the tf-idf value of a token *t* in a document *d* within a corpus *D* is calculated as the product of two constituents. The first being tf(*t*,*d*) defined as the quotient of the frequency of token *t* in document *d* and the total number of tokens in document *d*, whereas the second is idf(*t*, *D*) denoted by the quotient of the natural logarithm of the total number of documents in corpus *D* and the number of documents containing the token *t* [@SilgeRobinson2017]. N
+The process of tokenization entails breaking up given text into units, referred to as tokens (or terms), which are meaningful for analysis [@Zhang2018]. In this case, these tokens take on different structures, based on either a macro-context (i.e., sentences) or micro-context (i.e., words). At both scales, the way in which these tokens are valued will be varied. The value will either be defined by a bag-of-words (BoW) or term-frequency, inverse-document-frequency (tf-idf) approach. The former way implicates accounting for the number of occurrences of some token in some document. On the other hand, the latter way not only regards the frequency of some token, but also the significance thereof. Thus, tf-idf involves the assignment of some weight to each token in a document which in turn reflects its importance relative to the entire collection of documents (corpus). It then follows that the tf-idf value of a token *t* in a document *d* within a corpus *D* is calculated as the product of two constituents. The first being tf(*t*,*d*) defined as the quotient of the frequency of token *t* in document *d* and the total number of tokens in document *d*, whereas the second is idf(*t*, *D*) denoted by the quotient of the natural logarithm of the total number of documents in corpus *D* and the number of documents containing the token *t* [@SilgeRobinson2017]. 
 
 
 <b><u> Number of topics </b></u>
@@ -1352,6 +1352,8 @@ plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
 
 <b><u> LDA </b></u>
 
+A systematic hyperparameter grid search was conducted, spanning $\alpha$ values from 0.1 to 1 in increments of 0.1 and $\beta$ values from 0.1 to 1 in increments of 0.2, with the objective of determining the optimal combination for coherence score maximization across a topic range of two to ten. This empirical approach revealed, through the application of contour plots to both word-and-sentence tokenized speeches (@fig-LDA-contours), a distinct pattern: the coherence score remained largely unaffected by variations in the $\beta$ parameter, yet exhibited a pronounced sensitivity to alterations in the $\alpha$ parameter.
+ 
 ::: {#fig-LDA-contours layout-ncol=2}
 
 ![Words](lda_plots/words_contour_plot.png){#fig-LDA-contour-words}
@@ -1360,6 +1362,9 @@ plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
 
 Contour plots visualizing variation in coherence scores tuned across range of different $\alpha$ and $\beta$ hyperparameter values. 
 :::
+
+Examination of Table 1, presenting a subset of the grid search results for word-tokenized speeches, further corroborated these findings. The values therein demonstrated a tendency for higher $\alpha$ values to consistently yield maximum coherence scores, irrespective of the $\beta$ value. This table also highlighted the superiority of the Bag-of-Words (BoW) corpus over the term frequency-inverse document frequency (tf-idf) corpus in achieving optimal hyperparameter settings, particularly with a topic count of nine. Parallel results were observed in Table 2, where the employment of high alpha values in conjunction with the BoW corpus, irrespective of beta values, resulted in the most favorable coherence scores, even with a minimal topic count of two.
+
 
 
 ```{python}
@@ -1875,6 +1880,7 @@ As for CTM, the coherence plots presented in @fig-ATM-coherence,  suggest that t
 Coherence plots for ATM across different tokens (words or sentences) implemented within BoW approach.
 :::
 
+The topics suggested by ATM are the most disparate from the other topic models implemented. When incorporating author-topic information, there is a shift away from topics being mere reporting overviews of the way in which governance was achieved economically, structurally, and socially, as well as how contemporary contexts (like the pandemic, power problems, or pivotal sporting events) were confronted. Instead, particular presidents’ agendas become more apparent. For instance, Mbeki and Zuma’s agenda is entirely social cohesion and confidence (“constitution”, “democracy”, “better”) when considering sentence-based topics. Most notably, for all presidents within the word-based-topic context, there is an equal emphasis placed on the general national agenda (like the “elections”) and more economic (“rand”, “mining”) and reformation (“reform”) related priorities.
 
 ::: {#fig-ATM-topics layout-ncol=2}
 
