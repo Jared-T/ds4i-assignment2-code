@@ -2002,6 +2002,14 @@ author_topic_model_sentences.update(bow_corpus_sentences, author2doc=author2sent
 author_topic_model.save('data/author_topic_model')
 author_topic_model_sentences.save('data/author_topic_model_sentences')
 
+```
+
+```{python}
+
+# Load the models
+author_topic_model = AuthorTopicModel.load('data/author_topic_model')
+author_topic_model_sentences = AuthorTopicModel.load('data/author_topic_model_sentences')
+
 colours = ['midnightblue', 'lightsteelblue', 'darkgray']
 
 # Function to plot the top words for one topic in an AuthorTopicModel
