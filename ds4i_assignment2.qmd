@@ -15,6 +15,11 @@ execute:
 <h4> Abstract </h4>
 <hr> 
 
+In the domain of natural language processing (NLP), a comprehensive analysis was conducted on the State of the Nation Addresses (SONA) by South African presidents from 1994 to 2023, employing advanced emotion and theme extraction techniques. This study utilized sentiment analysis, leveraging two distinct lexicons—AFINN and Bing—to gauge the polarity of emotions within the speeches. Concurrently, five sophisticated topic modeling algorithms were applied, namely Latent Semantic Analysis (LSA), Probabilistic Latent Semantic Analysis (pLSA), Latent Dirichlet Allocation (LDA), Correlated Topic Model (CTM), and Author-Topic Model (ATM), to distill and categorize the predominant themes.
+
+The empirical findings indicated a lack of significant divergence between the AFINN and Bing lexicons in mapping the sentiment trajectory—both positive and negative—across different time periods and presidencies. It was observed that the specific lexicon words contributing to these sentiments varied across the speeches, yet no discernible pattern emerged when analyzed by presidential term. In terms of thematic consistency, the LSA, pLSA, LDA, and CTM exhibited remarkable uniformity in identifying key governance-related themes encompassing economic, social, and structural dimensions, as well as contextual contemporary issues like pandemics and sports.
+However, the application of the ATM revealed a nuanced differentiation, unearthing more personalized thematic elements aligned with individual presidential agendas. This model demonstrated an enhanced capability in distinguishing topics more effectively across different presidencies, underscoring the utility of ATM in extracting distinct, president-specific themes from the corpus of SONA speeches. This study underscores the potency of NLP techniques in thematic and sentiment analysis, particularly in the context of political discourse, offering valuable insights into the subtle variations in thematic emphasis and sentiment across different administrative tenures.
+
 <h4> Introduction </h4>
 <hr>
 The field of Natural Language Processing (NLP) is faceted by techniques tailored for theme tracking and opinion mining which merge part of text analysis. Though, of particular prominence, is the extraction of latent thematic patterns and the establishment of the extent of emotionality expressed in political-based texts. 
@@ -2116,14 +2121,14 @@ def style_df(df):
 presidents = sona_speeches_clean['president'].unique()
 
 # Create a DataFrame to store the information
-df = pd.DataFrame(columns=['President', 'Speech IDs', 'Word-Based Topics', 'Sentence-Based Topics'])
+df = pd.DataFrame(columns=['President', 'Document IDs', 'Word-Based Topics', 'Sentence-Based Topics'])
 
 # Populate the DataFrame
 rows = []
 for president in presidents:
     doc_ids, word_topics = show_author(president, author_topic_model, topic_labels_words)
     _, sent_topics = show_author(president, author_topic_model_sentences, topic_labels_sents)
-    rows.append({'President': president, 'Speech IDs': doc_ids, 
+    rows.append({'President': president, 'Document IDs': doc_ids, 
                  'Word-Based Topics': word_topics, 'Sentence-Based Topics': sent_topics})
 
 df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
@@ -2136,7 +2141,7 @@ def format_topics(topic_list):
 # Applying formatting to each row
 for idx, row in df.iterrows():
     # Format document IDs as a comma-separated string
-    df.at[idx, 'Speech IDs'] = ', '.join(map(str, row['Speech IDs']))
+    df.at[idx, 'Document IDs'] = ', '.join(map(str, row['Document IDs']))
     
     # Format topics
     df.at[idx, 'Word-Based Topics'] = format_topics(row['Word-Based Topics'])
