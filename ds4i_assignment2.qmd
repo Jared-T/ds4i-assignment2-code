@@ -61,11 +61,14 @@ In order to determine the optimal number of topics, a coherence score is calcula
 
 <!-- Two approaches can be applied to determine the optimum topic number. Within the first approach, each topic can be viewed as a cluster and a metric showing how similar each word is to its own topic (cohesion) compared to other topics (separation) can be computed. The Silhouette Coefficient is such a measure ranging from a value of negative one to positive one. Here, higher positive values are indicative of words being well-compacted within the topic to which it belongs. The second approach involves the calculation of a coherence score. This measures the ability of the topic model to distinguish well between topics that are semantically interpretable by humans and are not simply statistical-inference artifacts. Hence, the number of topics as well as any other topic-model hyperparameters are tuned to values that yield the maximum coherence score, allowing for the most understandable themes. This latter approach will largely be applied in this SONA-speech analysis.  -->
 
+<b><u> Data pre-processing </b></u>
+
+
 <h4> Methods </h4>
 <hr>
 <h5> Topic modelling </h5>
 
-<b><u> Latent Semantic Analysis (LSA) </b></u> 
+<b><u> Latent Semantic Analysis (LSA) </b></u>
 
 ![Schematic representation of LSA outlining the factorization of the *DTM* matrix.](LSA.png){#fig-LSA}
 
@@ -81,7 +84,7 @@ Instead of implementing truncated SVD, pLSA [@Hofmann1999] rather utilizes a gen
 
 Despite pLSA implicitly addressing LSA-related disadvantages, this method still involves two main drawbacks. There is no probability model for the document-topic probabilities P(t|d), resulting in the inability to assign topic mixtures to new, unseen documents not trained on. Model parameters also then increase linearly with the number of documents added, making this method more susceptible to overfitting. 
 
-<b><u>  Latent Dirichlet Allocation </b></u>
+<b><u>  Latent Dirichlet Allocation (LDA) </b></u>
 
 ![Schematic representation of LDA where the dark-blue-shaded block represents observed words.](LDA.png){height=370 #fig-LDA}
 
@@ -487,11 +490,8 @@ for president, top_words in top_10_words_by_president.items():
 ```
 
 
-<h4> Results </h4>
+<h4> Sentiment Analysis Results </h4>
 <hr>
-
-<h5> Sentiment Analysis </h5>
-
 
 ::: {#fig-sent-speeches layout-ncol=2}
 
@@ -852,10 +852,10 @@ plot_top_words(word_sentiments_afinn, 'AFINN')
 ```
 
 
-<h5> Topic modelling Results </h5>
+<h4> Topic modelling Results </h4>
 <hr> 
 
-<h4> Latent Semantic Analysis (LSA) </h4> 
+<b><u> LSA </b></u>
 
 In the micro-context (i.e., word tokenization) of LSA implementation, the maximum coherence score of approximately -1.5 seen in @fig-words-coherence indicates that three topics are optimal when utilizing the tf-idf approach. In contrast, there is no discernible difference in the coherence scores across a range of topic numbers when instead using the BoW approach. Hence, for comparative purposes, three topics are also chosen as best in this instance.
 
@@ -1070,7 +1070,7 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 ```
 
 
-<h4> pLSA </h4> 
+<b><u> pLSA </b></u>
 
 As previously found with the implementation of LSA, there is essentially no variability in the coherence scores when utilizing the BoW approach for the word-tokenized application of pLSA. Though, like with LSA, there are fluctuating changes in the coherence scores across topic numbers when considering the tf-idf approach. Again, it is opted to take the minimum-best topic number (based on tf-idf) to apply in both approaches, amounting to five in this case. 
 
@@ -1350,7 +1350,7 @@ plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
 ```
 
 
-<h4> LDA </h4> 
+<b><u> LDA </b></u>
 
 ::: {#fig-LDA-contours layout-ncol=2}
 
@@ -1666,9 +1666,9 @@ pyLDAvis.display(vis_data_sentences)
 
 ```
 
-<h4> CTM </h4> 
+<b><u> CTM </b></u>
 
-When accounting for potential correlation between topics,  @fig-ctm-coherence-sentences (for sentence-tokenized speeches) and @fig-ctm-coherence-words (for word-tokenized speeches) indicate that the optimal number of topics for the BoW-related corpus is three and two, respectively. 
+When accounting for potential correlation between topics,  @fig-ctm-coherence-sentences (for sentence-tokenized speeches) and @fig-ctm-coherence-words (for word-tokenized speeches) indicate that the optimal number of topics for a BoW-related corpus is three and two, respectively. 
 
 ::: {#fig-CTM-coherence layout-ncol=2}
 
@@ -1679,6 +1679,7 @@ When accounting for potential correlation between topics,  @fig-ctm-coherence-se
 Coherence plots for CTM across different tokens (words or sentences) implemented within BoW approach.
 :::
 
+As first found in pLSA, the idea of governance also features as CTM topics, for both token-type corpora. Though, instead of spreading the different facets across five topics, the CTM combines economic and social (topic one for words), in addition to structural governance (topic two for sentences) into one topic. Moreover, as seen before in LSA, the topic of societal collectives is applicable again. The only differentiable result is the first topic of the sentence-tokenized speeches being dominated by explicit, economy-related words via the overt references to monetary values (“million”, “billion”) and currency (“r” for Rands). 
 
 ::: {#fig-CTM-topics layout-ncol=2}
 
@@ -1861,8 +1862,9 @@ for k in range(ctms.k):
 
 ```
 
-<h4> ATM (Author-Topic Model) </h4> 
+<b><u> ATM </b></u>
 
+As for CTM, the coherence plots presented in @fig-ATM-coherence,  suggest that three and two topics relay the maximum coherence score for the BoW-related corpus for the respective sentence-tokenized and word-tokenized speeches. 
 
 ::: {#fig-ATM-coherence layout-ncol=2}
 
@@ -1876,15 +1878,15 @@ Coherence plots for ATM across different tokens (words or sentences) implemented
 
 ::: {#fig-ATM-topics layout-ncol=2}
 
-![Sentences: Topic 1 ~ social cohesion](atm_plots/sentences_1.png){#fig-atm-sentences-topic1}
+![Sentences: Topic 1 ~ social cohesion and confidence](atm_plots/sentences_1.png){#fig-atm-sentences-topic1}
 
-![Words: Topic  1 ~ diplomatic strategy](atm_plots/words_1.png){#fig-atm-words-topic1}
+![Words: Topic  1 ~ general national agenda](atm_plots/words_1.png){#fig-atm-words-topic1}
 
-![Sentences: Topic 2 ~ prospective plans](atm_plots/sentences_2.png){#fig-atm-sentences-topic2}
+![Sentences: Topic 2 ~ prospective planning](atm_plots/sentences_2.png){#fig-atm-sentences-topic2}
 
-![Words: Topic 2 ~ general strategic vision](atm_plots/words_2.png){#fig-atm-words-topic2}
+![Words: Topic 2 ~ economic reform agenda](atm_plots/words_2.png){#fig-atm-words-topic2}
 
-![Sentences: Topic 3 ~ esteem within governmental structures](atm_plots/sentences_3.png){#fig-atm-sentences-topic3}
+![Sentences: Topic 3 ~ Land and people](atm_plots/sentences_3.png){#fig-atm-sentences-topic3}
 
 Topic plots where either sentences (left) or words (right) were used as tokens for ATM application. 
 :::
@@ -2058,7 +2060,6 @@ for k in range(author_topic_model_sentences.num_topics):
 ```
 
 
-
 ```{python}
 #| eval: true
 
@@ -2072,8 +2073,8 @@ from pprint import pprint
 
 # Assuming sona_speeches_clean and the topic models are already defined
 # Define the topic labels
-topic_labels_words = ['Diplomatic strategy', 'General strategic vision']
-topic_labels_sents = ['Social cohesion', 'Prospective plans', 'Esteem within governmental structures']
+topic_labels_words = ['General national agenda', 'Economic reform agenda']
+topic_labels_sents = ['Social cohesion and confidence', 'Prospective planning', 'Land and people']
 
 # Function to show topics for each author
 def show_author(name, model, topic_labels):
