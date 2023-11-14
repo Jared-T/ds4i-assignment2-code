@@ -2109,14 +2109,14 @@ def style_df(df):
 presidents = sona_speeches_clean['president'].unique()
 
 # Create a DataFrame to store the information
-df = pd.DataFrame(columns=['President', 'Document IDs', 'Word-Based Topics', 'Sentence-Based Topics'])
+df = pd.DataFrame(columns=['President', 'Speech IDs', 'Word-Based Topics', 'Sentence-Based Topics'])
 
 # Populate the DataFrame
 rows = []
 for president in presidents:
     doc_ids, word_topics = show_author(president, author_topic_model, topic_labels_words)
     _, sent_topics = show_author(president, author_topic_model_sentences, topic_labels_sents)
-    rows.append({'President': president, 'Document IDs': doc_ids, 
+    rows.append({'President': president, 'Speech IDs': doc_ids, 
                  'Word-Based Topics': word_topics, 'Sentence-Based Topics': sent_topics})
 
 df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
@@ -2129,7 +2129,7 @@ def format_topics(topic_list):
 # Applying formatting to each row
 for idx, row in df.iterrows():
     # Format document IDs as a comma-separated string
-    df.at[idx, 'Document IDs'] = ', '.join(map(str, row['Document IDs']))
+    df.at[idx, 'Speech IDs'] = ', '.join(map(str, row['Speech IDs']))
     
     # Format topics
     df.at[idx, 'Word-Based Topics'] = format_topics(row['Word-Based Topics'])
