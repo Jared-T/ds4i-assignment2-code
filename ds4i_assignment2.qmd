@@ -1882,7 +1882,8 @@ Topic plots where either sentences (left) or words (right) were used as tokens f
 
 
 ```{python}
-# Run 8.5
+#| eval: true
+
 # Note that ATM only works for BoW. Raw word counts (BoW) is standard because these models are based on the assumption that the data is generated from a multinomial distribution, which does not hold with TF-IDF weights.
 
 texts = sona_speeches_clean['speech']
@@ -1987,8 +1988,6 @@ plt.close()
 
 ```{python}
 
-# Run 9
-
 # Set the number of topics based on the plots
 
 # Author-Topic LDA model with the current number of topics
@@ -1998,6 +1997,10 @@ author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, aut
 # Train the model
 author_topic_model.update(bow_corpus, author2doc=author2doc)
 author_topic_model_sentences.update(bow_corpus_sentences, author2doc=author2sent)
+
+# Save the models
+author_topic_model.save('data/author_topic_model')
+author_topic_model_sentences.save('data/author_topic_model_sentences')
 
 colours = ['midnightblue', 'lightsteelblue', 'darkgray']
 
@@ -2040,6 +2043,11 @@ for k in range(author_topic_model_sentences.num_topics):
 
 
 ```{python}
+#| eval: true
+
+# Load the models
+author_topic_model = AuthorTopicModel.load('data/author_topic_model')
+author_topic_model_sentences = AuthorTopicModel.load('data/author_topic_model_sentences')
 
 import pandas as pd
 import numpy as np
