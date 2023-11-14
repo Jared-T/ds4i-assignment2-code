@@ -6,7 +6,7 @@ format: html
 
 In an endeavour to explore the capabilities of artificial intelligence in the realm of data analysis, specifically sentiment analysis and topic modelling, we employed ChatGPT, a large language model developed by OpenAI. This reflection critically assesses its performance across five distinct areas.
 
-<h4>Code Generation for Python:</h4
+<h4>Code Generation for Python:</h4>
 
 ChatGPT demonstrated a commendable aptitude in assisting with Python code generation. Using ChatGPT4, which has a Python interpreter, its ability to understand and generate code snippets was impressive, significantly streamlining the initial stages of the data analysis process. However, it is important to note that the model's suggestions occasionally required adjustments to align with specific project requirements, underscoring the necessity for a foundational understanding of Python. Prompts that were slightly vague also resulted in less relevant outputs, highlighting the importance of providing specific instructions to the model.
 
