@@ -10,6 +10,7 @@ website:
         text: Home
       - ds4i_assignment2.qmd
       - code_appendix.qmd
+      - plaigarism_declaration.qmd
 
 format:
   html:

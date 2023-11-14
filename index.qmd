@@ -10,6 +10,6 @@ This is the website for Assignment 2 of the Masters-level course "Data Science f
 ## Links to the repos:
 
 ### Website files
-[Link to the website files](https://github.com/Jared-T/DS4I_Ass1Code)
+[Link to the website files](https://github.com/Jared-T/ds4i-assignment2-code)
 
 
