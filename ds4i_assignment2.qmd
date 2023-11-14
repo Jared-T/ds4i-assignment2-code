@@ -1074,7 +1074,7 @@ plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
 
 <h4> pLSA </h4> 
 
-As previously found with the implementation of LSA, there is essentially no variability in the coherence scores when utilizing the BoW approach for the word-tokenized application of pLSA. Though, like with LSA, there are fluctuating changes in the coherence scores across topic numbers when considering the tf-idf approach. Again, it is opted to take the minimum-best (based on tf-idf) number of three topics for both approaches which
+As previously found with the implementation of LSA, there is essentially no variability in the coherence scores when utilizing the BoW approach for the word-tokenized application of pLSA. Though, like with LSA, there are fluctuating changes in the coherence scores across topic numbers when considering the tf-idf approach. Again, it is opted to take the minimum-best (based on tf-idf) topic number to apply in both approaches, amounting to five in this case. 
 
 ![Coherence plot for pLSA where SONA speeches were tokenized by words.](plsa_plots/words_coherence.png){width=500 height=300 #fig-pLSA-words-coherence}
 
@@ -1676,13 +1676,13 @@ Coherence plots for CTM across different tokens (words or sentences) implemented
 
 ![Sentences: Topic 1 ~ economy](ctm_plots/sentences_1.png){#fig-ctm-sentences-topic1}
 
-![Words: Topic 1 ~ economy](ctm_plots/words_1.png){#fig-ctm-words-topic1}
+![Words: Topic 1 ~ economic governance](ctm_plots/words_1.png){#fig-ctm-words-topic1}
 
 ![Sentences: Topic 2 ~ economic and structural advancement](ctm_plots/sentences_2.png){#fig-ctm-sentences-topic2}
 
 ![Words: Topic 2 ~ societal collectives](ctm_plots/words_2.png){#fig-ctm-words-topic2}
 
-![Sentences: Topic 3 ~ social collectives](ctm_plots/sentences_3.png){#fig-ctm-sentences-topic3}
+![Sentences: Topic 3 ~ societal collectives](ctm_plots/sentences_3.png){#fig-ctm-sentences-topic3}
 
 Topic plots where either sentences (left) or words (right) were used as tokens for CTM application. 
 :::
