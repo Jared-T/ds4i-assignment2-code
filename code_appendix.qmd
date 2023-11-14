@@ -225,6 +225,12 @@ tfidf_vectorizer = TfidfVectorizer(max_features=max_features)
 bow_matrix_words = bow_vectorizer.fit_transform(sona_speeches_clean['speech'])
 tfidf_matrix_words = tfidf_vectorizer.fit_transform(sona_speeches_clean['speech'])
 
+
+```
+
+
+```{python}
+
 from matplotlib.colors import LinearSegmentedColormap
 
 cmap = plt.cm.cividis
@@ -559,6 +565,11 @@ plot_top_words(word_sentiments_bing, 'bing')
 plot_top_words(word_sentiments_afinn, 'AFINN')
 
 
+```
+
+
+```{python}
+
 texts = sona_speeches_clean['speech']
 sentences = sona_sentences_alltogether['sentence']
 
@@ -652,7 +663,7 @@ plt.savefig(f'lsa_plots/sentence_coherence_plots.png', bbox_inches='tight')
 plt.close()
 
 
-# TODO: Set the number of topics based on the plots
+# Set the number of topics based on the plots
 lsa_bow_words = LsiModel(corpus=bow_corpus, num_topics=3, id2word=dictionary)
 lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=2, id2word=dict_sentences)
 
