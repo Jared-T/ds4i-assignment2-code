@@ -11,8 +11,6 @@ execute:
 
 ```{python}
 
-# Run 1
-
 # Loading in the necessary libraries
 import zipfile
 import os
@@ -196,9 +194,6 @@ sona_sentences_clean.drop(columns=['speech'], inplace=True)
 
 # Make a csv of the sentences
 sona_sentences_clean.to_csv('data/sona_sentences_clean.csv', index=False)
-
-
-# Run 2
 
 sona_sentences_clean = pd.read_csv('data/sona_sentences_clean.csv')
 sona_sentences_clean['sentence'] = sona_sentences_clean['sentence'].apply(literal_eval)
