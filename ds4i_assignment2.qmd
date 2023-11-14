@@ -64,10 +64,15 @@ The process of tokenization entails breaking up given text into units, referred 
 
 In order to determine the optimal number of topics, a coherence score is calculated.  This metric measures the ability of a topic model to distinguish well between topics that are semantically interpretable by humans and are not simply statistical-inference artifacts. Hence, the number of topics as well as any other topic-model hyperparameters (like $\alpha$ and $\beta$ for LDA) are tuned to values that yield the maximum coherence score, allowing for the most understandable themes. 
 
-<!-- Two approaches can be applied to determine the optimum topic number. Within the first approach, each topic can be viewed as a cluster and a metric showing how similar each word is to its own topic (cohesion) compared to other topics (separation) can be computed. The Silhouette Coefficient is such a measure ranging from a value of negative one to positive one. Here, higher positive values are indicative of words being well-compacted within the topic to which it belongs. The second approach involves the calculation of a coherence score. This measures the ability of the topic model to distinguish well between topics that are semantically interpretable by humans and are not simply statistical-inference artifacts. Hence, the number of topics as well as any other topic-model hyperparameters are tuned to values that yield the maximum coherence score, allowing for the most understandable themes. This latter approach will largely be applied in this SONA-speech analysis.  -->
 
 <b><u> Data pre-processing </b></u>
 
+
+In the realm of textual data analysis, a series of intricate preprocessing procedures is paramount to prepare and refine the dataset for subsequent analytical scrutiny. Initially, an extraction process is undertaken wherein a ZIP archive, comprising multiple text documents, is meticulously opened, and its contents are methodically transferred to a designated directory. This is followed by an intricate file filtering stage, during which the directory's contents are scrupulously sifted, retaining only those files with a '.txt' extension, thereby ensuring format uniformity.
+Subsequent to these preliminary stages, a meticulous process of data reading and parsing is executed. Each text file is individually accessed; its inaugural line, postulated to contain the date, is extracted and segregated. The residual contents of each file are then assiduously read and conserved. In the ensuing phase, a DataFrame is constructed, astutely incorporating filenames, the previously extracted dates, and the comprehensive speech text.
+A critical phase of metadata extraction ensues, wherein, through precise string operations, pivotal information such as the year and the president's name are discerned from the filenames and adroitly integrated as discrete columns within the DataFrame. The text cleaning phase plays a pivotal role, involving the removal of URLs, HTML entities, and newline characters from the speeches, and employing periods and question marks as delimiters to fragment the text into sentences. This stage further includes the flattening of nested lists and the exclusion of null strings.
+The data export phase involves the systematic saving of the full speeches and the segmented sentences into two distinct CSV files. For enhanced analytical precision, the CSV files are reimported into DataFrames, and a lemmatization function, tailored to convert words into their base form using appropriate part-of-speech tags, is defined and applied. This phase also involves the exclusion of stop words and a custom list of additional words, with a stringent focus on retaining only those words recognized as English.
+The final adjustments and export phase encompass the application of two separate cleaning functions to the speeches: one excluding additional words and the other retaining them. Subsequently, the refined speeches and sentences are saved into new CSV files. In a concluding act of data optimization, the original 'speech' column is meticulously dropped from the sentences DataFrame prior to the final export, thereby streamlining the dataset for advanced analysis.
 
 <h4> Methods </h4>
 <hr>
@@ -1359,6 +1364,7 @@ plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
 
 A systematic hyperparameter grid search was conducted, spanning $\alpha$ values from 0.1 to 1 in increments of 0.1 and $\beta$ values from 0.1 to 1 in increments of 0.2, with the objective of determining the optimal combination for coherence score maximization across a topic range of two to ten. This empirical approach revealed, through the application of contour plots to both word-and-sentence tokenized speeches (@fig-LDA-contours), a distinct pattern: the coherence score remained largely unaffected by variations in the $\beta$ parameter, yet exhibited a pronounced sensitivity to alterations in the $\alpha$ parameter.
  
+
 ::: {#fig-LDA-contours layout-ncol=2}
 
 ![Words](lda_plots/words_contour_plot.png){#fig-LDA-contour-words}
@@ -1401,6 +1407,8 @@ tfidf_sentences = TfidfModel(bow_corpus_sentences)
 tfidf_corpus_sentences = tfidf_sentences[bow_corpus_sentences]
 
 ```
+
+
 
 
 ```{python}
@@ -1652,6 +1660,13 @@ vis_data_sentences = pyLDAvis.gensim_models.prepare(lda_model_sentences, bow_cor
 
 <b><u> pyLDAvis for Words </b></u>
 
+The employment of pyLDAvis for interactive visualization of LDA results yielded insightful revelations. The left panel of this visualization tool, presenting an inter-topic distance map, offered a comprehensive view of the topic distribution and interrelations, employing multi-dimensional scaling (MDS) to project these relationships onto a two-dimensional plane. The size of each topic circle in this map was directly proportional to its prevalence, while the right panel provided a horizontal bar chart delineating the most salient terms for each topic, thereby facilitating a deeper understanding of the topic's essence. The juxtaposition of corpus-wide frequencies (light-blue bars) against topic-specific frequencies (red bars) for each term allowed for an intricate exploration of topic-term relationships.
+
+ 
+Further analytical depth was achieved through the application of the relevance metric, which leveraged a weight parameter lambda to balance the probability of a word within a topic against its lift—a measure of the word's frequency within a topic relative to its marginal probability across the corpus. This metric proved instrumental in distinguishing between terms that were prevalent yet not exclusive to a topic (high lambda values) and those that were rare but highly indicative of a topic (low lambda values).
+
+When applied to the word-tokenized BoW corpus, the LDA results revealed several distinct thematic clusters. For instance, at a lambda value of 0.1, Topic 1, characterized by terms like “mining” and “alliance,” was identified as the most prevalent, suggesting a focus on mining-related activities. In contrast, Topic 9, with a significantly smaller presence, was associated with local governance themes like “municipality” and “refurbishment.” This thematic diversity was further reflected in the spatial distribution of topics on the inter-topic distance map, where topics related to economic activities (Topics 1 and 4) were shown to have a certain degree of proximity, indicative of underlying thematic similarities, while Topic 2, centered around abstract concepts like “unity” and “compatriots,” was markedly distant from other topics, underscoring its unique thematic focus.
+
 ```{python}
 #| eval: true
 #| output: true
@@ -1665,6 +1680,8 @@ pyLDAvis.display(vis_data_speeches)
 ```
 
 <b><u> pyLDAvis for Sentences </b></u>
+
+In the case of the sentence-tokenized BoW corpus, the two discerned topics exhibited a marked separation, suggesting minimal thematic overlap or interrelation, thereby underscoring the distinct nature of the topics identified through this corpus-specific LDA implementation.
 
 ```{python}
 #| eval: true
