@@ -9,4 +9,1387 @@ execute:
   output: false
 ---
 
-# Code below
+```{python}
+
+# Run 1
+
+# Loading in the necessary libraries
+import zipfile
+import os
+import pandas as pd
+import re
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS
+from itertools import cycle
+import seaborn as sns
+import numpy as np
+from collections import Counter
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import wordnet, stopwords, words
+from nltk.stem import WordNetLemmatizer
+from ast import literal_eval
+from collections import defaultdict
+import pyLDAvis.gensim_models
+import gensim
+from gensim.models import LsiModel, TfidfModel
+from gensim.models.coherencemodel import CoherenceModel
+from gensim import corpora
+from gensim.utils import simple_preprocess
+from plsa import Corpus, Pipeline, Visualize
+from plsa.pipeline import DEFAULT_PIPELINE
+from plsa.algorithms import PLSA
+from gensim.models import AuthorTopicModel
+from gensim.models import LdaModel
+import tqdm
+
+# Global params
+plt.rcParams['xtick.labelsize'] = 18
+plt.rcParams['ytick.labelsize'] = 18
+
+# Set the global label sizes for the plots
+plt.rcParams['axes.labelsize'] = 20
+
+# Set the global legend size
+plt.rcParams['legend.fontsize'] = 18
+
+# Unzip the file and get the list of filenames
+with zipfile.ZipFile("data/speeches.zip", 'r') as zip_ref:
+    zip_ref.extractall("data")
+
+filenames = os.listdir("data")
+filenames = [filename for filename in filenames if filename.endswith('.txt')]
+
+# Read the content of each speech file and extract the date from the first line
+speeches = []
+dates = []
+for filename in filenames:
+    with open(os.path.join("data", filename), 'r', encoding='utf-8') as file:
+        # Extract date from the first line
+        date = file.readline().strip()
+        dates.append(date)
+        
+        # Read the rest of the file
+        speeches.append(file.read())
+
+# Create DataFrame
+sona = pd.DataFrame({'filename': filenames, 'speech': speeches, 'date': dates})
+
+# Extract year and president for each speech
+sona['year'] = sona['filename'].str[:4]
+sona['president'] = sona['filename'].str.split('_').str[-1].str.split('.').str[0]
+
+# Clean the sona dataset by removing unnecessary text
+replace_reg = r'(http.*?(\s|.$))|(www.*?(\s|.$))|&amp;|&lt;|&gt;|\n'
+sona['speech'] = sona['speech'].str.replace(replace_reg, ' ')
+
+# Split speeches into sentences
+sona_sentences = sona.copy()
+
+import itertools
+
+# Replace new lines with space and split into sentences based on regular expression
+sona_sentences['speech'] = sona_sentences['speech'].str.replace('\n', ' ').str.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s')
+
+# Flatten the list of sentence fragments to avoid nested lists
+sona_sentences['speech'] = sona_sentences['speech'].apply(lambda sentences: list(itertools.chain.from_iterable(sentence.split('.') for sentence in sentences)))
+
+# Remove empty strings from the list of sentences
+sona_sentences['speech'] = sona_sentences['speech'].apply(lambda sentences: [sentence.strip() for sentence in sentences if sentence.strip()])
+
+# Make a csv of the speeches
+sona.to_csv('data/sona_speeches.csv', index=False)
+
+# Make a csv of the sentences
+sona_sentences.to_csv('data/sona_sentences_untransformed.csv', index=False)
+
+
+# Make sure to download the necessary NLTK corpus if you haven't already
+#nltk.download('wordnet')
+#nltk.download('averaged_perceptron_tagger')
+#nltk.download('words')
+
+# Read in the sona speeches dataset
+sona_speeches_df = pd.read_csv('data/sona_speeches.csv')
+sona_sentences_clean = pd.read_csv('data/sona_sentences_untransformed.csv')
+sona_sentences_clean['speech'] = sona_sentences_clean['speech'].apply(literal_eval)
+
+# Initialize the WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+english_words = set(words.words())
+additional_words = {
+    'honourable', 'member', 'chairperson',
+    'south', 'africa', 'african', 'africans', 'year',
+    'madame', 'madam', 'soes', 'ms', 'madams', 'madames', 'mw',
+    'compatriotsthe',
+    'also'
+}
+
+# Function to convert NLTK's part-of-speech tags to WordNet's part-of-speech tags
+def get_wordnet_pos(word):
+    """Map NLTK part of speech tags to WordNet part of speech tags."""
+    tag = nltk.pos_tag([word])[0][1][0].upper()
+    tag_dict = {"J": nltk.corpus.wordnet.ADJ,
+                "N": nltk.corpus.wordnet.NOUN,
+                "V": nltk.corpus.wordnet.VERB,
+                "R": nltk.corpus.wordnet.ADV}
+
+    return tag_dict.get(tag, nltk.corpus.wordnet.NOUN)
+
+# Clean the text, convert to lowercase, and lemmatize each word
+def clean_text(text):
+    # Remove special characters: keep only letters, numbers, and basic punctuation
+    text = re.sub(r'[.;]', ' ', text)  # Replaces periods with spaces
+    text = re.sub(r'[^a-zA-Z ]', '', text)
+    text = text.lower()  # Convert to lowercase
+    
+    # Tokenize the text
+    words = word_tokenize(text)
+    
+    # Remove stop words
+    words = [word for word in words if word not in stop_words]
+    
+    # Remove additional words
+    words = [word for word in words if word not in additional_words]
+
+    # Lemmatize each word with the correct POS tag
+    lemmatized_words = []
+    for word, tag in nltk.pos_tag(words):
+        wntag = get_wordnet_pos(tag)
+        lemmatized_word = lemmatizer.lemmatize(word, wntag)
+        # Only append the lemmatized word if it is in the set of English words
+        if lemmatized_word in english_words:
+            lemmatized_words.append(lemmatized_word)
+    
+    # Join the lemmatized words back into one string
+    text = ' '.join(words)
+    return text
+
+def clean_text_no_word_removals(text):
+    # Remove special characters: keep only letters, numbers, and basic punctuation
+    text = re.sub(r'[.;]', ' ', text)  # Replaces periods with spaces
+    text = re.sub(r'[^a-zA-Z ]', '', text)
+    text = text.lower()  # Convert to lowercase
+    return text
+
+# Apply the cleaning function to the speech column
+tempdf = sona_speeches_df.copy()
+sona_speeches_df['speech'] = tempdf['speech'].apply(clean_text)
+sona_speeches_df['speech_untrans'] = tempdf['speech'].apply(clean_text_no_word_removals)
+
+def clean_speeches(speeches):
+    # The input is expected to be a list of strings
+    return [clean_text(sentence) for sentence in speeches]
+
+# Apply the cleaning to the sentences too
+sona_sentences_clean['sentence'] = sona_sentences_clean['speech'].apply(lambda speeches: [clean_text(sentence) for sentence in speeches])
+
+# Apply the cleaning to sentences that need to keep their words
+sona_sentences_clean['sent_untrans'] = sona_sentences_clean['speech'].apply(lambda speeches: [clean_text_no_word_removals(sentence) for sentence in speeches])
+
+# Make a csv of the speeches
+sona_speeches_df.to_csv('data/sona_speeches_adapted.csv', index=False)
+
+# Remove the speech column from the sentences DataFrame
+sona_sentences_clean.drop(columns=['speech'], inplace=True)
+
+# Make a csv of the sentences
+sona_sentences_clean.to_csv('data/sona_sentences_clean.csv', index=False)
+
+
+# Run 2
+
+sona_sentences_clean = pd.read_csv('data/sona_sentences_clean.csv')
+sona_sentences_clean['sentence'] = sona_sentences_clean['sentence'].apply(literal_eval)
+sona_sentences_clean['sent_untrans'] = sona_sentences_clean['sent_untrans'].apply(literal_eval)
+
+# Make the sentences into a single column
+sona_sentences_alltogether = sona_sentences_clean.explode('sentence')
+sona_sentences_all_untrans = sona_sentences_clean.explode('sent_untrans')
+
+# Drop the other columns
+sona_sentences_alltogether.drop(columns=['sent_untrans'], inplace=True)
+sona_sentences_all_untrans.drop(columns=['sentence'], inplace=True)
+
+# Make a csv of the sentences
+sona_sentences_all_untrans.to_csv('data/sona_sentiment_sentences.csv', index=False)
+
+# Speeches
+sona_speeches_clean = pd.read_csv('data/sona_speeches_adapted.csv')
+
+
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+max_features = 2000
+
+bow_vectorizer = CountVectorizer(max_features=max_features)
+tfidf_vectorizer = TfidfVectorizer(max_features=max_features)
+
+# Transformed on the words
+bow_matrix_words = bow_vectorizer.fit_transform(sona_speeches_clean['speech'])
+tfidf_matrix_words = tfidf_vectorizer.fit_transform(sona_speeches_clean['speech'])
+
+from matplotlib.colors import LinearSegmentedColormap
+
+cmap = plt.cm.cividis
+
+norm = plt.Normalize(0, 100)
+
+# Define a colour map based on cividis
+# Define a new colormap using a smaller slice of the cividis colormap, this time stopping well before the yellows
+cividis_modified = cmap(np.linspace(0, 0.4, cmap.N))  # Using only 40% of the colormap range
+
+# Create a new colormap from the data
+cividis_no_yellow_light = LinearSegmentedColormap.from_list('cividis_no_yellow_light', cividis_modified)
+
+# Let's pick three colors from the modified colormap
+colormap = [cividis_no_yellow_light(norm(0)), 
+          cividis_no_yellow_light(norm(50)), 
+          cividis_no_yellow_light(norm(100))]
+
+
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+from collections import Counter
+import matplotlib.pyplot as plt
+
+# Function to count words in speeches excluding stopwords
+def get_word_frequencies(speeches, stopwords):
+    word_counts = Counter()
+    for speech in speeches:
+        words = speech.lower().split()
+        # Remove stopwords from the count
+        words = [word.strip('.,!?"\'-()') for word in words if word.strip('.,!?"\'-()') not in stopwords]
+        word_counts.update(words)
+    return word_counts
+
+# Get the word frequencies excluding stopwords
+word_frequencies = get_word_frequencies(sona_speeches_clean['speech'], ENGLISH_STOP_WORDS)
+
+# Get the top 10 most frequent words across all speeches
+top_10_words = word_frequencies.most_common(10)
+
+
+# Plotting
+plt.figure(figsize=(10, 6))
+plt.bar([word for word, count in top_10_words], [count for word, count in top_10_words], color=colormap[2])
+plt.xlabel('Words')
+plt.ylabel('Frequency')
+plt.xticks()
+plt.yticks()
+plt.xticks(rotation=45)
+
+# Save the plot as a PNG file
+plt.savefig(f'saved_plots/overall_top_words.png', bbox_inches='tight')
+plt.close()  # Close the figure to avoid displaying it in the notebook
+
+
+# Function to get top N frequent words for each president
+def get_top_words_by_president(speeches_df, n, stopwords):
+    presidents = speeches_df['president'].unique()
+    top_words_by_president = {}
+    for president in presidents:
+        president_speeches = speeches_df[speeches_df['president'] == president]['speech']
+        word_frequencies = get_word_frequencies(president_speeches, stopwords)
+        top_words_by_president[president] = word_frequencies.most_common(n)
+    return top_words_by_president
+
+# Get the top 10 most frequent words for each president
+top_10_words_by_president = get_top_words_by_president(sona_speeches_clean, 10, ENGLISH_STOP_WORDS)
+
+
+# Plot the word frequencies for each president
+for president, top_words in top_10_words_by_president.items():
+    
+    # Individual plot for each president
+    plt.figure(figsize=(10, 6))
+    plt.bar([word for word, count in top_words], [count for word, count in top_words], color=colormap[0])
+    plt.xlabel('Words')
+    plt.ylabel('Frequency')
+    plt.xticks(rotation=45)
+
+    # Save the plot as a PNG file
+    plt.savefig(f'saved_plots/{president}_top_words.png', bbox_inches='tight')
+    plt.close()  # Close the figure to avoid displaying it in the notebook
+
+
+import pandas as pd
+import nltk
+from nltk.corpus import opinion_lexicon
+from nltk.tokenize import treebank
+from afinn import Afinn
+
+from dateutil import parser
+
+# Function to parse date strings based on the described rule
+def parse_date(date_str):
+    # Split the string by comma and take the last part
+    date_part = date_str.split(',')[-1].strip()
+    # Parse the date part into a datetime object
+    return parser.parse(date_part)
+
+# Define a function to get Bing lexicon sentiment scores
+def get_bing_sentiment(text):
+    tokenizer = treebank.TreebankWordTokenizer()
+    tokens = tokenizer.tokenize(text.lower())
+    pos_score = sum(1 for word in tokens if word in positive_words)
+    neg_score = sum(1 for word in tokens if word in negative_words)
+    compound_score = pos_score - neg_score
+    return compound_score
+
+
+# Load the AFINN lexicon
+afinn = Afinn()
+
+# Define a function to get AFINN sentiment scores
+def get_afinn_sentiment(text):
+    return afinn.score(text)
+
+# Load positive and negative words
+positive_words = set(opinion_lexicon.positive())
+negative_words = set(opinion_lexicon.negative())
+
+# Apply Bing sentiment analysis
+sona_speeches_clean['bing_sentiment'] = sona_speeches_clean['speech_untrans'].apply(get_bing_sentiment)
+sona_sentences_all_untrans['bing_sentiment'] = sona_sentences_all_untrans['sent_untrans'].apply(get_bing_sentiment)
+
+# Apply AFINN sentiment analysis
+sona_speeches_clean['afinn_sentiment'] = sona_speeches_clean['speech_untrans'].apply(lambda text: get_afinn_sentiment(text))
+sona_sentences_all_untrans['afinn_sentiment'] = sona_sentences_all_untrans['sent_untrans'].apply(lambda text: get_afinn_sentiment(text))
+
+# Convert the date strings to datetime objects
+sona_speeches_clean['date'] = sona_speeches_clean['date'].apply(parse_date)
+sona_sentences_all_untrans['date'] = sona_sentences_all_untrans['date'].apply(parse_date)
+
+# Sort the DataFrames by date in ascending order
+sona_speeches_clean.sort_values('date', ascending=True, inplace=True)
+#sona_sentences_all_untrans.sort_values('date', ascending=True, inplace=True)
+
+# Create a new variable which is the date as a string
+sona_speeches_clean['date_str'] = sona_speeches_clean['date'].dt.strftime('%Y-%m-%d')
+sona_sentences_all_untrans['date_str'] = sona_sentences_all_untrans['date'].dt.strftime('%Y-%m-%d')
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# For plotting sentiment scores of speeches by each president
+def plot_speeches_by_president(df, lexicon):
+    plt.figure(figsize=(10, 6))
+
+    presidents = df['president'].unique()
+
+    lexicon_lab = lexicon
+
+    if lexicon == 'afinn':
+        lexicon_lab = 'AFINN'
+
+    colors = ['lightsteelblue', colormap[1], 'midnightblue', 'lightgray', 'darkgray',  'dimgray']
+
+    for idx, president in enumerate(presidents):
+        president_df = df[df['president'] == president]
+        plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
+    plt.xlabel('Date')
+    plt.ylabel(f'Sentiment Score')
+    plt.xticks(rotation=45)
+    plt.yticks()
+    plt.legend(loc ="upper left")
+    plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
+    plt.close()  # Close the figure to avoid displaying it in the notebook
+
+
+# For plotting sentiment scores of sentences by each president
+def plot_sentences_by_president(df, lexicon):
+    #plt.figure(figsize=(10, 6))
+
+    presidents = df['president'].unique()
+
+    colors = [colormap[1],  'dimgray', 'midnightblue', 'darkgray', 'lightsteelblue', 'lightgray']
+
+    lexicon_lab = lexicon
+
+    if lexicon == 'afinn':
+        lexicon_lab = 'AFINN'
+    
+    # Create a copy of the DataFrame
+    df = df.copy()
+
+    # Add a column for the sentence number
+    df['sentence_num'] = df.groupby('date_str').cumcount() + 1
+    
+    i = 0
+
+    for idx, president in enumerate(presidents):
+        plt.figure(figsize=(10, 6))
+        president_df = df[df['president'] == president]
+        plt.bar(president_df['sentence_num'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[i])
+        plt.xlabel('Sentence')
+        plt.ylabel(f'Sentiment Score')
+        plt.xticks()
+        plt.savefig(f'sentiment_plots/sent_{lexicon}_{president}.png', bbox_inches='tight')
+        plt.close()  # Close the figure to avoid displaying it in the notebook
+
+        i += 1
+
+    
+# Assuming 'date' is a column in datetime format and 'president' is the name of each president
+plot_speeches_by_president(sona_speeches_clean, 'bing')
+plot_speeches_by_president(sona_speeches_clean, 'afinn')
+
+plot_sentences_by_president(sona_sentences_all_untrans, 'bing')
+plot_sentences_by_president(sona_sentences_all_untrans, 'afinn')
+
+# Function to calculate word sentiments across all speeches of a president
+def calculate_word_sentiments(president_speeches, lexicon):
+    # Combine all speeches into one large text
+    all_speeches = ' '.join(president_speeches)
+    # Tokenize the text into words and filter out stopwords and non-alphabetic tokens
+    words = [word for word in word_tokenize(all_speeches.lower()) if word.isalpha() and word not in stopwords.words('english')]
+    # Get sentiment score for each word
+    word_sentiments = defaultdict(int)
+    for word in words:
+        # Get the sentiment score for the word
+        if lexicon == 'bing':
+            sentiment = get_bing_sentiment(word)
+        elif lexicon == 'afinn':
+            sentiment = get_afinn_sentiment(word)
+
+        word_sentiments[word] += sentiment
+    return word_sentiments
+
+# Function to plot the top positive and negative words
+def plot_top_words(word_sentiments, president, lexicon):
+    # Sort words by sentiment score
+    sorted_words = sorted(word_sentiments.items(), key=lambda kv: kv[1])
+    # Select the top 10 positive and negative words
+    top_positive_words = sorted_words[-10:]
+    top_negative_words = sorted_words[:10]
+
+    # Words and their sentiment scores for plotting
+    words_positive, scores_positive = zip(*top_positive_words)
+    words_negative, scores_negative = zip(*top_negative_words)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Plot the top negative words
+    ax.barh(range(10), scores_negative, color=colormap[2], label='Negative')
+    # Plot the top positive words
+    ax.barh(range(10, 20), scores_positive, color=colormap[0], label='Positive')
+
+    # Add the word labels
+    ax.set_yticks(range(20))
+    ax.set_yticklabels(words_negative + words_positive)
+    
+    # Set the labels and title
+    ax.set_xlabel(f'Contribution to Sentiment Score')
+    ax.legend(loc = "lower right")
+
+    # Adjust the view so negative words are at the bottom and positive at the top
+    ax.set_ylim(-1, 20)
+    
+    plt.tight_layout()
+    # Save the plot as a PNG file
+    plt.savefig(f'sentiment_plots/word_contr_{lexicon}_{president}.png', bbox_inches='tight')
+    plt.close()  # Close the figure to avoid displaying it in the notebook
+
+# Aggregate the speeches by president and calculate the top words
+presidents_speeches = sona_speeches_clean.groupby('president')['speech_untrans'].apply(list)
+for president, speeches in presidents_speeches.items():
+    word_sentiments_bing = calculate_word_sentiments(speeches, 'bing')
+    word_sentiments_afinn = calculate_word_sentiments(speeches, 'afinn')
+    plot_top_words(word_sentiments_bing, president, 'bing')
+    plot_top_words(word_sentiments_bing, president, 'AFINN')
+
+
+# Function to calculate word sentiments across all speeches
+def calculate_word_sentiments(speeches, lexicon):
+    # Combine all speeches into one large text
+    all_speeches = ' '.join(speeches)
+    # Tokenize the text into words and filter out stopwords and non-alphabetic tokens
+    words = [word for word in word_tokenize(all_speeches.lower()) if word.isalpha() and word not in stopwords.words('english')]
+    # Get sentiment score for each word
+    word_sentiments = defaultdict(int)
+    for word in words:
+        # Get the sentiment score for the word
+        if lexicon == 'bing':
+            sentiment = get_bing_sentiment(word)
+        elif lexicon == 'afinn':
+            sentiment = get_afinn_sentiment(word)
+
+        word_sentiments[word] += sentiment
+    return word_sentiments
+
+# Function to plot the top positive and negative words
+def plot_top_words(word_sentiments, lexicon):
+    # Sort words by sentiment score
+    sorted_words = sorted(word_sentiments.items(), key=lambda kv: kv[1])
+    # Select the top 10 positive and negative words
+    top_positive_words = sorted_words[-10:]
+    top_negative_words = sorted_words[:10]
+
+    # Words and their sentiment scores for plotting
+    words_positive, scores_positive = zip(*top_positive_words)
+    words_negative, scores_negative = zip(*top_negative_words)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Plot the top negative words
+    ax.barh(range(10), scores_negative, color=colormap[2], label='Negative')
+    # Plot the top positive words
+    ax.barh(range(10, 20), scores_positive, color=colormap[0], label='Positive')
+
+    # Add the word labels
+    ax.set_yticks(range(20))
+    ax.set_yticklabels(words_negative + words_positive)
+    # ax.yticks(fontsize=16)
+
+    # Set the labels and title
+    ax.set_xlabel(f'Contribution to Sentiment Score')
+    ax.legend()
+    # ax.xticks(fontsize=16)
+
+    # Adjust the view so negative words are at the bottom and positive at the top
+    ax.set_ylim(-1, 20)
+    
+    plt.tight_layout()
+    plt.savefig(f'sentiment_plots/word_contr_{lexicon}_all.png', bbox_inches='tight')
+    plt.close()  # Close the figure to avoid displaying it in the notebook
+
+# Calculate the word sentiments across all speeches for each lexicon
+all_speeches = sona_speeches_clean['speech_untrans'].tolist()
+word_sentiments_bing = calculate_word_sentiments(all_speeches, 'bing')
+word_sentiments_afinn = calculate_word_sentiments(all_speeches, 'afinn')
+
+# Plot the top words for each lexicon
+plot_top_words(word_sentiments_bing, 'bing')
+plot_top_words(word_sentiments_afinn, 'AFINN')
+
+
+texts = sona_speeches_clean['speech']
+sentences = sona_sentences_alltogether['sentence']
+
+# Further process tokens using gensim's simple_preprocess
+tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc=True removes punctuations
+tokenized_sentences = [simple_preprocess(doc, deacc=True) for doc in sentences]  # deacc=True removes punctuations
+
+# Create a Gensim dictionary from the tokenized documents
+dictionary = corpora.Dictionary(tokenized_texts)
+dict_sentences = corpora.Dictionary(tokenized_sentences)
+
+#dictionary.filter_extremes(no_below=2, no_above=0.7)
+#dict_sentences.filter_extremes(no_below=2, no_above=0.7)
+
+# Create a BOW corpus
+bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
+bow_corpus_sentences = [dict_sentences.doc2bow(text) for text in tokenized_sentences]
+
+# Create a TF-IDF corpus
+tfidf = TfidfModel(bow_corpus)
+tfidf_corpus = tfidf[bow_corpus]
+
+tfidf_sentences = TfidfModel(bow_corpus_sentences)
+tfidf_corpus_sentences = tfidf_sentences[bow_corpus_sentences]
+
+
+# Define the function to compute coherence values
+def compute_coherence_values(dictionary, corpus, texts, start, limit, step, coherence='u_mass'):
+    coherence_values = []
+    model_list = []
+    for num_topics in range(start, limit, step):
+        model = LsiModel(corpus=corpus, num_topics=num_topics, id2word=dictionary)
+        model_list.append(model)
+        coherencemodel = CoherenceModel(model=model, texts=tokenized_texts, dictionary=dictionary, coherence=coherence)
+        coherence_values.append(coherencemodel.get_coherence())
+    return model_list, coherence_values
+
+# Set parameters
+start, limit, step = 2, 20, 1
+
+# Compute coherence values for BOW
+bow_model_list, bow_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=bow_corpus, texts=texts, start=start, limit=limit, step=step)
+
+bow_model_list_sentences, bow_coherence_values_sentences = compute_coherence_values(dictionary=dict_sentences, corpus=bow_corpus_sentences, texts=sentences, start=start, limit=limit, step=step)
+
+# Compute coherence values for TF-IDF
+tfidf_model_list, tfidf_coherence_values = compute_coherence_values(dictionary=dictionary, corpus=tfidf_corpus, texts=tokenized_texts, start=start, limit=limit, step=step)
+
+tfidf_model_list_sentences, tfidf_coherence_values_sentences = compute_coherence_values(dictionary=dict_sentences, corpus=tfidf_corpus_sentences, texts=sentences, start=start, limit=limit, step=step)
+
+# Save the to csv
+coherence_df = pd.DataFrame({'bow_coherence_values': bow_coherence_values, 'tfidf_coherence_values': tfidf_coherence_values, 'bow_coherence_values_sentences': bow_coherence_values_sentences, 'tfidf_coherence_values_sentences': tfidf_coherence_values_sentences})
+
+coherence_df.to_csv('lsa_plots/coherence_values.csv', index=False)
+
+
+from matplotlib.ticker import MaxNLocator
+
+# Read in the coherence values
+coherence_df = pd.read_csv('lsa_plots/coherence_values.csv')
+
+# Extract the coherence values
+bow_coherence_values = coherence_df['bow_coherence_values']
+tfidf_coherence_values = coherence_df['tfidf_coherence_values']
+bow_coherence_values_sentences = coherence_df['bow_coherence_values_sentences']
+tfidf_coherence_values_sentences = coherence_df['tfidf_coherence_values_sentences']
+
+# Plotting the coherence values
+x = range(start, limit, step)
+plt.figure(figsize=(10, 6))
+plt.plot(x, bow_coherence_values, label='BoW', color='midnightblue')
+plt.plot(x, tfidf_coherence_values, label='tf-idf', color='darkgray')
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
+plt.legend(loc='lower left')
+plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+plt.savefig(f'lsa_plots/words_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
+
+# Plotting the coherence values
+x = range(start, limit, step)
+plt.figure(figsize=(10, 6))
+plt.plot(x, bow_coherence_values_sentences, label='BoW', color='midnightblue')
+plt.plot(x, tfidf_coherence_values_sentences, label='tf-idf', color='darkgray')
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
+plt.legend(loc='lower right')
+plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+plt.savefig(f'lsa_plots/sentence_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
+
+# TODO: Set the number of topics based on the plots
+lsa_bow_words = LsiModel(corpus=bow_corpus, num_topics=3, id2word=dictionary)
+lsa_bow_sentences = LsiModel(corpus=bow_corpus_sentences, num_topics=2, id2word=dict_sentences)
+
+lsa_tfidf_words = LsiModel(corpus=tfidf_corpus, num_topics=3, id2word=dictionary)
+lsa_tfidf_sentences = LsiModel(corpus=tfidf_corpus_sentences, num_topics=2, id2word=dict_sentences)
+
+import matplotlib.pyplot as plt
+
+# Function to plot the top words for each topic in a single LSA model
+def plot_top_words_for_each_topic(model, fiton, lexicon, num_words=10):
+
+    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'darkgray', 'dimgray']
+    
+    j = 0
+
+    for i in range(model.num_topics):
+        # Extract the top words for this topic
+        top_words = model.show_topic(i, num_words)
+        # Separate the words and their corresponding weights
+        words, weights = zip(*top_words)
+        weights = [abs(weight) for weight in weights]  # Use absolute values for weights
+
+        # Create a bar chart for the top words in this topic
+        plt.figure(figsize=(10, 6))
+        plt.barh(words, weights, color = colors[j])
+        # ax.set_yticklabels(words, fontsize=20)
+        j += 1
+
+        if j == 4:
+            j = 0
+
+        plt.xlabel('Weight')
+        plt.gca().invert_yaxis()  # Highest weights on top
+        plt.savefig(f'lsa_plots/{fiton}_{lexicon}_topic_{i + 1}.png', bbox_inches='tight')
+        plt.close()
+
+
+# Apply the plotting function to each of your LSA models
+plot_top_words_for_each_topic(lsa_bow_words, 'words', 'bow')
+plot_top_words_for_each_topic(lsa_bow_sentences, 'sentences', 'bow')
+plot_top_words_for_each_topic(lsa_tfidf_words, 'words', 'tfidf')
+plot_top_words_for_each_topic(lsa_tfidf_sentences, 'sentences', 'tfidf')
+
+sona_speeches_clean['speech'].to_csv('data/sona_speeches_only.csv', index=False)
+sona_sentences_alltogether['sentence'].to_csv('data/sona_sentences_only.csv', index=False)
+
+import math
+
+def calculate_umass_coherence(plsa_result, corpus, top_n=10, tf_idf=False):
+    # Extract the top N words for each topic
+    top_words_by_topic = [
+        [word for word, _ in plsa_result.word_given_topic[i][:top_n]]
+        for i in range(plsa_result.n_topics)
+    ]
+    
+    # Get document-word matrix (document frequency matrix)
+    doc_word_matrix = corpus.get_doc_word(tf_idf=tf_idf)
+    
+    # Calculate document frequencies for single words
+    word_doc_freq = np.sum(doc_word_matrix > 0, axis=0)
+    
+    # Calculate coherence for each topic
+    topic_coherences = []
+    for top_words in top_words_by_topic:
+        pair_scores = []
+        for i, word in enumerate(top_words):
+            for j in range(i + 1, len(top_words)):
+                # Get indices in the vocabulary
+                word_i_index = corpus.index[word]
+                word_j_index = corpus.index[top_words[j]]
+                
+                # Count the documents where both words appear
+                both_docs = np.sum((doc_word_matrix[:, word_i_index] > 0) & (doc_word_matrix[:, word_j_index] > 0))
+                
+                # Calculate score for this word pair
+                score = math.log((both_docs + 1.0) / word_doc_freq[word_i_index])  # Add 1 to avoid log(0)
+                pair_scores.append(score)
+                
+        # Average over all pairs to get the topic coherence
+        topic_coherence = sum(pair_scores) / len(pair_scores)
+        topic_coherences.append(topic_coherence)
+        
+    # Average over all topics to get the overall coherence
+    overall_coherence = sum(topic_coherences) / len(topic_coherences)
+    return overall_coherence
+
+
+pipeline = Pipeline(*DEFAULT_PIPELINE)
+
+corpus = Corpus.from_csv("data/sona_speeches_only.csv", pipeline)
+corpus_sent = Corpus.from_csv("data/sona_sentences_only.csv", pipeline)
+
+topic_numbers = range(2, 12, 1)
+
+# Loop over the topic number and calculate the coherence values
+bow_coherence_values = []
+bow_coherence_values_sent = []
+tfidf_coherence_values = []
+tfidf_coherence_values_sent = []
+
+for n_topics in topic_numbers:
+    # Initialize the models
+    tfidf_plsa = PLSA(corpus, n_topics, tf_idf=True)
+    bow_plsa = PLSA(corpus, n_topics, tf_idf=False)
+
+    tfidf_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=True)
+    bow_plsa_sent = PLSA(corpus_sent, n_topics, tf_idf=False)
+
+    # Fit the models
+    tfidf_result = tfidf_plsa.fit()
+    bow_result = bow_plsa.fit()
+    tfidf_result_sent = tfidf_plsa_sent.fit()
+    bow_result_sent = bow_plsa_sent.fit()
+
+    # Calculate the coherence values
+    bow_coherence_values.append(calculate_umass_coherence(bow_result, corpus, tf_idf=False))
+    tfidf_coherence_values.append(calculate_umass_coherence(tfidf_result, corpus, tf_idf=True))
+    bow_coherence_values_sent.append(calculate_umass_coherence(bow_result_sent, corpus_sent, tf_idf=False))
+    tfidf_coherence_values_sent.append(calculate_umass_coherence(tfidf_result_sent, corpus_sent, tf_idf=True))
+
+
+# Save the coherence value results
+pd.DataFrame({
+    'topic_number': topic_numbers,
+    'bow_coherence': bow_coherence_values,
+    'tfidf_coherence': tfidf_coherence_values,
+    'bow_coherence_sent': bow_coherence_values_sent,
+    'tfidf_coherence_sent': tfidf_coherence_values_sent
+}).to_csv('data/saved_plsa_coherence_values.csv', index=False)
+
+
+# Load the coherence value results
+coherence_values = pd.read_csv('data/saved_plsa_coherence_values.csv')
+
+topic_numbers = coherence_values['topic_number']
+bow_coherence_values = coherence_values['bow_coherence']
+tfidf_coherence_values = coherence_values['tfidf_coherence']
+bow_coherence_values_sent = coherence_values['bow_coherence_sent']
+tfidf_coherence_values_sent = coherence_values['tfidf_coherence_sent']
+
+# Plot the speech coherence values - updated
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, bow_coherence_values, label='BoW', color='midnightblue')
+plt.plot(topic_numbers, tfidf_coherence_values, label='tf-idf', color='darkgray')
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
+plt.legend(loc='lower right')
+plt.savefig(f'plsa_plots/words_coherence.png', bbox_inches='tight')
+plt.close()
+
+
+# Plot the sentence coherence values - updated
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, bow_coherence_values_sent, label='BoW', color='midnightblue')
+plt.plot(topic_numbers, tfidf_coherence_values_sent, label='tf-idf', color='darkgray')
+plt.xlabel("Number of Topics")
+plt.ylabel("Coherence score")
+plt.legend(loc='lower right')
+plt.savefig(f'plsa_plots/sentences_coherence.png', bbox_inches='tight')
+plt.close()
+
+# Fit the models with the calibrated number of topics
+tfidf_plsa = PLSA(corpus, 5, tf_idf=True)
+bow_plsa = PLSA(corpus, 5, tf_idf=False)
+tfidf_plsa_sent = PLSA(corpus_sent, 4, tf_idf=True)
+bow_plsa_sent = PLSA(corpus_sent, 4, tf_idf=False)
+
+# Fit the models
+tfidf_result = tfidf_plsa.fit()
+bow_result = bow_plsa.fit()
+tfidf_result_sent = tfidf_plsa_sent.fit()
+bow_result_sent = bow_plsa_sent.fit()
+
+# Function to plot the top words for a given topic
+def plot_top_words_for_topic(word_given_topic, topic_num, corptype, color, top_n=10):
+    # Extract the top words for this topic
+    top_words_data = word_given_topic[topic_num][:top_n]
+    words, probabilities = zip(*top_words_data)
+
+    # Create a bar plot
+    plt.figure(figsize=(10, 6))
+    plt.barh(words, probabilities, color=color)
+    plt.xlabel('Probability')
+    plt.gca().invert_yaxis() 
+    plt.savefig(f'plsa_plots/{corptype}_topic_{topic_num + 1}.png', bbox_inches='tight')
+    plt.close()
+
+
+def plot_word_contribution(result, corptype):
+    # Number of topics in your model
+    n_topics = len(result.word_given_topic)
+
+    colors = ['lightsteelblue', 'midnightblue', 'lightgray', 'darkgray', 'dimgray']
+    
+    i = 0
+
+    # Plot the top words for each topic
+    for topic_num in range(n_topics):
+        plot_top_words_for_topic(result.word_given_topic, topic_num, corptype, colours[i])
+        i+=1
+
+        # if i == 4:
+        #     i = 0
+
+# Plot the word contribution for each topic for each model
+plot_word_contribution(bow_result, 'words-BoW')
+plot_word_contribution(tfidf_result, 'words-tf-idf')
+plot_word_contribution(bow_result_sent, 'sentences-BoW')
+plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
+
+
+texts = sona_speeches_clean['speech']
+sentences = sona_sentences_alltogether['sentence']
+
+# Further process tokens using gensim's simple_preprocess
+tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc=True removes punctuations
+tokenized_sentences = [simple_preprocess(doc, deacc=True) for doc in sentences]  # deacc=True removes punctuations
+
+# Create a Gensim dictionary from the tokenized documents
+dictionary = corpora.Dictionary(tokenized_texts)
+dictionary.filter_extremes(no_below=3, no_above=0.7)
+
+dict_sentences = corpora.Dictionary(tokenized_sentences)
+dict_sentences.filter_extremes(no_below=3, no_above=0.7)
+
+# Create a BOW corpus
+bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
+bow_corpus_sentences = [dict_sentences.doc2bow(text) for text in tokenized_sentences]
+
+# Create a TF-IDF corpus
+tfidf = TfidfModel(bow_corpus)
+tfidf_corpus = tfidf[bow_corpus]
+
+tfidf_sentences = TfidfModel(bow_corpus_sentences)
+tfidf_corpus_sentences = tfidf_sentences[bow_corpus_sentences]
+
+
+# Define the function to compute coherence values
+def compute_coherence_values(corpus, dictionary, k, a, b, texts):
+    lda_model = LdaModel(corpus=corpus,
+                         id2word=dictionary,
+                         num_topics=k, 
+                         random_state=100,
+                         eval_every=None,
+                         alpha=a,
+                         eta=b)
+    
+    coherence_model_lda = CoherenceModel(model=lda_model, texts=texts, dictionary=dictionary, coherence='u_mass')
+    
+    return coherence_model_lda.get_coherence()
+
+# Define the parameter space for grid search
+grid = {}
+grid['Validation_Set'] = {}
+# Topics range
+min_topics = 2
+max_topics = 10
+step_size = 1
+topics_range = range(min_topics, max_topics, step_size)
+# Alpha parameter
+alpha = list(np.arange(0.1, 1, 0.1))
+# Beta parameter
+beta = list(np.arange(0.1, 1, 0.2))
+
+# Validation sets
+num_of_docs = len(bow_corpus)
+corpus_sets = [tfidf_corpus, 
+               bow_corpus]
+corpus_title = ['TF-IDF Corpus', 'BoW Corpus']
+model_results = {'Validation_Set': [],
+                 'Topics': [],
+                 'Alpha': [],
+                 'Beta': [],
+                 'Coherence': []
+                }
+model_results_sentences = {'Validation_Set': [],
+                 'Topics': [],
+                 'Alpha': [],
+                 'Beta': [],
+                 'Coherence': []
+                }
+
+# Can take a long time to run
+# If you want to only test a few models, reduce the number of steps in topics_range
+# and/or limit the number of values in alpha and beta lists.
+if 1 == 1:
+    pbar = tqdm.tqdm(total=(max_topics-min_topics)*len(alpha)*len(beta)*len(corpus_sets))
+    
+    # iterate through validation corpuses
+    for i in range(len(corpus_sets)):
+        # iterate through number of topics
+        for k in topics_range:
+            # iterate through alpha values
+            for a in alpha:
+                # iterare through beta values
+                for b in beta:
+                    # get the coherence score for the given parameters
+                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dictionary, k=k, a=a, b=b, texts=tokenized_texts)
+                    # Save the model results
+                    model_results['Validation_Set'].append(corpus_title[i])
+                    model_results['Topics'].append(k)
+                    model_results['Alpha'].append(a)
+                    model_results['Beta'].append(b)
+                    model_results['Coherence'].append(cv)
+                    
+                    pbar.update(1)
+    pbar.close()
+
+
+# Get the results for the sentences
+if 1 == 1:
+    pbar = tqdm.tqdm(total=(max_topics-min_topics)*len(alpha)*len(beta)*len(corpus_sets))
+    
+    # iterate through validation corpuses
+    for i in range(len(corpus_sets)):
+        # iterate through number of topics
+        for k in topics_range:
+            # iterate through alpha values
+            for a in alpha:
+                # iterare through beta values
+                for b in beta:
+                    # get the coherence score for the given parameters
+                    cv = compute_coherence_values(corpus=corpus_sets[i], dictionary=dict_sentences, k=k, a=a, b=b, texts=tokenized_sentences)
+                    # Save the model results
+                    model_results_sentences['Validation_Set'].append(corpus_title[i])
+                    model_results_sentences['Topics'].append(k)
+                    model_results_sentences['Alpha'].append(a)
+                    model_results_sentences['Beta'].append(b)
+                    model_results_sentences['Coherence'].append(cv)
+                    
+                    pbar.update(1)
+    pbar.close()
+
+
+# # Save the results to a csv
+# model_results_df = pd.DataFrame(model_results)
+# model_results_sentences_df = pd.DataFrame(model_results_sentences)
+
+# model_results_df.to_csv('data/sona_speeches_lda.csv', index=False)
+# model_results_sentences_df.to_csv('data/sona_sentences_lda.csv', index=False)
+
+# Save the results to a csv
+model_results_df = pd.read_csv('data/sona_speeches_lda.csv')
+sorted_speeches_df = model_results_df.sort_values(by='Coherence', ascending=False)
+
+# Concatenate the head and tail of the DataFrame
+combined_speeches_df = pd.concat([sorted_speeches_df.head(5), sorted_speeches_df.tail(5)])
+
+combined_speeches_df['Validation_Set'] = combined_speeches_df['Validation_Set'].replace(['TF-IDF Corpus', 'BoW Corpus'], ['tf-idf', 'BoW'])
+
+# Change the validation set column name from "Validation_Set" to "Corpus"
+combined_speeches_df = combined_speeches_df.rename(columns={'Validation_Set': 'Corpus'})
+
+# Save the results to a csv
+model_results_sentences_df = pd.read_csv('data/sona_sentences_lda.csv')
+sorted_sentences_df = model_results_sentences_df.sort_values(by='Coherence', ascending=False)
+
+# Concatenate the head and tail of the DataFrame
+combined_sentences_df = pd.concat([sorted_sentences_df.head(5), sorted_sentences_df.tail(5)])
+combined_sentences_df['Validation_Set'] = combined_sentences_df['Validation_Set'].replace(['TF-IDF Corpus', 'BoW Corpus'], ['tf-idf', 'BoW'])
+
+# Change the validation set column name from "Validation_Set" to "Corpus"
+combined_sentences_df = combined_sentences_df.rename(columns={'Validation_Set': 'Corpus'})
+
+num_cols = combined_sentences_df.select_dtypes(include=['number']).columns
+
+# Remove the first value from the num_cols
+num_cols = num_cols[1:]
+
+# Use pivot_table to handle duplicate (Alpha, Beta) pairs by averaging their coherence values
+pivot_table = model_results_df.pivot_table(index='Alpha', columns='Beta', values='Coherence', aggfunc=np.mean)
+pivot_table_sentences = model_results_sentences_df.pivot_table(index='Alpha', columns='Beta', values='Coherence', aggfunc=np.mean)
+
+# Create the meshgrid for Alpha and Beta values
+Alpha, Beta = np.meshgrid(pivot_table.columns, pivot_table.index)
+Alpha_sentences, Beta_sentences = np.meshgrid(pivot_table_sentences.columns, pivot_table_sentences.index)
+
+# Create the contour plot using the values of the pivot_table
+# We need to use the values attribute to get the coherence scores as a 2D array
+plt.figure(figsize=(8, 6))
+cp = plt.contourf(Alpha, Beta, pivot_table.values, cmap='seismic', levels=100)
+plt.colorbar(cp)
+plt.xlabel('Beta')
+plt.ylabel('Alpha')
+plt.savefig(f'lda_plots/words_contour_plot.png', bbox_inches='tight')
+plt.close()
+
+plt.figure(figsize=(8, 6))
+cp = plt.contourf(Alpha_sentences, Beta_sentences, pivot_table_sentences.values, cmap='seismic', levels=100)
+plt.colorbar(cp)
+plt.xlabel('Beta')
+plt.ylabel('Alpha')
+plt.savefig(f'lda_plots/sentences_contour_plot.png', bbox_inches='tight')
+plt.close()
+
+def style_df(df):
+    # Select the numeric columns except the first one
+    numeric_cols = df.select_dtypes(include=['number']).columns[1:]
+    format_dict = {col: "{:.2f}" for col in numeric_cols}
+    styles = [
+        dict(selector="th", props=[("text-align", "center")]),
+        dict(selector="td", props=[("text-align", "center")]),
+        dict(selector="", props=[("margin", "auto"), ("border", "1px solid black")])
+    ]
+    return df.style.set_table_styles(styles).format(format_dict).hide()
+
+
+# Save the results to a csv
+style_df(combined_speeches_df)
+
+
+# Save the results to a csv
+style_df(combined_sentences_df)
+
+
+# Train the best models for each corpus
+lda_model_speeches = LdaModel(corpus=bow_corpus,
+                         id2word=dictionary,
+                         num_topics=9, 
+                         random_state=100,
+                         eval_every=None,
+                         alpha=0.6,
+                         eta=0.5)
+
+lda_model_sentences = LdaModel(corpus=bow_corpus,
+                         id2word=dict_sentences,
+                         num_topics=2, 
+                         random_state=100,
+                         eval_every=None,
+                         alpha=0.9,
+                         eta=0.9)
+
+# Prepare the visualization data
+vis_data_speeches = pyLDAvis.gensim_models.prepare(lda_model_speeches, bow_corpus, dictionary)
+vis_data_sentences = pyLDAvis.gensim_models.prepare(lda_model_sentences, bow_corpus_sentences, dict_sentences)
+
+# Enable the automatic display of visualizations in the Jupyter notebook
+pyLDAvis.enable_notebook()
+
+# Display the visualization
+pyLDAvis.display(vis_data_speeches)
+
+
+# Display the visualization
+pyLDAvis.display(vis_data_sentences)
+
+
+import tomotopy as tp
+import matplotlib.pyplot as plt
+
+# Function to calculate coherence scores
+def calculate_coherence(model, metric='u_mass'):
+    coherence = tp.coherence.Coherence(model, coherence=metric)
+    return coherence.get_score()
+
+# Prepare the data for the CTM model
+tokenized_docs = [text.split() for text in sona_speeches_clean['speech']]  # Ensure the texts are tokenized
+tokenized_sentences = [text.split() for text in sona_sentences_alltogether['sentence']]  # Ensure the texts are tokenized
+
+
+# Define the range of topic numbers you want to test
+topic_numbers = range(2, 12, 1)  # for example from 2 to 20 by step of 2
+
+# Store coherence scores for plotting
+coherence_scores = []
+coherence_scores_sentences = []
+
+for k in topic_numbers:
+    # Initialize CTM with the current number of topics
+    ctm = tp.CTModel(k=k)
+    ctms = tp.CTModel(k=k)
+
+    # Add documents to the model
+    for tokens in tokenized_docs:
+        ctm.add_doc(tokens)
+
+    # Add sentences to the model
+    for tokens in tokenized_sentences:
+        ctms.add_doc(tokens)    
+
+    # Train the model
+    ctm.train(0)
+    ctms.train(0)
+
+    for _ in range(100):
+        ctm.train(10)
+        ctms.train(10)
+
+    # Calculate and store the coherence score
+    score = calculate_coherence(ctm)
+    score_sentences = calculate_coherence(ctms)
+
+    coherence_scores.append(score)
+    coherence_scores_sentences.append(score_sentences)
+
+    #(f"Topics: {k}, Coherence Score: {score}")
+
+# Save the coherence scores to a csv
+pd.DataFrame({
+    'topic_number': topic_numbers,
+    'bow_coherence_values': coherence_scores,
+    'bow_coherence_values_sentences': coherence_scores_sentences
+}).to_csv('data/saved_ctm_coherence_values.csv', index=False)
+
+
+# Read in the saved values
+coherence_values = pd.read_csv('data/saved_ctm_coherence_values.csv')
+
+topic_numbers = coherence_values['topic_number']
+coherence_scores = coherence_values['bow_coherence_values']
+coherence_scores_sentences = coherence_values['bow_coherence_values_sentences']
+
+# Plot the speech coherence scores
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, coherence_scores,  color='midnightblue')
+plt.xlabel('Number of Topics')
+plt.ylabel('Coherence Score')
+plt.xticks(topic_numbers)
+plt.savefig(f'ctm_plots/words_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
+# Plot the sentence coherence scores
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, coherence_scores_sentences, color='lightsteelblue')
+plt.xlabel('Number of Topics')
+plt.ylabel('Coherence Score')
+plt.xticks(topic_numbers)
+plt.savefig(f'ctm_plots/sentences_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
+# Train the models with the optimal number of topics
+ctm = tp.CTModel(k=2)
+ctms = tp.CTModel(k=3)
+
+# Add documents to the model
+for tokens in tokenized_docs:
+    ctm.add_doc(tokens)
+
+# Add sentences to the model
+for tokens in tokenized_sentences:
+    ctms.add_doc(tokens)
+
+# Train the model
+ctm.train(0)
+ctms.train(0)
+
+for _ in range(100):
+    ctm.train(10)
+    ctms.train(10)
+
+# Function to plot the top words for one topic
+def plot_top_words_for_topic(model, modtype, topic_num, color, top_n=10):
+    # Extract the top words for this topic
+    top_words = model.get_topic_words(topic_num, top_n=top_n)
+    words, weights = zip(*top_words)
+
+    # Create a bar chart for the top words in this topic
+    plt.figure(figsize=(10, 6))
+    plt.barh(words, weights, color=color)
+    plt.xlabel('Weight')
+    plt.gca().invert_yaxis()  # Highest weights on top
+    plt.savefig(f'ctm_plots/{modtype}_{topic_num+1}.png', bbox_inches='tight')
+    plt.close()
+
+# Plot the top words for each topic for the CTModel of documents
+i = 0
+colours = ['midnightblue', 'lightsteelblue']
+
+for k in range(ctm.k):
+    plot_top_words_for_topic(ctm, 'words', k, colours[i])
+    i+=1
+
+    if i == 2:
+        i = 0
+
+i = 0
+# Plot the top words for each topic for the CTModel of sentences
+for k in range(ctms.k):
+    plot_top_words_for_topic(ctms, 'sentences', k, colours[i])
+    i+=1
+
+    if i == 2:
+        i = 0
+
+
+# Note that ATM only works for BoW. Raw word counts (BoW) is standard because these models are based on the assumption that the data is generated from a multinomial distribution, which does not hold with TF-IDF weights.
+
+texts = sona_speeches_clean['speech']
+sentences = sona_sentences_alltogether['sentence']
+
+# Further process tokens using gensim's simple_preprocess
+tokenized_texts = [simple_preprocess(doc, deacc=True) for doc in texts]  # deacc=True removes punctuations
+tokenized_sentences = [simple_preprocess(doc, deacc=True) for doc in sentences]  # deacc=True removes punctuations
+
+# Create a Gensim dictionary from the tokenized documents
+dictionary = corpora.Dictionary(tokenized_texts)
+dictionary.filter_extremes(no_below=3, no_above=0.7)
+
+dict_sentences = corpora.Dictionary(tokenized_sentences)
+dict_sentences.filter_extremes(no_below=3, no_above=0.7)
+
+# Create a BOW corpus
+bow_corpus = [dictionary.doc2bow(text) for text in tokenized_texts]
+bow_corpus_sentences = [dict_sentences.doc2bow(text) for text in tokenized_sentences]
+
+# Prepare the data for the AuthorTopicModel
+# Create a mapping of authors to documents
+author2doc = {author: [] for author in sona_speeches_clean['president'].unique()}
+for i, row in sona_speeches_clean.iterrows():
+    author2doc[row['president']].append(i)
+
+# Create a mapping of authors to sentences
+author2sent = {author: [] for author in sona_sentences_alltogether['president'].unique()}
+for i, row in sona_sentences_alltogether.iterrows():
+    author2sent[row['president']].append(i)
+
+
+# Define the range of topic numbers you want to test
+topic_numbers = range(2, 12, 1)  # for example from 2 to 20 by step of 2
+
+# Store coherence scores for plotting
+coherence_scores = []
+coherence_scores_sentences = []
+
+for num_topics in topic_numbers:
+    # Author-Topic LDA model with the current number of topics
+    author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=num_topics)
+    author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, author2doc=author2sent, id2word=dict_sentences, num_topics=num_topics)
+
+    # Train the model
+    author_topic_model.update(bow_corpus, author2doc=author2doc)
+    author_topic_model_sentences.update(bow_corpus_sentences, author2doc=author2sent)
+
+    # Compute coherence score
+    cm = CoherenceModel(model=author_topic_model, texts=tokenized_docs, dictionary=dictionary, coherence='u_mass')
+    cm_sentences = CoherenceModel(model=author_topic_model_sentences, texts=tokenized_sentences, dictionary=dict_sentences, coherence='u_mass')
+
+    coherence = cm.get_coherence()
+    coherence_sentences = cm_sentences.get_coherence()
+
+    coherence_scores.append(coherence)
+    coherence_scores_sentences.append(coherence_sentences)
+
+# Save the coherence scores to a csv
+pd.DataFrame({
+    'topic_number': topic_numbers,
+    'bow_coherence_values': coherence_scores,
+    'bow_coherence_values_sentences': coherence_scores_sentences
+}).to_csv('data/saved_atm_coherence_values.csv', index=False)
+
+
+
+# Read in the saved values
+coherence_values = pd.read_csv('data/saved_atm_coherence_values.csv')
+
+topic_numbers = coherence_values['topic_number']
+coherence_scores = coherence_values['bow_coherence_values']
+coherence_scores_sentences = coherence_values['bow_coherence_values_sentences']
+
+# Plot the speech coherence scores
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, coherence_scores,  color='midnightblue')
+plt.title('Coherence Scores by Number of Topics')
+plt.xlabel('Number of Topics')
+plt.ylabel('Coherence Score')
+plt.xticks(topic_numbers)
+plt.savefig(f'atm_plots/words_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
+# Plot the sentence coherence scores
+plt.figure(figsize=(10, 6))
+plt.plot(topic_numbers, coherence_scores_sentences, color='lightsteelblue')
+plt.title('Coherence Scores by Number of Topics')
+plt.xlabel('Number of Topics')
+plt.ylabel('Coherence Score')
+plt.xticks(topic_numbers)
+plt.savefig(f'atm_plots/sentences_coherence_plots.png', bbox_inches='tight')
+plt.close()
+
+
+# Author-Topic LDA model with the current number of topics
+author_topic_model = AuthorTopicModel(corpus=bow_corpus, author2doc=author2doc, id2word=dictionary, num_topics=2)
+author_topic_model_sentences = AuthorTopicModel(corpus=bow_corpus_sentences, author2doc=author2sent, id2word=dict_sentences, num_topics=3)
+
+# Train the model
+author_topic_model.update(bow_corpus, author2doc=author2doc)
+author_topic_model_sentences.update(bow_corpus_sentences, author2doc=author2sent)
+
+colours = ['midnightblue', 'lightsteelblue', 'darkgray']
+
+# Function to plot the top words for one topic in an AuthorTopicModel
+def plot_top_words_for_author_topic_model(model, modtype, topic_num, colour, top_n=10):
+    # Extract the top words for this topic
+    top_words = model.get_topic_terms(topic_num, topn=top_n)
+    words, weights = zip(*[(model.id2word[word_id], weight) for word_id, weight in top_words])
+
+    # Create a bar chart for the top words in this topic
+    plt.figure(figsize=(10, 6))
+    plt.barh(words, weights, color=colour)
+    plt.xlabel('Weight')
+    plt.gca().invert_yaxis()  # Highest weights on top
+    plt.savefig(f'atm_plots/{modtype}_{topic_num+1}.png', bbox_inches='tight')
+    plt.close()
+
+# Plot the top words for each topic for the AuthorTopicModel of documents
+i = 0
+for k in range(author_topic_model.num_topics):
+    plot_top_words_for_author_topic_model(author_topic_model, "words",k, colours[i])
+
+    i += 1
+
+    if i == 3:
+        i = 0
+
+i = 0
+# Plot the top words for each topic for the AuthorTopicModel of sentences
+for k in range(author_topic_model_sentences.num_topics):
+    plot_top_words_for_author_topic_model(author_topic_model_sentences, "sentences", k, colours[i])
+
+    i += 1
+
+    if i == 3:
+        i = 0
+
+from pprint import pprint
+
+def show_author(name, model, topic_labels):
+    print('\n%s' % name)
+    print('Docs:', pd.Series(author_topic_model.author2doc[name]).unique())
+    print('Topics:')
+    pprint([(topic_labels[topic[0]], topic[1]) for topic in model[name]])
+
+
+
+```

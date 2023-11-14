@@ -665,9 +665,9 @@ def plot_speeches_by_president(df, lexicon):
         plt.bar(president_df['date_str'], president_df[f'{lexicon}_sentiment'], label=president, color=colors[idx])
     plt.xlabel('Date')
     plt.ylabel(f'Sentiment Score')
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=90)
     plt.yticks()
-    plt.legend(loc ="upper left")
+    plt.legend(loc ="upper left", fontsize=14)
     plt.savefig(f'sentiment_plots/speech_{lexicon}_all.png', bbox_inches='tight')
     plt.close()  # Close the figure to avoid displaying it in the notebook
 
@@ -1324,14 +1324,17 @@ def plot_word_contribution(result, corptype):
         plot_top_words_for_topic(result.word_given_topic, topic_num, corptype, colours[i])
         i+=1
 
-        # if i == 4:
-        #     i = 0
+        if i == 4:
+            i = 0
 
 # Plot the word contribution for each topic for each model
 plot_word_contribution(bow_result, 'words-BoW')
 plot_word_contribution(tfidf_result, 'words-tf-idf')
 plot_word_contribution(bow_result_sent, 'sentences-BoW')
 plot_word_contribution(tfidf_result_sent, 'sentences-tf-idf')
+
+
+
 
 ```
 
@@ -1533,7 +1536,6 @@ num_cols = num_cols[1:]
 
 
 ```{python}
-
 
 # Use pivot_table to handle duplicate (Alpha, Beta) pairs by averaging their coherence values
 pivot_table = model_results_df.pivot_table(index='Alpha', columns='Beta', values='Coherence', aggfunc=np.mean)
@@ -2060,15 +2062,15 @@ sona_speeches_clean['president'].unique()
 
 # TODO: Add topic labels
 
-topic_labels_words = ['Circuits', 'Neuroscience', 'Numerical optimization']
+# topic_labels_words = ['Circuits', 'Neuroscience', 'Numerical optimization']
 
-topic_labels_sents = ['Circuits', 'Neuroscience', 'Numerical optimization', 'Object recognition', \
-               'Math/general', 'Robotics', 'Character recognition', \
-                'Reinforcement learning', 'Speech recognition', 'Bayesian modelling']
+# topic_labels_sents = ['Circuits', 'Neuroscience', 'Numerical optimization', 'Object recognition', \
+#                'Math/general', 'Robotics', 'Character recognition', \
+#                 'Reinforcement learning', 'Speech recognition', 'Bayesian modelling']
 
 # Show the topics for each author
-show_author('Mandela', author_topic_model, topic_labels_words)
-#show_author('deKlerk', author_topic_model_sentences)
+# show_author('Mandela', author_topic_model, topic_labels_words)
+# show_author('deKlerk', author_topic_model_sentences)
 
 ```
 
