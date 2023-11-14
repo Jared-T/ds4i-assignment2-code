@@ -1665,24 +1665,24 @@ pyLDAvis.display(vis_data_sentences)
 
 ::: {#fig-CTM-coherence layout-ncol=2}
 
-![Words](ctm_plots/words_coherence_plots.png){#fig-ctm-coherence-words}
+![Words ~ economy](ctm_plots/words_coherence_plots.png){#fig-ctm-coherence-words}
 
-![Sentences](ctm_plots/sentences_coherence_plots.png){#fig-ctm-coherence-sentences}
+![Sentences ~ economy](ctm_plots/sentences_coherence_plots.png){#fig-ctm-coherence-sentences}
 
 Coherence plots for CTM across different tokens (words or sentences) implemented within BoW approach.
 :::
 
 ::: {#fig-CTM-topics layout-ncol=2}
 
-![Words: Topic 1](ctm_plots/words_1.png){#fig-ctm-words-topic1}
+![Sentences: Topic 1 ~ economy](ctm_plots/sentences_1.png){#fig-ctm-sentences-topic1}
 
-![Sentences: Topic 1](ctm_plots/sentences_1.png){#fig-ctm-sentences-topic1}
+![Words: Topic 1 ~ economy](ctm_plots/words_1.png){#fig-ctm-words-topic1}
 
-![Words: Topic 2](ctm_plots/words_2.png){#fig-ctm-words-topic2}
+![Sentences: Topic 2 ~ economic and structural advancement](ctm_plots/sentences_2.png){#fig-ctm-sentences-topic2}
 
-![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-ctm-sentences-topic2}
+![Words: Topic 2 ~ societal collectives](ctm_plots/words_2.png){#fig-ctm-words-topic2}
 
-![Sentences: Topic 3](ctm_plots/sentences_3.png){#fig-ctm-sentences-topic3}
+![Sentences: Topic 3 ~ social collectives](ctm_plots/sentences_3.png){#fig-ctm-sentences-topic3}
 
 Topic plots where either words (left) or sentences (right) were used as tokens for CTM application. 
 :::
@@ -1867,15 +1867,15 @@ Coherence plots for ATM across different tokens (words or sentences) implemented
 
 ::: {#fig-ATM-topics layout-ncol=2}
 
-![Words: Topic 1](ctm_plots/words_1.png){#fig-atm-words-topic1}
+![Sentences: Topic 1](atm_plots/sentences_1.png){#fig-atm-sentences-topic1}
 
-![Sentences: Topic 1](ctm_plots/sentences_1.png){#fig-atm-sentences-topic1}
+![Words: Topic 1](atm_plots/words_1.png){#fig-atm-words-topic1}
 
-![Words: Topic 2](ctm_plots/words_2.png){#fig-atm-words-topic2}
+![Sentences: Topic 2](atm_plots/sentences_2.png){#fig-atm-sentences-topic2}
 
-![Sentences: Topic 2](ctm_plots/sentences_2.png){#fig-atm-sentences-topic2}
+![Words: Topic 2](atm_plots/words_2.png){#fig-atm-words-topic2}
 
-![Sentences: Topic 3](ctm_plots/sentences_3.png){#fig-atm-sentences-topic3}
+![Sentences: Topic 3](atm_plots/sentences_3.png){#fig-atm-sentences-topic3}
 
 Topic plots where either words (left) or sentences (right) were used as tokens for ATM application. 
 :::
