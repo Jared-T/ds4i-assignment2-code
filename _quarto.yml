@@ -9,6 +9,7 @@ website:
       - href: index.qmd
         text: Home
       - ds4i_assignment2.qmd
+      - chatgpt_part.qmd
       - code_appendix.qmd
       - plaigarism_declaration.qmd
 
