@@ -892,9 +892,7 @@ Topic-by-word plots for BoW (left) and tf-idf (right) approach for LSA implement
 
 ![tf-idf: Topic 2](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
 
-![BoW: Topic 3](lsa_plots/sentences_bow_topic_3.png){#fig-sentences-bow-topic3}
-
-![tf-idf: Topic 3](lsa_plots/sentences_tfidf_topic_3.png){#fig-sentences-tfidf-topic3}
+{#fig-sentences-tfidf-topic3}
 
 SONA speeches tokenized by sentences for BoW (left) and tf-idf (right) approach for LSA implementation.
 :::
