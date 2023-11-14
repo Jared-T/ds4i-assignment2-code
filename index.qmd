@@ -5,9 +5,7 @@ author:
     - "Heiletjé van Zyl (VZYHEI003)"
 ---
 
-This is the website for the second assignment of the Masters-level course "Data Science for Industry" (DS4I) at the University of Cape Town.
+This is the website for the second assignment (pertaining to sentiment analysis and topic modelling) of the Masters-level course "Data Science for Industry" (DS4I) at the University of Cape Town. All relevant files related to this assignment are archived [here](https://github.com/Jared-T/ds4i-assignment2-code). 
 
-<h4> Website files </h4>
-[Link to the website files](https://github.com/Jared-T/ds4i-assignment2-code) 
 
 

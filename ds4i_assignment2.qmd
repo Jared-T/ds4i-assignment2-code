@@ -25,7 +25,7 @@ Given such political context, it is of specific interest to analyse the  annual 
 
 ![Depiction of how TM will be done using a similar approach to sentA, though tokens will only be defined in terms of words (and not also as sentences) at a text level of all SONA speeches (so disregarding the micro-president context).](TM_MacroMicroScheme.png){height=150 #fig-TM_MacroMicroScheme}
 
-Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa, but also a more niche outlook of the specific rhetoric employed by each of the country's serving presidents during different date periods. 
+Through such a multi-layered lens, the identification of any trends, both in terms of topics and sentiments, over time at both a large (presidents as a collective) as well as at a small (each president as an individual) scale is attainable. This explicates not only an aggregated perspective of the general political discourse prevailing within South Africa (SA), but also a more niche outlook of the specific rhetoric employed by each of the country's serving presidents during different date periods. 
 
 To achieve all of the above-mentioned, it is first relevant to revise foundational terms and review related literature in context of politics and NLP. All pertinent pre-processing of the political text data is then considered, followed by a discussion delving into the details of each SentA and TM approach applied. Specifically, two different lexicons are leveraged to describe sentiments, whilst five different topic models are tackled to uncover themes within South-African-presidents’ SONA speeches. Ensuing the implementation of these methodologies, the results thereof are detailed in terms insights and interpretations. Thereafter, an overall evaluation of the techniques in terms of efficacy and inadequacy is overviewed. Finally, focal findings are highlighted and potential improvements as part of future research are recommended.  
 
@@ -35,7 +35,7 @@ To achieve all of the above-mentioned, it is first relevant to revise foundation
 <b><u> SONA  </b></u>
 
 SONA, a pivotal event in the political programme of Parliament, serves as a presidential summary for the South African public. Specifically, the country’s current domestic affairs and international relations are reflected upon, past governmental work is perused, and future plans in terms of policies and civil projects are proposed. Through this address, accountability on the part of government is re-instilled and transparency with the public is re-affirmed on an annual basis, either once (non-election year) or twice (pre-and-post election) [@Muthambi2017].
-The text analysis of such SONA speeches, via the implementation of TM and SentA, has been previously done for Philippine presidents [@MirandaBringula2021]. Though, it is now of interest to extend such an application to another country, South Africa. 
+The text analysis of such SONA speeches, via the implementation of TM and SentA, has been previously done for Philippine presidents [@MirandaBringula2021]. Though, it is now of interest to extend such an application to another country, SA. 
 
 
 <b><u> Topic modelling (TM) </b></u>
@@ -385,7 +385,7 @@ colormap = [cividis_no_yellow_light(norm(0)),
 
 ![Most frequent words used across all SONA speeches, irrespective of president.](saved_plots/overall_top_words.png){width=500 height=350 #fig-EDA-speeches}
 
-From @fig-EDA-speeches, it is evident that the word "government" is mainly referenced to across all SONA speeches. This word dominance draws upon how the importance of this authority body, which is integral to the governance of South Africa, is emphasized. The frequent usage of the words "people" and "public" indicates a sense of inclusivity where the idea of togetherness is implicitly suggested. Other words, such as "development" and "new", are indicative of ideas of growth and renewal. Lastly, a sense of security and safety is provided with the recurring use of the word "ensure".
+From @fig-EDA-speeches, it is evident that the word "government" is mainly referenced to across all SONA speeches. This word dominance draws upon how the importance of this authority body, which is integral to the governance of SA, is emphasized. The frequent usage of the words "people" and "public" indicates a sense of inclusivity where the idea of togetherness is implicitly suggested. Other words, such as "development" and "new", are indicative of ideas of growth and renewal. Lastly, a sense of security and safety is provided with the recurring use of the word "ensure".
 
 ::: {#fig-EDA-presidents layout-ncol=2}
 
@@ -579,7 +579,7 @@ Similarly with the general sentiment-score trajectories, there are more overlaps
 Words which contribute to the positive and negative sentiment for each specific presidents' SONA speech/speeches. 
 :::
 
-After faceting @fig-wordcontr-speeches by president, as presented in the sub-plots of @fig-wordcontr-presidents, essentially no variability is indicated in terms of uniqueness and the contribution magnitude thereof. For both lexicons, the same set of words add the same amount to each sentiment. Furthermore,  commonalities between words contributing to the sentiments is evident between the five presidents after de Klerk. Negative-sentiment words like “unconstitutional”, “deprive”, “discrimination”, and “boycott” and positive-sentiment words such as “proud”, “succeeded”, and “peaceful” only features in de Klerk’s speech. All of these aforementioned words seem to directly relate to the change in political context during de Klerk’s term. Whilst, the words prevailing in the other five presidents’ speeches appear to foreground the continuation of this changed political climate with positive-sentiment words like “improve”, “better”, “freedom” and “peace”.  Additionally, the shared negative-sentiment words like “crime”, “corruption” and “poverty” foreground the commonality of perpetuating problems that became pronounced throughout all presidential terms after de Klerk. 
+After faceting @fig-wordcontr-speeches by president, as presented in the sub-plots of @fig-wordcontr-presidents, essentially no variability is indicated in terms of uniqueness and the contribution magnitude thereof. For both lexicons, the same set of words add the same amount to each sentiment. Furthermore,  commonalities between words contributing to the sentiments is evident between the five presidents after de Klerk. Negative-sentiment words like “unconstitutional”, “deprive”, “discrimination”, and “boycott” and positive-sentiment words such as “proud”, “succeeded”, and “peaceful” only features in de Klerk’s speech. All of these aforementioned words seem to directly relate to the change in political context during de Klerk’s term. Whilst, the words prevailing in the other five presidents’ speeches appear to foreground the continuation of this changed political climate with positive-sentiment words like “improve”, “better”, “freedom” and “peace”.  Additionally, the shared negative-sentiment words like “crime”, “corruption” and “poverty” foreground the commonality of perpetuating problems that became pronounced throughout all presidential tenures after de Klerk. 
 
 
 ```{python}
@@ -857,42 +857,49 @@ plot_top_words(word_sentiments_afinn, 'AFINN')
 
 <h4> Latent Semantic Analysis (LSA) </h4> 
 
-In the micro-context (i.e., word tokenization) of LSA implementation, the maximum coherence score of -1.5 seen in @fig-words-coherence indicates that three topics are optimal when utilizing the tf-idf approach. In contrast, there is no discernible difference in the coherence scores across a range of topic numbers when instead using the BoW approach. Hence, for comparative purposes, three topics are also chosen as best in this instance.
+In the micro-context (i.e., word tokenization) of LSA implementation, the maximum coherence score of approximately -1.5 seen in @fig-words-coherence indicates that three topics are optimal when utilizing the tf-idf approach. In contrast, there is no discernible difference in the coherence scores across a range of topic numbers when instead using the BoW approach. Hence, for comparative purposes, three topics are also chosen as best in this instance.
 
 ![Coherence plot for LSA where SONA speeches were tokenized by words.](lsa_plots/words_coherence_plots){width=500 height=300 #fig-words-coherence}
 
-Unlike within the micro-context, LSA now applied in the maro-context (i.e., sentence tokenization) indicates more variability in the choice of the optimal topic number for both BoW and tf-idf approaches. Due to the excessive jumps between high and low coherence scores across the topic amounts seen in Figure, it is opted to choose the lowest number (but greater than two). This choice aims to limit potential theme-overlapping (i.e., many common words shared across topics) and allow for more conciseness. 
+Considering @fig-LSA-words-topics, a different overarching focus seems to come to the fore contingent on whether the BoW or tf-idf approach is examined. With reference to the BoW-related corpus, the broad scope of the three topics appears associated to national frameworks and the future thereof. More particularly, the first topic labelled as governance alludes to processes (“work”, “development”) established by institutions (“government”) which direct communities (“public”, “people”).
+Words like “infrastructure”, “investment” and “energy” seem to indicate structural resources, which encompasses the second topic.  The third topic, sustainability, is more related to the prospective of long-term (“years”) endurance (“continue”) across these governmental processes and resources. 
+
+On the other hand, with respect to the tf-idf-related corpus, the three topics now instead appear concentrated on current issues. The first topic centers on a sole problem, particularly that of common (“compatriots”) “pandemic” preparedness (“plan”). Whereas, the second topic broadens to other additional issues contextual to the country. Hence, in this case, the challenges range from energy (“eskom”) problems (“loadshedding”) to the “covid” “pandemic” to the government’s corruption (state “capture”). Most words contained in the third topic all already feature in topic one or two already. Given this lack of unique distinction, topic three is said to simply be a synthesis of the two, aforementioned topics. 
 
 ::: {#fig-LSA-words-topics layout-ncol=2}
 
-![BoW: Topic 1](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
+![BoW: Topic 1 ~ governance](lsa_plots/words_bow_topic_1.png){#fig-words-bow-topic1}
 
-![tf-idf: Topic 1](lsa_plots/words_tfidf_topic_1.png){#fig-words-tfidf-topic1}
+![tf-idf: Topic 1 ~ pandemic preparedness](lsa_plots/words_tfidf_topic_1.png){#fig-words-tfidf-topic1}
 
-![BoW: Topic 2](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
+![BoW: Topic 2 ~ structural resources](lsa_plots/words_bow_topic_2.png){#fig-words-bow-topic2}
 
-![tf-idf: Topic 2](lsa_plots/words_tfidf_topic_2.png){#fig-words-tfidf-topic2}
+![tf-idf: Topic 2 ~ contemporary challenges](lsa_plots/words_tfidf_topic_2.png){#fig-words-tfidf-topic2}
 
-![BoW: Topic 3](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
+![BoW: Topic 3 ~ sustainability](lsa_plots/words_bow_topic_3.png){#fig-words-bow-topic3}
 
-![tf-idf: Topic 3](lsa_plots/words_tfidf_topic_3.png){#fig-words-tfidf-topic3}
+![tf-idf: Topic 3 ~ an amalgamation](lsa_plots/words_tfidf_topic_3.png){#fig-words-tfidf-topic3}
 
 Topic-by-word plots for BoW (left) and tf-idf (right) approach for LSA implementation.
 :::
 
+Unlike within the micro-context, LSA now applied in the maro-context (i.e., sentence tokenization) indicates more variability in the choice of the optimal topic number for both BoW and tf-idf approaches. Due to the excessive jumps between high and low coherence scores across the topic amounts seen in @fig-sentences-coherence, it is opted to choose the lowest best number. This choice aims to limit potential theme-overlapping (i.e., many common words shared across topics) and allow for more conciseness. 
+
 ![Coherence plot for LSA where SONA speeches were tokenized by sentences.](lsa_plots/sentence_coherence_plots.png){width=500 height=300 #fig-sentences-coherence}
+
+
+Given @fig-LSA-sentences-topics, more of an overlap in topic scope across both corpus types is seen for the sentence-tokenized speeches. For instance, the second topic for the BoW-related corpus and the first topic for the tf-idf-related corpus are both labelled as governance, given the commonly shared words (“government”, “people”, “work” and “development”). The first topic for this former-mentioned corpus accounts for the internal structures (“leaders”, “assembly”, “president”, “members”) related to governance. Whilst, the second topic of the tf-idf-related corpus is very distinguishable with the dominant weighting of the word “thank”, connotated with a sense of gratitude. This topic also refers to some reformation indicators like “opportunity” and “growth”. 
 
 ::: {#fig-LSA-sentences-topics layout-ncol=2}
 
-![BoW: Topic 1](lsa_plots/sentences_bow_topic_1.png){#fig-sentences-bow-topic1}
+![BoW: Topic 1 ~ governmental structures](lsa_plots/sentences_bow_topic_1.png){#fig-sentences-bow-topic1}
 
-![tf-idf: Topic 1](lsa_plots/sentences_tfidf_topic_1.png){#fig-sentences-tfidf-topic1}
+![tf-idf: Topic 1 ~ governance](lsa_plots/sentences_tfidf_topic_1.png){#fig-sentences-tfidf-topic1}
 
-![BoW: Topic 2](lsa_plots/sentences_bow_topic_2.png){#fig-sentences-bow-topic2}
+![BoW: Topic 2 ~  governance](lsa_plots/sentences_bow_topic_2.png){#fig-sentences-bow-topic2}
 
-![tf-idf: Topic 2](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
+![tf-idf: Topic 2 ~ reformation and gratitude](lsa_plots/sentences_tfidf_topic_2.png){#fig-sentences-tfidf-topic2}
 
-{#fig-sentences-tfidf-topic3}
 
 SONA speeches tokenized by sentences for BoW (left) and tf-idf (right) approach for LSA implementation.
 :::
