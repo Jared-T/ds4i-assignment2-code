@@ -2067,7 +2067,7 @@ sona_speeches_clean['president'].unique()
 
 # topic_labels_words = ['Diplomatic strategy', 'General strategic vision']
 
-# topic_labels_sents = ['Social cohesion', 'Prospective plans', Respect within governmental structures']
+# topic_labels_sents = ['Social cohesion', 'Prospective plans', Esteem within governmental structures']
 
 # Show the topics for each author
 # show_author('Mandela', author_topic_model, topic_labels_words)
