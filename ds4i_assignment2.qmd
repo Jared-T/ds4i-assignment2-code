@@ -2147,6 +2147,7 @@ styled_df = style_df(df)
 #| label: atm-table
 #| tbl-cap: "Table 3: ATM topics for each president."
 
+
 styled_df
 
 ```
