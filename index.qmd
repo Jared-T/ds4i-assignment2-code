@@ -7,8 +7,6 @@ author:
 
 This is the website for the second assignment of the Masters-level course "Data Science for Industry" (DS4I) at the University of Cape Town.
 
-<h4> Links to the repos: </h4>
-
 <h4> Website files </h4>
 [Link to the website files](https://github.com/Jared-T/ds4i-assignment2-code) 
 
