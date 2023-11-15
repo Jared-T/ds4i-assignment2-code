@@ -15,10 +15,9 @@ execute:
 <h4> Abstract </h4>
 <hr> 
 
-In the domain of natural language processing (NLP), a comprehensive analysis was conducted on the State of the Nation Addresses (SONA) by South African presidents from 1994 to 2023, employing advanced emotion and theme extraction techniques. This study utilized sentiment analysis, leveraging two distinct lexicons—AFINN and Bing—to gauge the polarity of emotions within the speeches. Concurrently, five sophisticated topic modeling algorithms were applied, namely Latent Semantic Analysis (LSA), Probabilistic Latent Semantic Analysis (pLSA), Latent Dirichlet Allocation (LDA), Correlated Topic Model (CTM), and Author-Topic Model (ATM), to distill and categorize the predominant themes.
+In the domain of natural language processing (NLP), a descriptive text-analysis was conducted on the State of the Nation Addresses (SONAs) by South African presidents from 1994 to 2023, employing emotion-and-theme extraction techniques. Sentiment analysis, leveraging two lexicons ($\texttt{AFINN}$ and $\texttt{bing}$), was applied to gauge the polarity of emotions within the speeches. Concurrently, five topic models were applied, namely Latent Semantic Analysis (LSA), Probabilistic Latent Semantic Analysis (pLSA), Latent Dirichlet Allocation (LDA), Correlated Topic Model (CTM), and Author-Topic Model (ATM), to track thematic patterns.
 
-The empirical findings indicated a lack of significant divergence between the AFINN and Bing lexicons in mapping the sentiment trajectory—both positive and negative—across different time periods and presidencies. It was observed that the specific lexicon words contributing to these sentiments varied across the speeches, yet no discernible pattern emerged when analyzed by presidential term. In terms of thematic consistency, the LSA, pLSA, LDA, and CTM exhibited remarkable uniformity in identifying key governance-related themes encompassing economic, social, and structural dimensions, as well as contextual contemporary issues like pandemics and sports.
-However, the application of the ATM revealed a nuanced differentiation, unearthing more personalized thematic elements aligned with individual presidential agendas. This model demonstrated an enhanced capability in distinguishing topics more effectively across different presidencies, underscoring the utility of ATM in extracting distinct, president-specific themes from the corpus of SONA speeches. This study underscores the potency of NLP techniques in thematic and sentiment analysis, particularly in the context of political discourse, offering valuable insights into the subtle variations in thematic emphasis and sentiment across different administrative tenures.
+No overt trajectory differences were found between the two lexicons, in terms of positive and negative sentiment across both time periods and president. It was further observed that the specific words contributing to the sentiments scores varied across the speeches, yet no discernible pattern emerged when stratified by president. In terms of thematic consistency, the LSA, pLSA, LDA, and CTM exhibited uniformity in identifying general governance-related topics in different spheres (economic, social, structural) and other contemporary contexts (pandemic and sport). In contrast, the application of the ATM revealed a nuanced differentiation, unearthing more abstract themes aligned with personal presidential agendas.  
 
 <h4> Introduction </h4>
 <hr>
@@ -67,12 +66,9 @@ In order to determine the optimal number of topics, a coherence score is calcula
 
 <b><u> Data pre-processing </b></u>
 
+Pre-processing procedures is paramount to prepare and refine the data for subsequent analytical scrutiny. Initially, a process of data reading and parsing is executed. Via string operations, crucial information such as the year and the president's name are discerned from the file names and integrated as discrete columns within the dataframe to be analysed. Then text-cleaning follows, involving the removal of URLs, HTML entities, and newline characters from the SONA speeches, and employing periods and question marks as delimiters to fragment the text into sentences. This stage further includes the flattening of nested lists and the exclusion of null strings.
+Then a lemmatization function, tailored to convert words into their base-root form using appropriate part-of-speech tags, is defined and applied to the refined data. This phase also involves the exclusion of stop words and a custom list of additional words (e.g., greeting references like "honourable", "member", "madame", "speaker"), with a stringent focus on retaining only those words recognized as English (given the SONA speeches at times include one of the other official African languages like Zulu). 
 
-In the realm of textual data analysis, a series of intricate preprocessing procedures is paramount to prepare and refine the dataset for subsequent analytical scrutiny. Initially, an extraction process is undertaken wherein a ZIP archive, comprising multiple text documents, is meticulously opened, and its contents are methodically transferred to a designated directory. This is followed by an intricate file filtering stage, during which the directory's contents are scrupulously sifted, retaining only those files with a '.txt' extension, thereby ensuring format uniformity.
-Subsequent to these preliminary stages, a meticulous process of data reading and parsing is executed. Each text file is individually accessed; its inaugural line, postulated to contain the date, is extracted and segregated. The residual contents of each file are then assiduously read and conserved. In the ensuing phase, a DataFrame is constructed, astutely incorporating filenames, the previously extracted dates, and the comprehensive speech text.
-A critical phase of metadata extraction ensues, wherein, through precise string operations, pivotal information such as the year and the president's name are discerned from the filenames and adroitly integrated as discrete columns within the DataFrame. The text cleaning phase plays a pivotal role, involving the removal of URLs, HTML entities, and newline characters from the speeches, and employing periods and question marks as delimiters to fragment the text into sentences. This stage further includes the flattening of nested lists and the exclusion of null strings.
-The data export phase involves the systematic saving of the full speeches and the segmented sentences into two distinct CSV files. For enhanced analytical precision, the CSV files are reimported into DataFrames, and a lemmatization function, tailored to convert words into their base form using appropriate part-of-speech tags, is defined and applied. This phase also involves the exclusion of stop words and a custom list of additional words, with a stringent focus on retaining only those words recognized as English.
-The final adjustments and export phase encompass the application of two separate cleaning functions to the speeches: one excluding additional words and the other retaining them. Subsequently, the refined speeches and sentences are saved into new CSV files. In a concluding act of data optimization, the original 'speech' column is meticulously dropped from the sentences DataFrame prior to the final export, thereby streamlining the dataset for advanced analysis.
 
 <h4> Methods </h4>
 <hr>
@@ -420,7 +416,6 @@ Most frequent words used in SONA speeches, faceted by president.
 After faceting the most frequent words by president, as displayed in @fig-EDA-presidents, there are some slight nuances noted. For instance, former president de Klerk used words which were emblematic of the political paradigm shift that occurred during the time of his term. Words such as “transitional”, “constitutional”, and “constitution” reflects the country’s progression from an exclusive, segregated to a more inclusive, democratic state. This political and legal reform directed towards achieving societal equality is further underscored by the words, “parties”, “party”, and “election”. The pivotal role of proper partnerships being formed, which would have further aided in maintaining this change, is foregrounded with the word “alliance”.  
 
 Similarly, this idea of unity has also been foregrounded in the other five presidents’ speeches with the commonly shared word “people”. Though, unlike de Klerk, the other former presidents (Mandela, Mbeki, Motlanthe, Zuma) and current president (Ramaphosa), seem to similarly place more focus on the explicit communication of policies and vision (“development” and “work”) and the establishment of a sense of responsibility and accountability on their part as president (“government” and “ensure”). Some minor distinctions between these aforementioned presidents can be made. Mandela, Mbeki, and Motlanthe, for example, seemed to draw more attention to “society” or “social” progress, whilst Zuma and Ramaphosa appeared to place more prominence on “economic” progress.
-
 
 
 ```{python}
@@ -912,7 +907,6 @@ SONA speeches tokenized by sentences for BoW (left) and tf-idf (right) approach 
 :::
 
 
-
 ```{python}
 #| eval: false
 
@@ -1374,8 +1368,7 @@ A systematic hyperparameter grid search was conducted, spanning $\alpha$ values 
 Contour plots visualizing variation in coherence scores tuned across range of different $\alpha$ and $\beta$ hyperparameter values. 
 :::
 
-Examination of Table 1, presenting a subset of the grid search results for word-tokenized speeches, further corroborated these findings. The values therein demonstrated a tendency for higher $\alpha$ values to consistently yield maximum coherence scores, irrespective of the $\beta$ value. This table also highlighted the superiority of the Bag-of-Words (BoW) corpus over the term frequency-inverse document frequency (tf-idf) corpus in achieving optimal hyperparameter settings, particularly with a topic count of nine. Parallel results were observed in Table 2, where the employment of high alpha values in conjunction with the BoW corpus, irrespective of beta values, resulted in the most favorable coherence scores, even with a minimal topic count of two.
-
+Examination of Table 1, presenting a subset of the grid search results for word-tokenized speeches, further corroborated these findings. The values therein demonstrate a tendency for higher $\alpha$ values to consistently yield maximum coherence scores, irrespective of the $\beta$ value. This table also highlights the superiority of the BoW-related corpus over tf-idf--related corpus in achieving an optimal hyperparameter combination, particularly with a topic number of nine. Parallel results are observed in Table 2, where the employment of high $\alpha$ values in conjunction with the BoW-related corpus, regardless of the value of $\beta$, result in the most favourable coherence scores. In this case, a minimal amount of two topics is sufficient. 
 
 
 ```{python}
@@ -1617,6 +1610,7 @@ style_df(combined_speeches_df)
 
 ```
 
+<br>  
 
 ```{python}
 #| eval: true
@@ -1657,15 +1651,15 @@ vis_data_sentences = pyLDAvis.gensim_models.prepare(lda_model_sentences, bow_cor
 
 ```
 
+<br> 
+
+Interactive visualization of the LDA results are produced using $\texttt{pyLDAvis}$.  The left-panel of this tool presents an inter-topic distance map, offering a comprehensive view of the topic distribution and relationships, where multi-dimensional scaling (MDS) is applied to project these relations onto a two-dimensional plane. The size of each topic circle in this map is directly proportional to its prevalence. While, the right-panel provides a horizontal bar chart delineating the most salient words for each topic, thereby facilitating a deeper understanding of the associated meaning. The juxtaposition of corpus-wide frequencies (light-blue bars) against topic-specific frequencies (red bars) for each term allows for an thorough exploration of topic-term relationships [@Sievert2014].
+
+Further analytical depth is achieved through the application of the relevance metric, which leverages a weight parameter $\lambda$ (calculation thereof shown in the right-panel footnote) to balance the probability of a word within a topic relative to its lift (a measure of the word's frequency within a topic relative to its marginal probability across the corpus). This measure is instrumental in distinguishing between terms that are frequent yet not exclusive to a topic (high $\lambda$ values, near one) and those that are rare but highly indicative of a topic (low $\lambda$ values, near zero) [@Sievert2014]. For superior, interpretative results the value of $\lambda$ can be viewed as another hyperparameter to tune. Though such an exercise is not executed here, rather the value of $\lambda$ is modifiable such that word rankings can be altered to aid topic interpretation. Given this, in addition to accounting for the red and light-blue bars’ widths for some word, one can determine whether a word is highly relevant to the selected topic due to its lift (high ratio of red to light-blue) or its probability (absolute width of red). 
 
 <b><u> pyLDAvis for Words </b></u>
 
-The employment of pyLDAvis for interactive visualization of LDA results yielded insightful revelations. The left panel of this visualization tool, presenting an inter-topic distance map, offered a comprehensive view of the topic distribution and interrelations, employing multi-dimensional scaling (MDS) to project these relationships onto a two-dimensional plane. The size of each topic circle in this map was directly proportional to its prevalence, while the right panel provided a horizontal bar chart delineating the most salient terms for each topic, thereby facilitating a deeper understanding of the topic's essence. The juxtaposition of corpus-wide frequencies (light-blue bars) against topic-specific frequencies (red bars) for each term allowed for an intricate exploration of topic-term relationships.
-
- 
-Further analytical depth was achieved through the application of the relevance metric, which leveraged a weight parameter lambda to balance the probability of a word within a topic against its lift—a measure of the word's frequency within a topic relative to its marginal probability across the corpus. This metric proved instrumental in distinguishing between terms that were prevalent yet not exclusive to a topic (high lambda values) and those that were rare but highly indicative of a topic (low lambda values).
-
-When applied to the word-tokenized BoW corpus, the LDA results revealed several distinct thematic clusters. For instance, at a lambda value of 0.1, Topic 1, characterized by terms like “mining” and “alliance,” was identified as the most prevalent, suggesting a focus on mining-related activities. In contrast, Topic 9, with a significantly smaller presence, was associated with local governance themes like “municipality” and “refurbishment.” This thematic diversity was further reflected in the spatial distribution of topics on the inter-topic distance map, where topics related to economic activities (Topics 1 and 4) were shown to have a certain degree of proximity, indicative of underlying thematic similarities, while Topic 2, centered around abstract concepts like “unity” and “compatriots,” was markedly distant from other topics, underscoring its unique thematic focus.
+When applied to the word-tokenized BoW corpus, the LDA results reveal several distinct thematic clusters. Assuming a $\lambda$  value of 0.1, topic one, characterized by terms like “mining” and “alliance,” is acknowledged as the most prevalent (largest circle), suggesting a focus on mining-activity relations. In contrast, topic nine (smallest circle), is associated with “municipality” improvement (“refurbishment”). This thematic divserity, where topic one alludes to a national economic activity and topic nine encompasses more of a local governing body. is further reflected in the spatial distribution of these two respective circles on the left-panel. Constratingly, topics five to eight are very inter-connected given the circles' close proximity. Topic four refers to general economic activity with the top words relating to monetary value (“millions”) and other economical terms like “spending” and “operations”.  Topic one and topic four both underline some part of the economy, where the former is industry-specific whilst the latter is more generalized. This underlying commonality is demonstrated with the general closeness between these two topic-number circles. Finally, the topic-two circle is the furthest from all other topic circles as it refers to an abstraction, unity (“compatriots”) which is not an idea featured amongst other topics.
 
 ```{python}
 #| eval: true
@@ -1679,9 +1673,11 @@ pyLDAvis.display(vis_data_speeches)
 
 ```
 
+<br> 
+
 <b><u> pyLDAvis for Sentences </b></u>
 
-In the case of the sentence-tokenized BoW corpus, the two discerned topics exhibited a marked separation, suggesting minimal thematic overlap or interrelation, thereby underscoring the distinct nature of the topics identified through this corpus-specific LDA implementation.
+In the case of the sentence-tokenized BoW corpus, the two topics seem to have minimal interrelation, at least suggested by the circles being quite separate in space from one another. Though, across a range of $\lambda$ values, the establishment of differentiable, underlying themes for these two topics proves challenging given that the same top words (like "railways") are generally present for both.
 
 ```{python}
 #| eval: true
@@ -1692,6 +1688,8 @@ pyLDAvis.display(vis_data_sentences)
 
 
 ```
+
+<br>  
 
 <b><u> CTM </b></u>
 
@@ -1902,7 +1900,7 @@ As for CTM, the coherence plots presented in @fig-ATM-coherence,  suggest that t
 Coherence plots for ATM across different tokens (words or sentences) implemented within BoW approach.
 :::
 
-The topics suggested by ATM are the most disparate from the other topic models implemented. When incorporating author-topic information, there is a shift away from topics being mere reporting overviews of the way in which governance was achieved economically, structurally, and socially, as well as how contemporary contexts (like the pandemic, power problems, or pivotal sporting events) were confronted. Instead, particular presidents’ agendas become more apparent. For instance, Mbeki and Zuma’s agenda is entirely social cohesion and confidence (“constitution”, “democracy”, “better”) when considering sentence-based topics. Most notably, for all presidents within the word-based-topic context, there is an equal emphasis placed on the general national agenda (like the “elections”) and more economic (“rand”, “mining”) and reformation (“reform”) related priorities.
+The topics suggested by ATM are the most disparate from the other topic models implemented. When incorporating author-topic information, there is a shift away from topics being mere reporting overviews of the way in which governance was achieved economically, structurally, and socially, as well as how contemporary contexts (like the pandemic, power problems, or pivotal sporting events) were confronted. Instead, particular presidents’ agendas become more apparent. For instance, Mbeki and Zuma’s agenda is entirely social cohesion and confidence (“constitution”, “democracy”, “better”) when considering sentence-based topics. Most notably, for all presidents within the word-based-topic context, there is an equal emphasis placed on the general national agenda (like the “elections”) and more economic (“rand”, “mining”) and reformation (“reform”) related priorities. Moreover, in general, ATM is able to correctly attribute the relevant speech/speeches to the correct author (i.e., president). 
 
 ::: {#fig-ATM-topics layout-ncol=2}
 
@@ -2180,6 +2178,15 @@ styled_df
 
 ```
 
+
+<h4> Discussion and Conclusion </h4>
+<hr> 
+
+Sentiment analysis, via a comparison of the $\texttt{AFINN}$ and $\texttt{bing}$ lexicons, revealed no significant sentiment differences over time. Specific words contributing to these sentiments varied though, especially when stratifying by different presidential tenures. 
+
+The implementation of four topic models (including LSA, pLSA, LDA, CTM) demonstrated a general consistency in themes, encompassing predominately different governance dimensions. Surprisingly, lots of similarity in findings were evident between CTM and LSA/pLSA. It was also noteworthy that the ATM introduced a level of granularity that revealed more in-depth, abstract topics. Through this, more nuanced differentiation between presidents and their personal visions became apparent. This finding highlights the relevance of employing advanced topic modeling to gain a deeper understanding of individual leadership styles and priorities. 
+
+Overall, the utility of employing NLP techniques to uncover sentimental and thematic patterns has been demonstrated not only in general, but also in a niche context like presidential communication. The findings emphasize the need at times for more sophisticated methodologies (such as ATM) to uncover subtle sentiment and topic variations in political discourse. These results could potentially be refined by combining the sentiment analysis and topic modelling with expertise in political science and linguistics. 
 
 </div> 
 
